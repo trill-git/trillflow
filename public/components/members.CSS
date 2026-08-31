@@ -1,0 +1,2168 @@
+/* =========================================================
+   MEMBERS SECTION — PROFESSIONAL TEAM DIRECTORY
+========================================================= */
+
+.members-container {
+    width: 100%;
+    height: auto;
+    min-height: 120px;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 6px 0;
+
+    background: transparent;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color:
+        rgba(255, 255, 255, .12) transparent;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.members-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.members-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.members-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .12);
+    border-radius: 20px;
+}
+
+.members-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .20);
+}
+
+
+/* =========================================================
+   MEMBER CARD
+   — ROW / DIRECTORY STYLE
+========================================================= */
+
+.member-card {
+
+    width: 100%;
+    min-height: 68px;
+
+    box-sizing: border-box;
+
+    padding: 10px 16px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    position: relative;
+
+    border: 1px solid transparent;
+    border-radius: 14px;
+
+    background:
+        linear-gradient(90deg,
+            rgba(255, 255, 255, .025),
+            rgba(255, 255, 255, .012));
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+/* =========================================================
+   LEFT ACCENT
+========================================================= */
+
+.member-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    right: 0;
+    top: 10px;
+    bottom: 10px;
+
+    width: 3px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(180deg,
+            var(--accent),
+            #0f9f7d);
+
+    opacity: 0;
+
+    transform: scaleY(.4);
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+
+/* =========================================================
+   HOVER
+========================================================= */
+
+.member-card:hover {
+
+    background:
+        linear-gradient(90deg,
+            rgba(4, 63, 60, .22),
+            rgba(255, 255, 255, .035));
+
+    border-color:
+        rgba(87, 255, 224, .08);
+
+    transform:
+        translateX(-3px);
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, .12);
+}
+
+.member-card:hover::before {
+
+    opacity: 1;
+
+    transform: scaleY(1);
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.member-card .avatar,
+.member-card .member-avatar {
+
+    width: 42px;
+    height: 42px;
+
+    min-width: 42px;
+    min-height: 42px;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        linear-gradient(135deg,
+            #075b55,
+            #0f9f7d);
+
+    color: #eafffc;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, .22);
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   AVATAR GLOW
+========================================================= */
+
+.member-card .avatar::after,
+.member-card .member-avatar::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, .16),
+            transparent 55%);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   USER INFO
+========================================================= */
+
+.member-card .member-info {
+
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: center;
+
+    gap: 3px;
+}
+
+
+/* =========================================================
+   USERNAME
+========================================================= */
+
+.member-card .member-name,
+.member-card .profile-username {
+
+    margin: 0;
+
+    padding: 0;
+
+    color: #ecffff;
+
+    font-size: 14px;
+
+    font-weight: 650;
+
+    line-height: 1.3;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ROLE
+========================================================= */
+
+.member-card .member-role {
+
+    width: fit-content;
+
+    padding: 3px 8px;
+
+    border-radius: 6px;
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    border:
+        1px solid rgba(255, 255, 255, .055);
+
+    color:
+        rgba(220, 240, 240, .48);
+
+    font-size: 10px;
+
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   OPTIONAL STATUS
+========================================================= */
+
+.member-card .member-status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    color:
+        rgba(220, 240, 240, .45);
+
+    font-size: 11px;
+
+    margin-left: auto;
+}
+
+
+.member-card .member-status-dot {
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #23a55a;
+
+    box-shadow:
+        0 0 0 3px rgba(35, 165, 90, .10),
+        0 0 10px rgba(35, 165, 90, .35);
+}
+
+
+.member-card.offline {
+
+    opacity: .55;
+}
+
+.member-card.offline .member-status-dot {
+
+    background: #80848e;
+
+    box-shadow:
+        0 0 0 3px rgba(128, 132, 142, .08);
+}
+
+
+/* =========================================================
+   MEMBER ACTION
+========================================================= */
+
+.member-card .member-action {
+
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    color:
+        rgba(220, 240, 240, .38);
+
+    background:
+        transparent;
+
+    opacity: 0;
+
+    transition:
+        opacity .2s ease,
+        background .2s ease,
+        color .2s ease;
+}
+
+.member-card:hover .member-action {
+
+    opacity: 1;
+}
+
+.member-card .member-action:hover {
+
+    color: #ffffff;
+
+    background:
+        rgba(255, 255, 255, .07);
+}
+
+
+/* =========================================================
+   CURRENT SIMPLE HTML SUPPORT
+   Your current JS creates:
+   
+   avatar
+   username
+   
+   So make that layout work perfectly.
+========================================================= */
+
+.member-card>.avatar {
+
+    flex-shrink: 0;
+}
+
+.member-card>.profile-username {
+
+    flex: 1;
+
+    min-width: 0;
+}
+
+
+/* =========================================================
+   EMPTY / ERROR
+========================================================= */
+
+.members-error {
+
+    width: 100%;
+
+    padding: 35px 20px;
+
+    text-align: center;
+
+    color:
+        rgba(220, 240, 240, .45);
+
+    font-size: 13px;
+
+    border:
+        1px dashed rgba(255, 255, 255, .08);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255, 255, 255, .018);
+}
+
+
+/* =========================================================
+   ADD MEMBER BUTTON
+========================================================= */
+
+#addMemberBtn {
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    min-width: 125px;
+
+    padding: 10px 17px;
+
+    border:
+        1px solid rgba(100, 255, 235, .13);
+
+    border-radius: 11px;
+
+    background:
+        linear-gradient(135deg,
+            #075b55,
+            #0f806f);
+
+    color: #eafffc;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 24px rgba(0, 80, 70, .20);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+}
+
+
+#addMemberBtn:hover {
+
+    transform:
+        translateY(-2px);
+
+    filter:
+        brightness(1.06);
+
+    box-shadow:
+        0 13px 30px rgba(0, 100, 90, .30);
+}
+
+
+#addMemberBtn:active {
+
+    transform:
+        scale(.97);
+}
+
+
+/* =========================================================
+   ADD MEMBER MODAL
+========================================================= */
+
+#addMemberModal {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(2, 12, 12, .72);
+
+    backdrop-filter:
+        blur(14px);
+
+    -webkit-backdrop-filter:
+        blur(14px);
+
+    z-index: 9999;
+
+    direction: rtl;
+}
+
+
+/* =========================================================
+   ADD MODAL CONTENT
+========================================================= */
+
+#addMemberModal .modal-content {
+
+    width: 440px;
+
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 30px;
+
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 14px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(25, 43, 43, .97),
+            rgba(9, 24, 24, .97));
+
+    border:
+        1px solid rgba(120, 255, 240, .10);
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 35px 100px rgba(0, 0, 0, .55),
+        inset 0 1px 0 rgba(255, 255, 255, .045);
+
+    animation:
+        addMemberModalShow .28s cubic-bezier(.2, .8, .2, 1);
+}
+
+
+/* =========================================================
+   MODAL TOP LINE
+========================================================= */
+
+#addMemberModal .modal-content::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 18%;
+    right: 18%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(90deg,
+            transparent,
+            rgba(87, 255, 224, .65),
+            transparent);
+
+    box-shadow:
+        0 0 14px rgba(87, 255, 224, .25);
+}
+
+
+/* =========================================================
+   ADD TITLE
+========================================================= */
+
+#addMemberModal .modal-content h2 {
+
+    margin: 0 0 5px;
+
+    color: #f2ffff;
+
+    font-size: 22px;
+
+    font-weight: 700;
+
+    text-align: right;
+}
+
+
+#addMemberModal .modal-content h2::after {
+
+    content: "";
+
+    display: block;
+
+    width: 30px;
+    height: 2px;
+
+    margin-top: 9px;
+
+    border-radius: 10px;
+
+    background:
+        #0f806f;
+
+    box-shadow:
+        0 0 10px rgba(0, 255, 220, .3);
+}
+
+
+/* =========================================================
+   ADD INPUTS
+========================================================= */
+
+#addMemberModal .modal-content input,
+#addMemberModal .modal-content select {
+
+    width: 100%;
+    height: 47px;
+
+    box-sizing: border-box;
+
+    padding:
+        0 14px;
+
+    border:
+        1px solid rgba(255, 255, 255, .075);
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color: #ecffff;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    transition:
+        .2s ease;
+}
+
+
+#addMemberModal .modal-content input::placeholder {
+
+    color:
+        rgba(220, 240, 240, .34);
+}
+
+
+#addMemberModal .modal-content input:focus,
+#addMemberModal .modal-content select:focus {
+
+    border-color:
+        rgba(87, 255, 224, .38);
+
+    background:
+        rgba(4, 63, 59, .18);
+
+    box-shadow:
+        0 0 0 3px rgba(87, 255, 224, .055);
+}
+
+
+/* =========================================================
+   ADD ROLE
+========================================================= */
+
+#addMemberModal #newMemberRole {
+
+    cursor: pointer;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+
+#addMemberModal #newMemberRole option {
+
+    background: #142525;
+
+    color: white;
+}
+
+
+/* =========================================================
+   ADD MODAL BUTTONS
+========================================================= */
+
+#addMemberModal .modal-content button {
+
+    height: 45px;
+
+    border-radius: 11px;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+
+#createMemberBtn {
+
+    margin-top: 4px;
+
+    border:
+        1px solid rgba(100, 255, 235, .12) !important;
+
+    background:
+        linear-gradient(135deg,
+            #075b55,
+            #043f3b);
+
+    color: #eafffc;
+
+    box-shadow:
+        0 8px 25px rgba(4, 63, 59, .25);
+}
+
+
+#createMemberBtn:hover {
+
+    transform:
+        translateY(-1px);
+
+    background:
+        linear-gradient(135deg,
+            #087068,
+            #07524d);
+
+    box-shadow:
+        0 12px 30px rgba(4, 63, 59, .35);
+}
+
+
+#closeAddMemberBtn {
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        rgba(235, 250, 250, .60);
+
+    border:
+        1px solid rgba(255, 255, 255, .07) !important;
+}
+
+
+#closeAddMemberBtn:hover {
+
+    background:
+        rgba(255, 255, 255, .075);
+
+    color: white;
+}
+
+
+/* =========================================================
+   EDIT USER MODAL
+========================================================= */
+
+#editUserModal {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    box-sizing: border-box;
+
+    background:
+        rgba(2, 12, 12, .72);
+
+    backdrop-filter:
+        blur(14px);
+
+    -webkit-backdrop-filter:
+        blur(14px);
+
+    z-index: 10000;
+
+    direction: rtl;
+}
+
+
+/* =========================================================
+   EDIT CONTENT
+========================================================= */
+
+.edit-user-content {
+
+    width: 460px;
+
+    max-width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 30px;
+
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(21, 42, 42, .97),
+            rgba(9, 25, 25, .97));
+
+    border:
+        1px solid rgba(120, 255, 240, .10);
+
+    border-radius: 21px;
+
+    box-shadow:
+        0 35px 100px rgba(0, 0, 0, .55),
+        inset 0 1px 0 rgba(255, 255, 255, .04);
+
+    animation:
+        editUserShow .28s cubic-bezier(.2, .8, .2, 1);
+}
+
+
+/* =========================================================
+   EDIT TOP LINE
+========================================================= */
+
+.edit-user-content::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    left: 18%;
+    right: 18%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(90deg,
+            transparent,
+            rgba(87, 255, 224, .55),
+            transparent);
+}
+
+
+/* =========================================================
+   EDIT HEADER
+========================================================= */
+
+.edit-user-header {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    margin-bottom: 5px;
+}
+
+
+.edit-user-header h2 {
+
+    margin: 0;
+
+    color: #f1ffff;
+
+    font-size: 21px;
+
+    font-weight: 700;
+}
+
+
+.edit-user-header p {
+
+    margin: 4px 0 0;
+
+    color:
+        rgba(220, 240, 240, .45);
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   EDIT AVATAR
+========================================================= */
+
+#editUserAvatar {
+
+    width: 45px;
+    height: 45px;
+
+    min-width: 45px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background:
+        linear-gradient(135deg,
+            #075b55,
+            #0f9f7d);
+
+    color: #eafffc;
+
+    font-size: 16px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 7px 20px rgba(0, 0, 0, .25);
+}
+
+
+/* =========================================================
+   EDIT CLOSE
+========================================================= */
+
+.edit-user-close {
+
+    position: absolute;
+
+    top: 14px;
+    left: 14px;
+
+    width: 33px;
+    height: 33px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid rgba(255, 255, 255, .07);
+
+    border-radius: 9px;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        rgba(255, 255, 255, .55);
+
+    font-size: 20px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        .2s ease;
+}
+
+
+.edit-user-close:hover {
+
+    color: white;
+
+    background:
+        rgba(255, 255, 255, .08);
+
+    transform:
+        rotate(90deg);
+}
+
+
+/* =========================================================
+   EDIT FIELDS
+========================================================= */
+
+.edit-user-field {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+
+.edit-user-field label {
+
+    color:
+        rgba(230, 245, 245, .55);
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+
+.edit-user-field input,
+.edit-user-field select {
+
+    width: 100%;
+    height: 46px;
+
+    box-sizing: border-box;
+
+    padding:
+        0 13px;
+
+    border:
+        1px solid rgba(255, 255, 255, .075);
+
+    border-radius: 11px;
+
+    outline: none;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color: #f2ffff;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    transition:
+        .2s ease;
+}
+
+
+.edit-user-field input::placeholder {
+
+    color:
+        rgba(220, 240, 240, .25);
+}
+
+
+.edit-user-field input:focus,
+.edit-user-field select:focus {
+
+    border-color:
+        rgba(87, 255, 224, .38);
+
+    background:
+        rgba(4, 63, 59, .16);
+
+    box-shadow:
+        0 0 0 3px rgba(87, 255, 224, .055);
+}
+
+
+/* =========================================================
+   EDIT ROLE
+========================================================= */
+
+#editUserRole {
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    -moz-appearance: none;
+
+    background-image: none;
+
+    cursor: pointer;
+}
+
+
+#editUserRole option {
+
+    background: #102626;
+
+    color: white;
+}
+
+
+/* =========================================================
+   EDIT ACTIONS
+========================================================= */
+
+.edit-user-actions {
+
+    display: flex;
+
+    grid-template-columns:
+        1fr 110px;
+
+    gap: 9px;
+
+    margin-top: 6px;
+}
+
+
+.edit-user-actions button {
+
+    height: 44px;
+
+    border-radius: 11px;
+
+    border:
+        1px solid rgba(255, 255, 255, .07);
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 650;
+
+    cursor: pointer;
+
+    transition:
+        .2s ease;
+}
+
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+#saveUserChangesBtn {
+
+    background:
+        linear-gradient(135deg,
+            #1a6962,
+            #0d4c47);
+
+    color: white;
+
+    box-shadow:
+        0 8px 25px rgba(4, 100, 93, .20);
+}
+
+
+#saveUserChangesBtn:hover {
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 12px 30px rgba(4, 100, 93, .30);
+}
+
+
+/* =========================================================
+   CANCEL
+========================================================= */
+
+#cancelEditUserBtn {
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        rgba(255, 255, 255, .58);
+}
+
+
+#cancelEditUserBtn:hover {
+
+    background:
+        rgba(255, 255, 255, .075);
+
+    color: white;
+}
+
+
+/* =========================================================
+   DISABLED
+========================================================= */
+
+#createMemberBtn:disabled,
+#saveUserChangesBtn:disabled {
+
+    opacity: .55;
+
+    cursor:
+        not-allowed;
+
+    transform: none !important;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes addMemberModalShow {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(18px) scale(.96);
+
+        filter:
+            blur(5px);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0) scale(1);
+
+        filter:
+            blur(0);
+    }
+}
+
+
+@keyframes editUserShow {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(18px) scale(.96);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0) scale(1);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .member-card {
+
+        min-height: 62px;
+
+        padding:
+            9px 12px;
+    }
+
+    .member-card .avatar,
+    .member-card .member-avatar {
+
+        width: 38px;
+        height: 38px;
+
+        min-width: 38px;
+        min-height: 38px;
+    }
+
+    .member-card .profile-username,
+    .member-card .member-name {
+
+        font-size: 13px;
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    #addMemberModal,
+    #editUserModal {
+
+        padding: 15px;
+    }
+
+    #addMemberModal .modal-content,
+    .edit-user-content {
+
+        width: 100%;
+
+        padding: 23px;
+
+        border-radius: 18px;
+    }
+
+    .edit-user-actions {
+
+        grid-template-columns: 1fr;
+    }
+
+    #addMemberBtn {
+
+        min-width: 110px;
+
+        padding:
+            9px 13px;
+    }
+
+}
+
+/* =========================================================
+   MEMBERS — ROLE GROUPS
+========================================================= */
+
+.members-container {
+
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 24px;
+
+    padding: 8px 4px 20px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   GROUP
+========================================================= */
+
+.members-group {
+
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   GROUP HEADER
+========================================================= */
+
+.members-group-header {
+
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 0 10px;
+
+    box-sizing: border-box;
+}
+
+
+.members-group-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+
+.members-group-title h3 {
+
+    margin: 0;
+
+    color:
+        rgba(240, 255, 255, .88);
+
+    font-size: 12px;
+
+    font-weight: 750;
+}
+
+
+.members-group-title span {
+
+    display: block;
+
+    margin-top: 2px;
+
+    color:
+        rgba(220, 240, 240, .35);
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   GROUP ICON
+========================================================= */
+
+.members-group-icon {
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background:
+        rgba(255, 255, 255, .04);
+
+    border:
+        1px solid rgba(255, 255, 255, .06);
+
+    color:
+        rgba(255, 255, 255, .65);
+
+    font-size: 13px !important;
+
+    margin: 0 !important;
+}
+
+
+/* =========================================================
+   GROUP COUNT
+========================================================= */
+
+.members-group-count {
+
+    min-width: 25px;
+    height: 25px;
+
+    padding: 0 7px;
+
+    display: flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    box-sizing: border-box;
+
+    border-radius: 7px;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        rgba(220, 240, 240, .42) !important;
+
+    font-size: 10px !important;
+
+    margin: 0 !important;
+}
+
+
+/* =========================================================
+   MEMBERS LIST
+========================================================= */
+
+.members-group-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+/* =========================================================
+   MEMBER CARD
+========================================================= */
+
+.member-card {
+
+    width: 100%;
+
+    min-height: 70px;
+
+    padding: 10px 13px;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 13px;
+
+    position: relative;
+
+    border-radius: 12px;
+
+    border:
+        1px solid transparent;
+
+    background:
+        rgba(255, 255, 255, .018);
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.member-card:hover {
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    border-color:
+        rgba(255, 255, 255, .065);
+
+    transform:
+        translateX(-2px);
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, .12);
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+.member-card .member-avatar {
+
+    width: 43px;
+    height: 43px;
+
+    min-width: 43px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 50%;
+
+    color: #efffff;
+
+    font-size: 15px;
+
+    font-weight: 750;
+
+    background:
+        linear-gradient(135deg,
+            #075b55,
+            #0f806f);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, .20);
+}
+
+
+.member-card .member-avatar span {
+
+    position: relative;
+
+    z-index: 1;
+}
+
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+.member-main {
+
+    min-width: 0;
+
+    flex: 1;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+/* =========================================================
+   NAME
+========================================================= */
+
+.member-name-row {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    min-width: 0;
+}
+
+
+.member-name {
+
+    margin: 0;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    color: #efffff;
+
+    font-size: 13px;
+
+    font-weight: 650;
+}
+
+
+/* =========================================================
+   CROWN
+========================================================= */
+
+.member-crown {
+
+    color:
+        #d7b85c !important;
+
+    font-size: 12px !important;
+
+    margin: 0 !important;
+}
+
+
+/* =========================================================
+   META
+========================================================= */
+
+.member-meta {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    min-width: 0;
+}
+
+
+.member-role {
+
+    width: fit-content;
+
+    padding: 3px 7px;
+
+    border-radius: 5px;
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    border:
+        1px solid rgba(255, 255, 255, .055);
+
+    color:
+        rgba(220, 240, 240, .48);
+
+    font-size: 9px;
+
+    font-weight: 650;
+
+    white-space: nowrap;
+}
+
+
+.member-email {
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    color:
+        rgba(220, 240, 240, .28);
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   RIGHT SIDE
+========================================================= */
+
+.member-right {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-right: auto;
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.member-status {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    color:
+        rgba(220, 240, 240, .35);
+
+    font-size: 10px;
+
+    white-space: nowrap;
+}
+
+
+.member-status-dot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #23a55a;
+
+    box-shadow:
+        0 0 0 3px rgba(35, 165, 90, .08),
+        0 0 9px rgba(35, 165, 90, .35);
+}
+
+
+/* =========================================================
+   EDIT BUTTON
+========================================================= */
+
+.member-edit-btn {
+
+    width: 31px;
+    height: 31px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border:
+        1px solid rgba(255, 255, 255, .06);
+
+    border-radius: 8px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    color:
+        rgba(255, 255, 255, .40);
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transition:
+        opacity .2s ease,
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+
+.member-card:hover .member-edit-btn {
+
+    opacity: 1;
+}
+
+
+.member-edit-btn:hover {
+
+    background:
+        rgba(255, 255, 255, .08);
+
+    color: white;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   OWNER
+========================================================= */
+
+.members-group--owner .members-group-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:
+        #d7b85c !important;
+
+    background:
+        rgba(215, 184, 92, .08);
+
+    border-color:
+        rgba(215, 184, 92, .13);
+}
+
+
+.member-card--owner {
+
+    background:
+        linear-gradient(90deg,
+            rgba(215, 184, 92, .065),
+            rgba(255, 255, 255, .018));
+
+    border-color:
+        rgba(215, 184, 92, .075);
+}
+
+
+.member-card--owner:hover {
+
+    background:
+        linear-gradient(90deg,
+            rgba(215, 184, 92, .10),
+            rgba(255, 255, 255, .035));
+
+    border-color:
+        rgba(215, 184, 92, .16);
+}
+
+
+.member-card--owner .member-avatar {
+
+    background:
+        linear-gradient(135deg,
+            #806b2d,
+            #c5a84d);
+}
+
+
+/* =========================================================
+   MANAGER
+========================================================= */
+
+.members-group--manager .members-group-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:
+        #6fded0 !important;
+
+    background:
+        rgba(79, 210, 193, .07);
+
+    border-color:
+        rgba(79, 210, 193, .12);
+}
+
+
+.member-card--manager {
+
+    background:
+        linear-gradient(90deg,
+            rgba(4, 120, 108, .07),
+            rgba(255, 255, 255, .018));
+}
+
+
+.member-card--manager .member-avatar {
+
+    background:
+        linear-gradient(135deg,
+            #075b55,
+            #0c9b87);
+}
+
+
+/* =========================================================
+   ADMIN
+========================================================= */
+
+.members-group--admin .members-group-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color:
+        #83c8ff !important;
+
+    background:
+        rgba(80, 160, 230, .07);
+
+    border-color:
+        rgba(80, 160, 230, .12);
+}
+
+
+.member-card--admin .member-avatar {
+
+    background:
+        linear-gradient(135deg,
+            #28546c,
+            #347e9c);
+}
+
+
+/* =========================================================
+   MEMBER
+========================================================= */
+
+.members-group--member .member-card {
+
+    background:
+        rgba(255, 255, 255, .015);
+}
+
+.members-group--member .members-group-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        rgba(255, 255, 255, .015);
+}
+
+
+.members-group--member .member-avatar {
+
+    background:
+        linear-gradient(135deg,
+            #315c59,
+            #477c76);
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.members-empty {
+
+    min-height: 220px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+    border:
+        1px dashed rgba(255, 255, 255, .08);
+
+    border-radius: 16px;
+
+    background:
+        rgba(255, 255, 255, .015);
+
+    text-align: center;
+}
+
+
+.members-empty-icon {
+
+    font-size: 28px;
+
+    opacity: .5;
+}
+
+
+.members-empty h3 {
+
+    margin: 0;
+
+    color:
+        rgba(240, 255, 255, .75);
+
+    font-size: 14px;
+}
+
+
+.members-empty p {
+
+    margin: 0;
+
+    color:
+        rgba(220, 240, 240, .35);
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   ERROR
+========================================================= */
+
+.members-error {
+
+    min-height: 100px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    color:
+        rgba(255, 130, 130, .65);
+
+    font-size: 12px;
+
+    border:
+        1px solid rgba(255, 100, 100, .08);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255, 70, 70, .025);
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .members-container {
+
+        gap: 18px;
+    }
+
+    .member-card {
+
+        min-height: 64px;
+
+        padding:
+            9px 10px;
+    }
+
+    .member-card .member-avatar {
+
+        width: 39px;
+        height: 39px;
+
+        min-width: 39px;
+    }
+
+    .member-status {
+
+        display: none;
+    }
+
+    .member-edit-btn {
+
+        opacity: 1;
+    }
+
+    .member-email {
+
+        display: none;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .members-group-title span {
+
+        display: none;
+    }
+
+    .members-group-header {
+
+        height: 36px;
+    }
+
+    .member-card {
+
+        border-radius: 10px;
+    }
+
+}
+
+/* Delete member action — shown only to the system owner. */
+.edit-user-actions .delete-user-btn {
+    margin-inline-start: auto;
+    border: 1px solid rgba(255, 104, 104, .36);
+    border-radius: 10px;
+    background: rgba(255, 82, 82, .10);
+    color: #ffaaa4;
+}
+
+.edit-user-actions .delete-user-btn:hover:not(:disabled) {
+    border-color: rgba(255, 104, 104, .7);
+    background: rgba(255, 82, 82, .18);
+    color: #fff;
+}
+
+.edit-user-actions .delete-user-btn:disabled {
+    cursor: wait;
+    opacity: .6;
+}

@@ -1,0 +1,1252 @@
+/* =========================================================
+   TRILLFLOW — CALENDAR
+   ========================================================= */
+
+.calendar-card {
+
+    position: relative;
+
+    padding: 24px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(255, 255, 255, .055),
+            rgba(255, 255, 255, .018));
+
+    border: 1px solid rgba(255, 255, 255, .07);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, .18);
+
+    color: #eefdfa;
+
+    overflow: hidden;
+}
+
+
+/* Glow */
+
+.calendar-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    top: -100px;
+    right: -80px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(88, 242, 168, .07);
+
+    filter: blur(40px);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.calendar-header {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+
+.calendar-header span {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color:
+        rgba(220, 240, 237, .38);
+
+    font-size: 10px;
+}
+
+
+.calendar-header h3 {
+
+    margin: 0;
+
+    font-size: 17px;
+
+    font-weight: 650;
+
+    letter-spacing: -.02em;
+}
+
+
+/* =========================================================
+   TODAY BUTTON
+   ========================================================= */
+
+.calendar-today {
+
+    padding: 7px 11px;
+
+    border: 1px solid rgba(88, 242, 168, .1);
+
+    border-radius: 9px;
+
+    background:
+        rgba(88, 242, 168, .06);
+
+    color: #58f2a8;
+
+    font-size: 9px;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+
+.calendar-today:hover {
+
+    background:
+        rgba(88, 242, 168, .12);
+
+    transform: translateY(-1px);
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.calendar-navigation {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+
+.calendar-navigation strong {
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color:
+        rgba(240, 253, 250, .8);
+}
+
+
+.calendar-navigation button {
+
+    width: 28px;
+    height: 28px;
+
+    display: grid;
+
+    place-items: center;
+
+    border: 1px solid rgba(255, 255, 255, .05);
+
+    border-radius: 8px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    color:
+        rgba(220, 240, 237, .45);
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+
+.calendar-navigation button:hover {
+
+    background:
+        rgba(88, 242, 168, .08);
+
+    color: #58f2a8;
+
+    border-color:
+        rgba(88, 242, 168, .1);
+}
+
+
+.calendar-navigation i {
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   WEEK DAYS
+   ========================================================= */
+
+.calendar-weekdays {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    margin-bottom: 8px;
+}
+
+
+.calendar-weekdays span {
+
+    text-align: center;
+
+    color:
+        rgba(220, 240, 237, .28);
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   DAYS
+   ========================================================= */
+
+.calendar-days {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    gap: 5px;
+}
+
+
+.calendar-day {
+
+    position: relative;
+
+    height: 35px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    color:
+        rgba(235, 250, 247, .58);
+
+    font-size: 10px;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+
+.calendar-day:hover {
+
+    background:
+        rgba(255, 255, 255, .055);
+
+    color: white;
+
+    transform: translateY(-1px);
+}
+
+
+/* الأيام خارج الشهر */
+
+.calendar-day.muted {
+
+    color:
+        rgba(220, 240, 237, .12);
+
+}
+
+
+/* اليوم الحالي */
+
+.calendar-day.today {
+
+    background:
+        linear-gradient(145deg,
+            #54e0b0,
+            #159d7c);
+
+    color:
+        #062c29;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 7px 18px rgba(54, 207, 165, .2);
+}
+
+
+/* =========================================================
+   EVENT DOT
+   ========================================================= */
+
+.calendar-day.has-event::after {
+
+    content: "";
+
+    position: absolute;
+
+    bottom: 4px;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background:
+        #58f2a8;
+
+    box-shadow:
+        0 0 7px rgba(88, 242, 168, .6);
+}
+
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+
+.calendar-events {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-top: 18px;
+
+    padding-top: 15px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, .055);
+}
+
+
+.calendar-event {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 8px 9px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    border:
+        1px solid rgba(255, 255, 255, .03);
+}
+
+
+.event-dot {
+
+    width: 6px;
+    height: 6px;
+
+    flex: 0 0 6px;
+
+    border-radius: 50%;
+
+    background:
+        #58f2a8;
+
+    box-shadow:
+        0 0 8px rgba(88, 242, 168, .5);
+}
+
+
+.event-dot.blue {
+
+    background:
+        #6bb8ff;
+
+    box-shadow:
+        0 0 8px rgba(107, 184, 255, .4);
+}
+
+
+.calendar-event div {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+    min-width: 0;
+}
+
+
+.calendar-event strong {
+
+    color:
+        rgba(240, 253, 250, .72);
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.calendar-event small {
+
+    color:
+        rgba(220, 240, 237, .28);
+
+    font-size: 8px;
+}
+
+/* =========================================================
+   TRILLFLOW — CALENDAR SUMMARY
+   ========================================================= */
+
+.calendarsummry-card {
+
+    position: relative;
+
+    padding: 24px;
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(255, 255, 255, .055),
+            rgba(255, 255, 255, .018));
+
+    border: 1px solid rgba(255, 255, 255, .07);
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, .18);
+
+    color: #eefdfa;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   GLOW
+   ========================================================= */
+
+.calendarsummry-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 180px;
+    height: 180px;
+
+    top: -100px;
+    right: -80px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(88, 242, 168, .07);
+
+    filter: blur(40px);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.calendarsummry-header {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+
+.calendarsummry-title span {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color:
+        rgba(220, 240, 237, .38);
+
+    font-size: 10px;
+}
+
+
+.calendarsummry-title h3 {
+
+    margin: 0;
+
+    font-size: 17px;
+
+    font-weight: 650;
+
+    letter-spacing: -.02em;
+}
+
+
+/* =========================================================
+   TODAY
+   ========================================================= */
+
+.calendarsummry-today {
+
+    padding: 7px 11px;
+
+    border:
+        1px solid rgba(88, 242, 168, .1);
+
+    border-radius: 9px;
+
+    background:
+        rgba(88, 242, 168, .06);
+
+    color: #58f2a8;
+
+    font-size: 9px;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+
+.calendarsummry-today:hover {
+
+    background:
+        rgba(88, 242, 168, .12);
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+.calendarsummry-navigation {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+
+.calendarsummry-navigation strong {
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color:
+        rgba(240, 253, 250, .8);
+}
+
+
+.calendarsummry-nav-btn {
+
+    width: 28px;
+    height: 28px;
+
+    display: grid;
+
+    place-items: center;
+
+    border:
+        1px solid rgba(255, 255, 255, .05);
+
+    border-radius: 8px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    color:
+        rgba(220, 240, 237, .45);
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+
+.calendarsummry-nav-btn:hover {
+
+    background:
+        rgba(88, 242, 168, .08);
+
+    color: #58f2a8;
+
+    border-color:
+        rgba(88, 242, 168, .1);
+
+    transform:
+        translateY(-1px);
+}
+
+
+.calendarsummry-nav-btn:active {
+
+    transform:
+        scale(.9);
+}
+
+
+.calendarsummry-nav-btn i {
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   WEEKDAYS
+   ========================================================= */
+
+.calendarsummry-weekdays {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    gap: 5px;
+
+    margin-bottom: 6px;
+}
+
+
+.calendarsummry-weekdays span {
+    text-align: center;
+
+    padding: 6px 0;
+
+    color:
+        rgba(220, 240, 237, .28);
+
+    font-size: 8px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   CALENDAR TABLE
+   ========================================================= */
+
+.calendarsummry-days {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, minmax(0, 1fr));
+
+    grid-template-rows:
+        repeat(6, 78px);
+
+    gap: 5px;
+}
+
+
+/* =========================================================
+   DAY
+   ========================================================= */
+
+.calendarsummry-day {
+
+    position: relative;
+
+    min-width: 0;
+
+    padding: 7px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, .018);
+
+    border:
+        1px solid rgba(255, 255, 255, .035);
+
+    overflow: hidden;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        border .2s ease,
+        transform .2s ease,
+        box-shadow .2s ease;
+
+    animation:
+        calendarsummryDayIn .35s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+
+@keyframes calendarsummryDayIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(5px) scale(.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0) scale(1);
+
+    }
+
+}
+
+
+.calendarsummry-day:hover {
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    border-color:
+        rgba(88, 242, 168, .1);
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, .12);
+}
+
+
+/* =========================================================
+   DAY NUMBER
+   ========================================================= */
+
+.calendarsummry-day-number {
+
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 4px;
+
+    border-radius: 7px;
+
+    color:
+        rgba(235, 250, 247, .58);
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   OTHER MONTH
+   ========================================================= */
+
+.calendarsummry-day.muted {
+
+    opacity: .35;
+
+    cursor: default;
+}
+
+
+.calendarsummry-day.muted .calendarsummry-day-number {
+
+    color:
+        rgba(220, 240, 237, .18);
+}
+
+
+/* =========================================================
+   TODAY
+   ========================================================= */
+
+.calendarsummry-day.today {
+
+    background:
+        linear-gradient(145deg,
+            rgba(84, 224, 176, .12),
+            rgba(21, 157, 124, .045));
+
+    border:
+        1px solid rgba(88, 242, 168, .22);
+
+    box-shadow:
+        inset 0 0 20px rgba(88, 242, 168, .025);
+}
+
+
+.calendarsummry-day.today .calendarsummry-day-number {
+
+    background:
+        linear-gradient(145deg,
+            #54e0b0,
+            #159d7c);
+
+    color:
+        #062c29;
+
+    font-weight: 800;
+
+    box-shadow:
+        0 5px 12px rgba(54, 207, 165, .2);
+}
+
+
+/* =========================================================
+   SELECTED
+   ========================================================= */
+
+.calendarsummry-day.selected {
+
+    border-color:
+        rgba(88, 242, 168, .35);
+
+    background:
+        rgba(88, 242, 168, .055);
+
+    box-shadow:
+        inset 0 0 18px rgba(88, 242, 168, .025),
+        0 0 0 1px rgba(88, 242, 168, .04);
+}
+
+
+/* =========================================================
+   TASK LIST INSIDE DAY
+   ========================================================= */
+
+.calendarsummry-day-tasks {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+
+    max-height: 39px;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   TASK
+   ========================================================= */
+
+.calendarsummry-task {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    min-width: 0;
+
+    padding: 3px 4px;
+
+    border-radius: 5px;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    border:
+        1px solid rgba(255, 255, 255, .025);
+
+    animation:
+        calendarsummryTaskIn .3s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+
+@keyframes calendarsummryTaskIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateX(5px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateX(0);
+
+    }
+
+}
+
+
+/* =========================================================
+   TASK DOT
+   ========================================================= */
+
+.calendarsummry-task-dot {
+
+    width: 5px;
+    height: 5px;
+
+    flex: 0 0 5px;
+
+    border-radius: 50%;
+
+    background:
+        #58f2a8;
+
+    box-shadow:
+        0 0 7px rgba(88, 242, 168, .5);
+}
+
+
+/* =========================================================
+   TASK TITLE
+   ========================================================= */
+
+.calendarsummry-task-title {
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    color:
+        rgba(240, 253, 250, .65);
+
+    font-size: 7px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   TASK STATUS
+   ========================================================= */
+
+.calendarsummry-task.progress .calendarsummry-task-dot {
+
+    background:
+        #6bb8ff;
+
+    box-shadow:
+        0 0 7px rgba(107, 184, 255, .5);
+}
+
+
+.calendarsummry-task.completed .calendarsummry-task-dot {
+
+    background:
+        #58f2a8;
+
+    box-shadow:
+        0 0 7px rgba(88, 242, 168, .5);
+}
+
+
+.calendarsummry-task.pending .calendarsummry-task-dot {
+
+    background:
+        rgba(220, 240, 237, .4);
+
+    box-shadow: none;
+}
+
+
+/* =========================================================
+   MORE
+   ========================================================= */
+
+.calendarsummry-more {
+
+    margin-top: 3px;
+
+    padding-right: 3px;
+
+    color:
+        rgba(220, 240, 237, .3);
+
+    font-size: 7px;
+
+    font-weight: 600;
+}
+
+
+/* =========================================================
+   EVENTS SECTION
+   ========================================================= */
+
+.calendarsummry-events {
+
+    margin-top: 18px;
+
+    padding-top: 15px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, .055);
+}
+
+
+.calendarsummry-events-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 8px;
+}
+
+
+.calendarsummry-events-header span {
+
+    color:
+        rgba(240, 253, 250, .65);
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.calendarsummry-events-header small {
+
+    color:
+        rgba(220, 240, 237, .28);
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   EVENT
+   ========================================================= */
+
+.calendarsummry-event {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 8px 9px;
+
+    margin-bottom: 6px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    border:
+        1px solid rgba(255, 255, 255, .03);
+
+    animation:
+        calendarsummryEventIn .35s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+
+@keyframes calendarsummryEventIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(5px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+.calendarsummry-event-dot {
+
+    width: 6px;
+    height: 6px;
+
+    flex: 0 0 6px;
+
+    border-radius: 50%;
+
+    background:
+        #58f2a8;
+
+    box-shadow:
+        0 0 8px rgba(88, 242, 168, .5);
+}
+
+
+.calendarsummry-event-dot.blue {
+
+    background:
+        #6bb8ff;
+
+    box-shadow:
+        0 0 8px rgba(107, 184, 255, .4);
+}
+
+
+.calendarsummry-event-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+
+    min-width: 0;
+}
+
+
+.calendarsummry-event-info strong {
+
+    color:
+        rgba(240, 253, 250, .72);
+
+    font-size: 9px;
+
+    font-weight: 600;
+}
+
+
+.calendarsummry-event-info small {
+
+    color:
+        rgba(220, 240, 237, .28);
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   EMPTY
+   ========================================================= */
+
+.calendarsummry-empty {
+
+    padding: 12px;
+
+    text-align: center;
+
+    border-radius: 9px;
+
+    background:
+        rgba(255, 255, 255, .018);
+
+    color:
+        rgba(220, 240, 237, .25);
+
+    font-size: 8px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .calendarsummry-days {
+
+        grid-template-rows:
+            repeat(6, 65px);
+
+    }
+
+
+    .calendarsummry-day {
+
+        padding: 5px;
+
+    }
+
+
+    .calendarsummry-task-title {
+
+        font-size: 6px;
+
+    }
+
+}

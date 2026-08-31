@@ -1,0 +1,984 @@
+/* =========================================================
+   TRILLFLOW — SETTINGS
+   RTL / ARABIC
+========================================================= */
+
+#settingsPage.tf-settings-page {
+
+    width: 100%;
+    min-height: 100%;
+
+    padding: 32px;
+
+    box-sizing: border-box;
+
+    direction: rtl;
+
+    background: #071918;
+
+    color: #e1e1e4;
+
+    font-family:
+        "Cairo",
+        "Tajawal",
+        sans-serif;
+
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.tf-settings-header {
+
+    width: 100%;
+
+    margin-bottom: 28px;
+}
+
+
+.tf-settings-kicker {
+
+    display: block;
+
+    margin-bottom: 5px;
+
+    color: #4c9992;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+
+.tf-settings-header h1 {
+
+    margin: 0 0 7px;
+
+    color: #ffffff;
+
+    font-size: 29px;
+
+    font-weight: 700;
+}
+
+
+.tf-settings-header p {
+
+    margin: 0;
+
+    color: #7f9290;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   LAYOUT
+========================================================= */
+
+.tf-settings-layout {
+
+    width: 100%;
+
+    max-width: 1200px;
+
+    display: grid;
+
+    grid-template-columns:
+        250px minmax(0, 1fr);
+
+    gap: 24px;
+
+    align-items: start;
+}
+
+
+/* =========================================================
+   SIDEBAR
+========================================================= */
+
+.tf-settings-sidebar {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+
+    padding: 9px;
+
+    background: #0a211f;
+
+    border: 1px solid rgba(255, 255, 255, .055);
+
+    border-radius: 17px;
+
+    box-sizing: border-box;
+}
+
+
+.tf-settings-nav {
+
+    width: 100%;
+
+    min-height: 67px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 12px;
+
+    border: 0;
+
+    border-radius: 11px;
+
+    background: transparent;
+
+    color: #7d908d;
+
+    text-align: right;
+
+    font-family: inherit;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease,
+        transform .2s ease;
+}
+
+
+.tf-settings-nav:hover {
+
+    background: rgba(255, 255, 255, .035);
+
+    color: #ffffff;
+}
+
+
+.tf-settings-nav.active {
+
+    background: #103a36;
+
+    color: #ffffff;
+}
+
+
+.tf-settings-nav-icon {
+
+    width: 38px;
+
+    height: 38px;
+
+    flex: 0 0 38px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: rgba(255, 255, 255, .035);
+
+    font-size: 15px;
+}
+
+
+.tf-settings-nav.active .tf-settings-nav-icon {
+
+    background: #18514c;
+
+    color: #ffffff;
+}
+
+
+.tf-settings-nav-text {
+
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+.tf-settings-nav-text strong {
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.tf-settings-nav-text small {
+
+    color: #667b78;
+
+    font-size: 10px;
+
+    font-weight: 400;
+}
+
+
+.tf-settings-nav.active .tf-settings-nav-text small {
+
+    color: #91aaa7;
+}
+
+
+/* =========================================================
+   CONTENT
+========================================================= */
+
+.tf-settings-content {
+
+    min-width: 0;
+}
+
+
+.tf-settings-panel {
+
+    display: none;
+
+    animation:
+        tfSettingsPanelIn .22s ease;
+}
+
+
+.tf-settings-panel.active {
+
+    display: block;
+}
+
+
+@keyframes tfSettingsPanelIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(6px);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0);
+
+    }
+
+}
+
+
+/* =========================================================
+   PANEL HEADING
+========================================================= */
+
+.tf-settings-panel-heading {
+
+    margin-bottom: 17px;
+}
+
+
+.tf-settings-panel-heading h2 {
+
+    margin: 0 0 5px;
+
+    color: #ffffff;
+
+    font-size: 20px;
+
+    font-weight: 700;
+}
+
+
+.tf-settings-panel-heading p {
+
+    margin: 0;
+
+    color: #788b88;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.tf-settings-card {
+
+    width: 100%;
+
+    padding: 21px;
+
+    box-sizing: border-box;
+
+    background: #0a211f;
+
+    border: 1px solid rgba(255, 255, 255, .055);
+
+    border-radius: 17px;
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+.tf-profile-preview {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+
+    padding: 3px 0 18px;
+}
+
+
+.tf-settings-avatar {
+
+    width: 55px;
+
+    height: 55px;
+
+    flex: 0 0 55px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 15px;
+
+    background: #164843;
+
+    color: #ffffff;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, .2);
+}
+
+
+.tf-profile-preview h3 {
+
+    margin: 0 0 3px;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+
+.tf-profile-preview span {
+
+    color: #708481;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.tf-settings-divider {
+
+    width: 100%;
+
+    height: 1px;
+
+    background: rgba(255, 255, 255, .055);
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.tf-settings-form {
+
+    width: 100%;
+
+    max-width: 650px;
+
+    margin-top: 3px;
+}
+
+
+.tf-settings-field {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-top: 17px;
+}
+
+
+.tf-settings-field label {
+
+    color: #b7c3c1;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+.tf-settings-field input {
+
+    width: 100%;
+
+    height: 45px;
+
+    padding: 0 13px;
+
+    box-sizing: border-box;
+
+    border: 1px solid rgba(255, 255, 255, .08);
+
+    border-radius: 9px;
+
+    outline: none;
+
+    background: #071918;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease;
+}
+
+
+.tf-settings-field input::placeholder {
+
+    color: #526562;
+}
+
+
+.tf-settings-field input:focus {
+
+    border-color: #247c74;
+
+    box-shadow:
+        0 0 0 3px rgba(36, 124, 116, .12);
+}
+
+
+/* =========================================================
+   PASSWORD
+========================================================= */
+
+.tf-password-wrapper {
+
+    position: relative;
+
+    width: 100%;
+}
+
+
+.tf-password-wrapper input {
+
+    padding-left: 45px;
+}
+
+
+.tf-password-toggle {
+
+    position: absolute;
+
+    left: 5px;
+
+    top: 50%;
+
+    width: 34px;
+
+    height: 34px;
+
+    transform: translateY(-50%);
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: 0;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    color: #60736f;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        color .2s ease;
+}
+
+
+.tf-password-toggle:hover {
+
+    background: rgba(255, 255, 255, .04);
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.tf-settings-actions {
+
+    display: flex;
+
+    justify-content: flex-start;
+
+    margin-top: 22px;
+}
+
+
+.tf-settings-primary-btn {
+
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 18px;
+
+    border: 0;
+
+    border-radius: 9px;
+
+    background: #17665f;
+
+    color: #ffffff;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background .2s ease,
+        transform .15s ease,
+        opacity .2s ease;
+}
+
+
+.tf-settings-primary-btn:hover {
+
+    background: #218078;
+}
+
+
+.tf-settings-primary-btn:active {
+
+    transform: scale(.97);
+}
+
+
+.tf-settings-primary-btn:disabled {
+
+    opacity: .55;
+
+    cursor: not-allowed;
+
+    transform: none;
+}
+
+
+/* =========================================================
+   OPTIONS
+========================================================= */
+
+.tf-settings-option {
+
+    min-height: 72px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+.tf-settings-option-info {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 4px;
+}
+
+
+.tf-settings-option-info strong {
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+
+.tf-settings-option-info span {
+
+    color: #70837f;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   SWITCH
+========================================================= */
+
+.tf-switch {
+
+    position: relative;
+
+    width: 46px;
+
+    height: 25px;
+
+    flex: 0 0 46px;
+
+    cursor: pointer;
+}
+
+
+.tf-switch input {
+
+    position: absolute;
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+.tf-switch-slider {
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 30px;
+
+    background: #253a37;
+
+    transition: .2s ease;
+}
+
+
+.tf-switch-slider::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 3px;
+
+    right: 3px;
+
+    width: 19px;
+
+    height: 19px;
+
+    border-radius: 50%;
+
+    background: #82918f;
+
+    transition: .2s ease;
+}
+
+
+.tf-switch input:checked+.tf-switch-slider {
+
+    background: #17665f;
+}
+
+
+.tf-switch input:checked+.tf-switch-slider::before {
+
+    transform:
+        translateX(-21px);
+
+    background: #ffffff;
+}
+
+
+/* =========================================================
+   PASSWORD HINT
+========================================================= */
+
+.tf-password-hint {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 15px;
+
+    color: #70837f;
+
+    font-size: 10px;
+}
+
+
+.tf-password-hint i {
+
+    color: #398b84;
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+.tf-settings-toast {
+
+    position: fixed;
+
+    left: 28px;
+
+    bottom: 28px;
+
+    z-index: 99999;
+
+    min-width: 280px;
+
+    max-width: 360px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 11px;
+
+    padding: 13px 15px;
+
+    border: 1px solid rgba(255, 255, 255, .07);
+
+    border-radius: 13px;
+
+    background: #102b28;
+
+    box-shadow:
+        0 15px 45px rgba(0, 0, 0, .3);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    transform:
+        translateY(15px);
+
+    transition:
+        opacity .25s ease,
+        visibility .25s ease,
+        transform .25s ease;
+}
+
+
+.tf-settings-toast.show {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translateY(0);
+}
+
+
+.tf-toast-icon {
+
+    width: 32px;
+
+    height: 32px;
+
+    flex: 0 0 32px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: #17665f;
+
+    color: #ffffff;
+}
+
+
+.tf-settings-toast strong {
+
+    display: block;
+
+    margin-bottom: 2px;
+
+    color: #ffffff;
+
+    font-size: 11px;
+}
+
+
+.tf-settings-toast p {
+
+    margin: 0;
+
+    color: #81928f;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.tf-settings-loading {
+
+    pointer-events: none;
+
+    opacity: .55;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 850px) {
+
+    #settingsPage.tf-settings-page {
+
+        padding: 20px;
+    }
+
+
+    .tf-settings-layout {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .tf-settings-sidebar {
+
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+
+    .tf-settings-nav {
+
+        min-height: 62px;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    #settingsPage.tf-settings-page {
+
+        padding: 14px;
+    }
+
+
+    .tf-settings-sidebar {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .tf-settings-card {
+
+        padding: 16px;
+    }
+
+
+    .tf-settings-option {
+
+        min-height: 80px;
+    }
+
+
+    .tf-settings-option-info span {
+
+        max-width: 220px;
+    }
+
+
+    .tf-settings-toast {
+
+        right: 14px;
+
+        left: 14px;
+
+        bottom: 14px;
+
+        min-width: 0;
+
+        max-width: none;
+    }
+
+}

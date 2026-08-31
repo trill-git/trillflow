@@ -1,0 +1,4581 @@
+/* =========================================================
+   TRILLFLOW — PROFESSIONAL KANBAN SYSTEM
+   Premium SaaS / Linear / ClickUp Inspired
+   ========================================================= */
+
+
+/* =========================================================
+   ROOT / PAGE
+   ========================================================= */
+
+#KanbanBoardPage {
+    width: 100%;
+    min-height: 100%;
+    box-sizing: border-box;
+    color: var(--text);
+    animation: kanbanPageIn .45s cubic-bezier(.16, 1, .3, 1) both;
+}
+
+@keyframes kanbanPageIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================================================
+   PAGE HEADER
+   ========================================================= */
+
+.welcomediv {
+    width: 100%;
+    min-height: 96px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 8px 2px 20px;
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   KANBAN BOARD
+   ========================================================= */
+
+#Kanban-board-container {
+    width: 100%;
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(5, minmax(270px, 1fr));
+
+    gap: 14px;
+
+    align-items: start;
+
+    padding: 4px 2px 30px;
+
+    box-sizing: border-box;
+
+    overflow-x: auto;
+    overflow-y: visible;
+
+    scrollbar-width: thin;
+
+    scrollbar-color:
+        rgba(255, 255, 255, .13) transparent;
+}
+
+
+/* =========================================================
+   BOARD SCROLLBAR
+   ========================================================= */
+
+#Kanban-board-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+#Kanban-board-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#Kanban-board-container::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .12);
+    border-radius: 999px;
+}
+
+#Kanban-board-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .22);
+}
+
+
+/* =========================================================
+   KANBAN COLUMN
+   ========================================================= */
+
+.kanban-columns {
+    position: relative;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 420px;
+
+    display: flex;
+    flex-direction: column;
+
+    box-sizing: border-box;
+
+    padding: 10px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255, 255, 255, .018);
+
+    border:
+        1px solid rgba(255, 255, 255, .065);
+
+    box-shadow:
+        0 6px 24px rgba(0, 0, 0, .12);
+
+    transition:
+        border-color .22s ease,
+        background .22s ease,
+        box-shadow .22s ease,
+        transform .22s ease;
+}
+
+
+/* =========================================================
+   COLUMN TOP GLOW
+   ========================================================= */
+
+.kanban-columns::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 12%;
+    right: 12%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, .16),
+            transparent);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   COLUMN HOVER
+   ========================================================= */
+
+.kanban-columns:hover {
+    border-color:
+        rgba(255, 255, 255, .095);
+
+    background:
+        rgba(255, 255, 255, .022);
+
+    box-shadow:
+        0 12px 32px rgba(0, 0, 0, .17);
+}
+
+
+/* =========================================================
+   COLUMN HEADER
+   ========================================================= */
+
+.kanban-columns-header1,
+.kanban-columns-header2,
+.kanban-columns-header3,
+.kanban-columns-header4 {
+    width: 100%;
+
+    padding:
+        2px 2px 11px;
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   STATUS LINE
+   ========================================================= */
+
+.border-header1,
+.border-header2,
+.border-header3,
+.border-header4 {
+    position: relative;
+
+    width: 100%;
+    height: 3px;
+
+    margin-bottom: 12px;
+
+    border-radius: 999px;
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   WAITING
+   ========================================================= */
+
+.border-header1 {
+    background:
+        linear-gradient(90deg,
+            rgba(148, 163, 184, .75),
+            rgba(148, 163, 184, .08));
+
+    box-shadow:
+        0 0 16px rgba(148, 163, 184, .12);
+}
+
+
+/* =========================================================
+   IN PROGRESS
+   ========================================================= */
+
+.border-header2 {
+    background:
+        linear-gradient(90deg,
+            rgba(59, 130, 246, .95),
+            rgba(59, 130, 246, .08));
+
+    box-shadow:
+        0 0 17px rgba(59, 130, 246, .16);
+}
+
+
+/* =========================================================
+   COMPLETED
+   ========================================================= */
+
+.border-header3,
+.border-header4 {
+    background:
+        linear-gradient(90deg,
+            rgba(34, 197, 94, .95),
+            rgba(34, 197, 94, .08));
+
+    box-shadow:
+        0 0 17px rgba(34, 197, 94, .16);
+}
+
+
+/* =========================================================
+   TASK CARD
+   ========================================================= */
+
+.Kanban-task {
+    position: relative;
+
+    width: 100%;
+    min-height: 150px;
+
+    margin-bottom: 9px;
+    padding: 12px 13px 11px;
+
+    box-sizing: border-box;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(145deg,
+            rgba(255, 255, 255, .052),
+            rgba(255, 255, 255, .018));
+
+    border:
+        1px solid rgba(255, 255, 255, .065);
+
+    box-shadow:
+        0 5px 18px rgba(0, 0, 0, .11),
+        inset 0 1px 0 rgba(255, 255, 255, .025);
+
+    cursor: grab;
+
+    user-select: none;
+    -webkit-user-select: none;
+
+    overflow: hidden;
+
+    transition:
+        transform .2s cubic-bezier(.16, 1, .3, 1),
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease,
+        opacity .2s ease;
+}
+
+
+/* =========================================================
+   TASK LEFT ACCENT
+   ========================================================= */
+
+.Kanban-task::before {
+    content: "";
+
+    position: absolute;
+
+    top: 12px;
+    bottom: 12px;
+    left: 0;
+
+    width: 2px;
+
+    border-radius: 0 4px 4px 0;
+
+    background:
+        var(--accent);
+
+    opacity: .35;
+
+    transition:
+        opacity .2s ease,
+        width .2s ease;
+}
+
+
+/* =========================================================
+   TASK TOP LIGHT
+   ========================================================= */
+
+.Kanban-task::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 14%;
+    right: 14%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, .09),
+            transparent);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   TASK HOVER
+   ========================================================= */
+
+.Kanban-task:hover {
+    transform:
+        translateY(-3px);
+
+    background:
+        linear-gradient(145deg,
+            rgba(255, 255, 255, .065),
+            rgba(255, 255, 255, .022));
+
+    border-color:
+        rgba(255, 255, 255, .12);
+
+    box-shadow:
+        0 12px 28px rgba(0, 0, 0, .2),
+        0 0 0 1px rgba(88, 242, 168, .035);
+}
+
+.Kanban-task:hover::before {
+    width: 3px;
+    opacity: .9;
+}
+
+
+/* =========================================================
+   ACTIVE / CLICK
+   ========================================================= */
+
+.Kanban-task:active {
+    cursor: grabbing;
+
+    transform:
+        scale(.985);
+
+    box-shadow:
+        0 18px 38px rgba(0, 0, 0, .26);
+}
+
+
+/* =========================================================
+   DRAGGING
+   ========================================================= */
+
+.Kanban-task.dragging {
+    opacity: .3;
+
+    transform:
+        rotate(1.5deg) scale(.97);
+
+    cursor: grabbing;
+
+    filter:
+        saturate(.7);
+}
+
+
+/* =========================================================
+   STATUS UPDATING
+   ========================================================= */
+
+.Kanban-task.status-updating {
+    opacity: .55;
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   TASK TITLE
+   ========================================================= */
+
+.title-task {
+    min-width: 0;
+
+    margin:
+        3px 0 7px;
+
+    color:
+        var(--text);
+
+    font-size:
+        14px;
+
+    font-weight:
+        650;
+
+    line-height:
+        1.5;
+
+    letter-spacing:
+        -.15px;
+
+    overflow-wrap:
+        anywhere;
+}
+
+
+/* =========================================================
+   TASK DESCRIPTION
+   ========================================================= */
+
+.description-task {
+    min-width: 0;
+
+    margin:
+        0 0 12px;
+
+    color:
+        var(--text-muted);
+
+    font-size:
+        12px;
+
+    line-height:
+        1.65;
+
+    display:
+        -webkit-box;
+
+    -webkit-line-clamp:
+        3;
+
+    -webkit-box-orient:
+        vertical;
+
+    overflow:
+        hidden;
+
+    overflow-wrap:
+        anywhere;
+}
+
+
+/* =========================================================
+   PRIORITY BADGES
+   ========================================================= */
+
+.priority-div,
+.priority-div-gray,
+.priority-div-green,
+.priority-div-red,
+.priority-div-yellow,
+.priority-div-blue {
+    width: fit-content;
+    min-width: 55px;
+
+    padding:
+        4px 9px;
+
+    margin:
+        0 0 9px;
+
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        7px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        650;
+
+    line-height:
+        1;
+
+    backdrop-filter:
+        blur(10px);
+
+    -webkit-backdrop-filter:
+        blur(10px);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+
+/* =========================================================
+   PRIORITY — DEFAULT
+   ========================================================= */
+
+.priority-div {
+    background:
+        rgba(255, 255, 255, .045);
+
+    border:
+        1px solid rgba(255, 255, 255, .09);
+
+    color:
+        rgba(255, 255, 255, .72);
+}
+
+
+/* =========================================================
+   PRIORITY — GRAY
+   ========================================================= */
+
+.priority-div-gray {
+    background:
+        rgba(148, 163, 184, .08);
+
+    border:
+        1px solid rgba(148, 163, 184, .18);
+
+    color:
+        #cbd5e1;
+}
+
+
+/* =========================================================
+   PRIORITY — GREEN
+   ========================================================= */
+
+.priority-div-green {
+    background:
+        rgba(34, 197, 94, .09);
+
+    border:
+        1px solid rgba(34, 197, 94, .2);
+
+    color:
+        #86efac;
+}
+
+
+/* =========================================================
+   PRIORITY — RED
+   ========================================================= */
+
+.priority-div-red {
+    background:
+        rgba(239, 68, 68, .09);
+
+    border:
+        1px solid rgba(239, 68, 68, .2);
+
+    color:
+        #fca5a5;
+}
+
+
+/* =========================================================
+   PRIORITY — YELLOW
+   ========================================================= */
+
+.priority-div-yellow {
+    background:
+        rgba(250, 204, 21, .08);
+
+    border:
+        1px solid rgba(250, 204, 21, .18);
+
+    color:
+        #fde68a;
+}
+
+
+/* =========================================================
+   PRIORITY — BLUE
+   ========================================================= */
+
+.priority-div-blue {
+    background:
+        rgba(59, 130, 246, .09);
+
+    border:
+        1px solid rgba(59, 130, 246, .18);
+
+    color:
+        #93c5fd;
+}
+
+
+/* =========================================================
+   PRIORITY HOVER
+   ========================================================= */
+
+.priority-div:hover,
+.priority-div-gray:hover,
+.priority-div-green:hover,
+.priority-div-red:hover,
+.priority-div-yellow:hover,
+.priority-div-blue:hover {
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   TASK META FOOTER
+   ========================================================= */
+
+.task-card-meta-footer {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        6px;
+
+    margin-top:
+        auto;
+
+    padding-top:
+        9px;
+
+    border-top:
+        1px solid rgba(255, 255, 255, .055);
+
+    flex-wrap:
+        wrap;
+}
+
+
+/* =========================================================
+   DATE BADGE
+   ========================================================= */
+
+.task-card-date-badge {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+
+    padding:
+        4px 7px;
+
+    border-radius:
+        7px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        500;
+
+    color:
+        rgba(255, 255, 255, .6);
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    border:
+        1px solid rgba(255, 255, 255, .06);
+}
+
+
+.task-card-date-badge svg {
+    width: 12px;
+    height: 12px;
+
+    color:
+        #60a5fa;
+}
+
+
+/* =========================================================
+   ATTACHMENT BADGE
+   ========================================================= */
+
+.task-card-attach-badge {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        4px;
+
+    padding:
+        4px 7px;
+
+    border-radius:
+        7px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        500;
+
+    color:
+        var(--accent);
+
+    background:
+        rgba(88, 242, 168, .055);
+
+    border:
+        1px solid rgba(88, 242, 168, .14);
+}
+
+
+.task-card-attach-badge svg {
+    width: 11px;
+    height: 11px;
+}
+
+
+/* =========================================================
+   ADD TASK BUTTON
+   ========================================================= */
+
+#addTaskbtn {
+    display: none;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        7px;
+
+    width:
+        auto;
+
+    min-width:
+        120px;
+
+    height:
+        40px;
+
+    padding:
+        0 16px;
+
+    box-sizing:
+        border-box;
+
+    background:
+        linear-gradient(135deg,
+            var(--accent),
+            #0f9f7d);
+
+    color:
+        #04100f;
+
+    border:
+        1px solid rgba(255, 255, 255, .08);
+
+    border-radius:
+        10px;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 7px 20px rgba(0, 208, 132, .12);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+}
+
+
+#addTaskbtn:hover {
+    transform:
+        translateY(-2px);
+
+    filter:
+        brightness(1.05);
+
+    box-shadow:
+        0 12px 28px rgba(0, 208, 132, .18);
+}
+
+
+#addTaskbtn:active {
+    transform:
+        scale(.97);
+}
+
+
+/* =========================================================
+   TASK FORM
+   ========================================================= */
+
+.no-members {
+    background-color:
+        red;
+}
+
+
+#taskform {
+    width:
+        min(760px, calc(100vw - 30px));
+
+    max-height:
+        90vh;
+
+    position:
+        fixed;
+
+    top:
+        50%;
+
+    left:
+        50%;
+
+    transform:
+        translate(-50%, -50%) scale(.97);
+
+    display:
+        none;
+
+    flex-direction:
+        column;
+
+    gap:
+        16px;
+
+    padding:
+        26px;
+
+    box-sizing:
+        border-box;
+
+    background:
+        linear-gradient(145deg,
+            rgba(255, 255, 255, .06),
+            rgba(255, 255, 255, .015)),
+        #101b1b;
+
+    border:
+        1px solid rgba(255, 255, 255, .09);
+
+    border-radius:
+        20px;
+
+    box-shadow:
+        0 30px 90px rgba(0, 0, 0, .55),
+        inset 0 1px 0 rgba(255, 255, 255, .045);
+
+    backdrop-filter:
+        blur(25px);
+
+    -webkit-backdrop-filter:
+        blur(25px);
+
+    overflow-y:
+        auto;
+
+    z-index:
+        999;
+
+    opacity:
+        1;
+
+    transition:
+        opacity .2s ease,
+        transform .25s cubic-bezier(.16, 1, .3, 1);
+
+    animation:
+        signinPageIn .35s ease forwards;
+}
+
+
+#taskform.active {
+    display:
+        flex;
+
+    opacity:
+        1;
+
+    transform:
+        translate(-50%, -50%) scale(1);
+}
+
+
+/* =========================================================
+   DATE PICKER
+   ========================================================= */
+
+.date-picker {
+    position:
+        relative;
+
+    width:
+        100%;
+}
+
+
+#taskduedate {
+    width:
+        100%;
+
+    cursor:
+        pointer;
+
+    position:
+        relative;
+
+    z-index:
+        2;
+}
+
+
+/* =========================================================
+   CALENDAR
+   ========================================================= */
+
+.calendar {
+    position:
+        absolute;
+
+    top:
+        calc(100% + 8px);
+
+    right:
+        0;
+
+    width:
+        320px;
+
+    padding:
+        16px;
+
+    box-sizing:
+        border-box;
+
+    background:
+        #0c2422;
+
+    border:
+        1px solid rgba(255, 255, 255, .1);
+
+    border-radius:
+        16px;
+
+    box-shadow:
+        0 20px 60px rgba(0, 0, 0, .4);
+
+    z-index:
+        99999;
+
+    opacity:
+        0;
+
+    visibility:
+        hidden;
+
+    transform:
+        translateY(-7px) scale(.98);
+
+    transition:
+        opacity .18s ease,
+        transform .18s ease,
+        visibility .18s ease;
+
+    pointer-events:
+        none;
+}
+
+
+.calendar.active {
+    opacity:
+        1;
+
+    visibility:
+        visible;
+
+    transform:
+        translateY(0) scale(1);
+
+    pointer-events:
+        auto;
+}
+
+
+/* =========================================================
+   CALENDAR HEADER
+   ========================================================= */
+
+.calendar-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    margin-bottom:
+        16px;
+}
+
+
+.calendar-header h3 {
+    margin:
+        0;
+
+    color:
+        white;
+
+    font-size:
+        15px;
+
+    font-weight:
+        650;
+}
+
+
+.calendar-header button {
+    width:
+        32px;
+
+    height:
+        32px;
+
+    border:
+        1px solid rgba(255, 255, 255, .07);
+
+    border-radius:
+        9px;
+
+    background:
+        rgba(255, 255, 255, .05);
+
+    color:
+        white;
+
+    cursor:
+        pointer;
+
+    font-size:
+        19px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    transition:
+        background .18s ease;
+}
+
+
+.calendar-header button:hover {
+    background:
+        rgba(255, 255, 255, .11);
+}
+
+
+/* =========================================================
+   CALENDAR WEEKDAYS
+   ========================================================= */
+
+.calendar-weekdays {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    gap:
+        4px;
+
+    margin-bottom:
+        7px;
+}
+
+
+.calendar-weekdays span {
+    text-align:
+        center;
+
+    color:
+        #76928e;
+
+    font-size:
+        10px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   CALENDAR DAYS
+   ========================================================= */
+
+.calendar-days {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    gap:
+        5px;
+}
+
+
+.calendar-days button {
+    width:
+        100%;
+
+    aspect-ratio:
+        1;
+
+    border:
+        none;
+
+    border-radius:
+        8px;
+
+    background:
+        transparent;
+
+    color:
+        white;
+
+    cursor:
+        pointer;
+
+    font-size:
+        12px;
+
+    transition:
+        background .15s ease,
+        transform .15s ease;
+
+    position:
+        relative;
+
+    z-index:
+        100000;
+
+    pointer-events:
+        auto;
+}
+
+
+.calendar-days button:hover {
+    background:
+        #174f4a;
+
+    transform:
+        translateY(-1px);
+}
+
+
+.calendar-days button.today {
+    background:
+        #1b5c55;
+
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, .13);
+}
+
+
+.calendar-days .empty {
+    aspect-ratio:
+        1;
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+.close-btn {
+    position:
+        absolute;
+
+    top:
+        15px;
+
+    left:
+        15px;
+
+    width:
+        36px;
+
+    height:
+        36px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid rgba(255, 255, 255, .06);
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        var(--text);
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+}
+
+
+.close-btn:hover {
+    background:
+        rgba(239, 68, 68, .1);
+
+    border-color:
+        rgba(239, 68, 68, .25);
+
+    transform:
+        rotate(6deg);
+}
+
+
+/* =========================================================
+   FORM TYPOGRAPHY
+   ========================================================= */
+
+#taskform h2 {
+    margin:
+        0;
+
+    color:
+        var(--text);
+
+    font-size:
+        24px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        -.5px;
+}
+
+
+.subtitle {
+    margin:
+        -7px 0 7px;
+
+    color:
+        var(--text-muted);
+
+    font-size:
+        12px;
+}
+
+
+/* =========================================================
+   FORM GROUP
+   ========================================================= */
+
+.form-group {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        7px;
+}
+
+
+.form-group label {
+    color:
+        rgba(255, 255, 255, .72);
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   FORM INPUTS
+   ========================================================= */
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+
+    padding:
+        11px 13px;
+
+    border:
+        1px solid rgba(255, 255, 255, .075);
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        var(--text);
+
+    font-size:
+        13px;
+
+    outline:
+        none;
+
+    transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+}
+
+
+.form-group input:hover,
+.form-group textarea:hover,
+.form-group select:hover {
+    background:
+        rgba(255, 255, 255, .045);
+}
+
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    border-color:
+        rgba(88, 242, 168, .4);
+
+    background:
+        rgba(88, 242, 168, .025);
+
+    box-shadow:
+        0 0 0 3px rgba(88, 242, 168, .065);
+}
+
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color:
+        rgba(255, 255, 255, .3);
+}
+
+
+.form-group textarea {
+    min-height:
+        115px;
+
+    resize:
+        vertical;
+}
+
+
+/* =========================================================
+   FORM ROW
+   ========================================================= */
+
+.row {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap:
+        12px;
+}
+
+
+/* =========================================================
+   TAGS / MEMBERS
+   ========================================================= */
+
+.tags,
+.members {
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        7px;
+}
+
+
+.tags button,
+.members button {
+    padding:
+        8px 10px;
+
+    border:
+        1px solid rgba(255, 255, 255, .07);
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        var(--text);
+
+    font-size:
+        11px;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease;
+}
+
+
+.tags button:hover,
+.members button:hover {
+    transform:
+        translateY(-1px);
+
+    background:
+        rgba(88, 242, 168, .08);
+
+    border-color:
+        rgba(88, 242, 168, .25);
+}
+
+
+.tags button.active,
+.members button.active {
+    background:
+        rgba(88, 242, 168, .12);
+
+    border-color:
+        rgba(88, 242, 168, .4);
+
+    color:
+        var(--accent);
+
+    box-shadow:
+        0 4px 14px rgba(88, 242, 168, .06);
+}
+
+
+/* =========================================================
+   CREATE TASK BUTTON
+   ========================================================= */
+
+#createTaskbtn {
+    width:
+        130px;
+
+    margin-top:
+        8px;
+
+    padding:
+        10px 16px;
+
+    border:
+        0;
+
+    border-radius:
+        10px;
+
+    background:
+        linear-gradient(135deg,
+            var(--accent),
+            #0f9f7d);
+
+    color:
+        #04100f;
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+
+#createTaskbtn:hover {
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 10px 24px rgba(0, 208, 132, .17);
+}
+
+
+/* =========================================================
+   UPLOAD AREA
+   ========================================================= */
+
+.upload-area {
+    padding:
+        28px 20px;
+
+    text-align:
+        center;
+
+    border:
+        1px dashed rgba(255, 255, 255, .14);
+
+    border-radius:
+        14px;
+
+    background:
+        rgba(255, 255, 255, .015);
+
+    cursor:
+        pointer;
+
+    transition:
+        border-color .2s ease,
+        background .2s ease,
+        transform .2s ease;
+}
+
+
+.upload-area:hover {
+    border-color:
+        rgba(88, 242, 168, .35);
+
+    background:
+        rgba(88, 242, 168, .025);
+
+    transform:
+        translateY(-1px);
+}
+
+
+.upload-area.dragover {
+    border-color:
+        var(--accent);
+
+    background:
+        rgba(16, 185, 129, .06);
+
+    transform:
+        scale(1.01);
+
+    box-shadow:
+        0 0 0 3px rgba(16, 185, 129, .05);
+}
+
+
+/* =========================================================
+   UPLOAD STATUS
+   ========================================================= */
+
+.upload-status {
+    display:
+        none;
+
+    margin-top:
+        10px;
+
+    padding:
+        9px 11px;
+
+    border-radius:
+        9px;
+
+    font-size:
+        12px;
+
+    text-align:
+        center;
+
+    font-weight:
+        500;
+}
+
+
+.upload-status.loading {
+    display:
+        block;
+
+    background:
+        rgba(59, 130, 246, .07);
+
+    border:
+        1px solid rgba(59, 130, 246, .14);
+
+    color:
+        #60a5fa;
+}
+
+
+.upload-status.success {
+    display:
+        block;
+
+    background:
+        rgba(34, 197, 94, .07);
+
+    border:
+        1px solid rgba(34, 197, 94, .14);
+
+    color:
+        #4ade80;
+}
+
+
+.upload-status.error {
+    display:
+        block;
+
+    background:
+        rgba(239, 68, 68, .07);
+
+    border:
+        1px solid rgba(239, 68, 68, .14);
+
+    color:
+        #f87171;
+}
+
+
+/* =========================================================
+   FILE LIST
+   ========================================================= */
+
+#fileList {
+    margin-top:
+        12px;
+}
+
+
+.file-item {
+    display:
+        flex;
+
+    justify-content:
+        space-between;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    padding:
+        9px 11px;
+
+    margin-top:
+        6px;
+
+    border-radius:
+        10px;
+
+    background:
+        rgba(255, 255, 255, .03);
+
+    border:
+        1px solid rgba(255, 255, 255, .05);
+
+    transition:
+        background .18s ease,
+        border-color .18s ease;
+}
+
+
+.file-item:hover {
+    background:
+        rgba(255, 255, 255, .05);
+
+    border-color:
+        rgba(255, 255, 255, .08);
+}
+
+
+/* =========================================================
+   TASK DETAILS OVERLAY
+   ========================================================= */
+
+.task-form-show-page {
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    width:
+        100%;
+
+    height:
+        100vh;
+
+    z-index:
+        9999;
+
+    box-sizing:
+        border-box;
+
+    padding:
+        24px;
+
+    display:
+        none;
+
+    align-items:
+        flex-start;
+
+    justify-content:
+        center;
+
+    background:
+        rgba(2, 7, 8, .78);
+
+    backdrop-filter:
+        blur(10px);
+
+    -webkit-backdrop-filter:
+        blur(10px);
+
+    overflow-y:
+        auto;
+
+    overflow-x:
+        hidden;
+
+    scrollbar-width:
+        thin;
+
+    animation:
+        signinPageIn .3s ease forwards;
+}
+
+
+@keyframes signinPageIn {
+    from {
+        opacity:
+            0;
+    }
+
+    to {
+        opacity:
+            1;
+    }
+}
+
+
+/* =========================================================
+   TASK DETAILS CONTAINER
+   ========================================================= */
+
+.task-form-show-container {
+    position:
+        relative;
+
+    width:
+        min(1120px, 96vw);
+
+    min-width:
+        0;
+
+    height:
+        auto;
+
+    min-height:
+        min(680px, calc(100vh - 48px));
+
+    margin:
+        auto;
+
+    box-sizing:
+        border-box;
+
+    display:
+        grid;
+
+    grid-template-columns:
+        minmax(0, 1fr) 285px;
+
+    padding:
+        0;
+
+    background:
+        linear-gradient(145deg,
+            rgba(255, 255, 255, .055),
+            rgba(255, 255, 255, .012)),
+        #101a1a;
+
+    border:
+        1px solid rgba(255, 255, 255, .085);
+
+    border-radius:
+        22px;
+
+    box-shadow:
+        0 35px 90px rgba(0, 0, 0, .58),
+        inset 0 1px 0 rgba(255, 255, 255, .04);
+
+    backdrop-filter:
+        blur(25px);
+
+    -webkit-backdrop-filter:
+        blur(25px);
+
+    overflow:
+        visible;
+}
+
+
+/* =========================================================
+   DETAILS CLOSE
+   ========================================================= */
+
+.btn-taskshowclose {
+    position:
+        fixed;
+
+    top:
+        22px;
+
+    right:
+        24px;
+
+    width:
+        40px;
+
+    height:
+        40px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid rgba(255, 255, 255, .08);
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    color:
+        var(--text);
+
+    cursor:
+        pointer;
+
+    transition:
+        .18s ease;
+
+    z-index:
+        999999;
+}
+
+
+.btn-taskshowclose:hover {
+    background:
+        rgba(255, 255, 255, .09);
+
+    border-color:
+        rgba(255, 255, 255, .14);
+
+    transform:
+        rotate(90deg);
+}
+
+
+.btn-taskshowclose svg {
+    width:
+        18px;
+
+    height:
+        18px;
+}
+
+
+/* =========================================================
+   RIGHT SIDE
+   ========================================================= */
+
+.task-form-show-rightside {
+    min-width:
+        0;
+
+    min-height:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    padding:
+        30px;
+
+    box-sizing:
+        border-box;
+
+    overflow:
+        visible;
+
+    border-left:
+        1px solid rgba(255, 255, 255, .065);
+}
+
+
+/* =========================================================
+   TASK HEADER
+   ========================================================= */
+
+.task-show-header {
+    margin-bottom:
+        20px;
+}
+
+
+.task-show-label {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    margin-bottom:
+        8px;
+
+    color:
+        rgba(255, 255, 255, .38);
+
+    font-size:
+        10px;
+
+    font-weight:
+        650;
+
+    letter-spacing:
+        .7px;
+}
+
+
+.task-details-actions {
+    position:
+        absolute;
+
+    top:
+        34px;
+
+    left:
+        325px;
+}
+
+
+/* =========================================================
+   DESCRIPTION
+   ========================================================= */
+
+.task-show-description {
+    padding-bottom:
+        22px;
+
+    border-bottom:
+        1px solid rgba(255, 255, 255, .055);
+}
+
+
+.title-des {
+    margin:
+        0 0 10px;
+
+    color:
+        rgba(255, 255, 255, .38);
+
+    font-size:
+        12px;
+
+    font-weight:
+        650;
+}
+
+
+.task-link {
+    position:
+        relative;
+
+    z-index:
+        10;
+
+    color:
+        #4ade80;
+
+    text-decoration:
+        underline;
+
+    text-underline-offset:
+        3px;
+
+    cursor:
+        pointer;
+
+    transition:
+        opacity .18s ease;
+}
+
+
+.task-link:hover {
+    opacity:
+        .7;
+}
+
+
+/* =========================================================
+   COMMENTS
+   ========================================================= */
+
+.task-show-comments-section {
+    min-height:
+        0;
+
+    flex:
+        1;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    margin-top:
+        22px;
+
+    background:
+        transparent;
+}
+
+
+.comments-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin-bottom:
+        12px;
+}
+
+
+.comments-header h2 {
+    margin:
+        0;
+
+    color:
+        var(--text);
+
+    font-size:
+        14px;
+
+    font-weight:
+        650;
+}
+
+
+.comments-count {
+    min-width:
+        21px;
+
+    height:
+        21px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        0 6px;
+
+    box-sizing:
+        border-box;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(88, 242, 168, .07);
+
+    border:
+        1px solid rgba(88, 242, 168, .11);
+
+    color:
+        var(--accent);
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   COMMENTS BODY
+   ========================================================= */
+
+.task-form-show-body {
+    min-height:
+        90px;
+
+    max-height:
+        330px;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        8px;
+
+    padding:
+        3px 3px 12px 0;
+
+    overflow-y:
+        auto;
+
+    overflow-x:
+        hidden;
+
+    scrollbar-width:
+        thin;
+
+    box-sizing:
+        border-box;
+}
+
+
+.task-form-show-body:empty::before {
+    content:
+        "لا توجد تعليقات حتى الآن";
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        90px;
+
+    color:
+        rgba(255, 255, 255, .22);
+
+    font-size:
+        11px;
+}
+
+
+/* =========================================================
+   COMMENT ITEM
+   ========================================================= */
+
+.task-form-show-comments {
+    display:
+        flex;
+
+    align-items:
+        flex-start;
+
+    gap:
+        9px;
+
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+
+    padding:
+        10px 12px;
+
+    border:
+        1px solid rgba(255, 255, 255, .055);
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(255, 255, 255, .022);
+
+    transition:
+        background .18s ease,
+        border-color .18s ease;
+}
+
+
+.task-form-show-comments:hover {
+    background:
+        rgba(255, 255, 255, .038);
+
+    border-color:
+        rgba(255, 255, 255, .09);
+}
+
+
+.comment-description {
+    margin:
+        0;
+
+    color:
+        rgba(255, 255, 255, .7);
+
+    font-size:
+        12px;
+
+    line-height:
+        1.7;
+
+    overflow-wrap:
+        anywhere;
+}
+
+
+/* =========================================================
+   COMMENT FOOTER
+   ========================================================= */
+
+.task-form-show-footer {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    width:
+        100%;
+
+    padding-top:
+        8px;
+
+    flex-shrink:
+        0;
+}
+
+
+.inputs-task-comment {
+    flex:
+        1;
+
+    width:
+        100%;
+
+    height:
+        42px;
+
+    min-width:
+        0;
+
+    box-sizing:
+        border-box;
+
+    padding:
+        0 13px;
+
+    border:
+        1px solid rgba(255, 255, 255, .065);
+
+    border-radius:
+        11px;
+
+    outline:
+        none;
+
+    background:
+        rgba(255, 255, 255, .03);
+
+    color:
+        var(--text);
+
+    font-family:
+        inherit;
+
+    font-size:
+        12px;
+
+    transition:
+        .2s ease;
+}
+
+
+.inputs-task-comment::placeholder {
+    color:
+        rgba(255, 255, 255, .27);
+}
+
+
+.inputs-task-comment:focus {
+    border-color:
+        rgba(88, 242, 168, .32);
+
+    background:
+        rgba(88, 242, 168, .025);
+
+    box-shadow:
+        0 0 0 3px rgba(88, 242, 168, .05);
+}
+
+
+/* =========================================================
+   COMMENT SUBMIT
+   ========================================================= */
+
+.btn-taskcomment-submit {
+    flex:
+        0 0 42px;
+
+    width:
+        42px;
+
+    height:
+        42px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border:
+        1px solid rgba(88, 242, 168, .15);
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(88, 242, 168, .065);
+
+    color:
+        var(--accent);
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        box-shadow .18s ease;
+}
+
+
+.btn-taskcomment-submit:hover {
+    transform:
+        translateY(-1px);
+
+    background:
+        rgba(88, 242, 168, .12);
+
+    box-shadow:
+        0 7px 18px rgba(88, 242, 168, .08);
+}
+
+
+.btn-taskcomment-submit:active {
+    transform:
+        scale(.94);
+}
+
+
+.btn-taskcomment-submit svg {
+    width:
+        16px;
+
+    height:
+        16px;
+}
+
+
+/* =========================================================
+   LEFT SIDE — MEMBERS
+   ========================================================= */
+
+.task-form-show-leftside {
+    min-width:
+        0;
+
+    min-height:
+        0;
+
+    padding:
+        30px 20px;
+
+    background:
+        rgba(0, 0, 0, .07);
+
+    box-sizing:
+        border-box;
+
+    overflow-y:
+        auto;
+
+    overflow-x:
+        hidden;
+
+    scrollbar-width:
+        thin;
+}
+
+
+/* =========================================================
+   MEMBERS HEADER
+   ========================================================= */
+
+.members-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    margin-bottom:
+        15px;
+}
+
+
+.members-header h2 {
+    margin:
+        0;
+
+    color:
+        var(--text);
+
+    font-size:
+        14px;
+
+    font-weight:
+        650;
+}
+
+
+.members-count {
+    min-width:
+        21px;
+
+    height:
+        21px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(255, 255, 255, .045);
+
+    color:
+        rgba(255, 255, 255, .48);
+
+    font-size:
+        9px;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   MEMBER ITEM
+   ========================================================= */
+
+.task-form-show-members {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+
+    padding:
+        10px;
+
+    margin-bottom:
+        7px;
+
+    border:
+        1px solid rgba(255, 255, 255, .055);
+
+    border-radius:
+        12px;
+
+    background:
+        rgba(255, 255, 255, .022);
+
+    transition:
+        .18s ease;
+}
+
+
+.task-form-show-members:hover {
+    background:
+        rgba(255, 255, 255, .04);
+
+    border-color:
+        rgba(255, 255, 255, .09);
+}
+
+
+.member-info {
+    min-width:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        2px;
+}
+
+
+.member-info strong {
+    color:
+        var(--text);
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+}
+
+
+.member-info span {
+    color:
+        rgba(255, 255, 255, .3);
+
+    font-size:
+        9px;
+}
+
+
+/* =========================================================
+   EDIT TASK MODAL
+   ========================================================= */
+
+.edit-task-form {
+    position:
+        absolute;
+
+    top:
+        50%;
+
+    left:
+        50%;
+
+    width:
+        min(430px, 90%);
+
+    max-height:
+        calc(100% - 40px);
+
+    overflow-y:
+        auto;
+
+    padding:
+        22px;
+
+    box-sizing:
+        border-box;
+
+    display:
+        none;
+
+    flex-direction:
+        column;
+
+    gap:
+        12px;
+
+    transform:
+        translate(-50%, -50%);
+
+    background:
+        rgba(10, 19, 19, .88);
+
+    backdrop-filter:
+        blur(24px);
+
+    -webkit-backdrop-filter:
+        blur(24px);
+
+    border:
+        1px solid rgba(255, 255, 255, .1);
+
+    border-radius:
+        18px;
+
+    box-shadow:
+        0 28px 70px rgba(0, 0, 0, .5),
+        inset 0 1px 0 rgba(255, 255, 255, .055);
+
+    z-index:
+        200;
+
+    animation:
+        editModalIn .22s ease-out;
+}
+
+
+@keyframes editModalIn {
+    from {
+        opacity:
+            0;
+
+        transform:
+            translate(-50%, -47%) scale(.97);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            translate(-50%, -50%) scale(1);
+    }
+}
+
+
+/* =========================================================
+   EDIT INPUTS
+   ========================================================= */
+
+.edit-task-form input,
+.edit-task-form textarea,
+.edit-task-form select {
+    width:
+        100%;
+
+    box-sizing:
+        border-box;
+
+    padding:
+        10px 12px;
+
+    border-radius:
+        9px;
+
+    border:
+        1px solid rgba(255, 255, 255, .07);
+
+    outline:
+        none;
+
+    background:
+        rgba(255, 255, 255, .035);
+
+    color:
+        #eeeeee;
+
+    font-family:
+        inherit;
+
+    font-size:
+        12px;
+
+    transition:
+        .18s ease;
+}
+
+
+.edit-task-form input:focus,
+.edit-task-form textarea:focus,
+.edit-task-form select:focus {
+    background:
+        rgba(255, 255, 255, .055);
+
+    border-color:
+        rgba(44, 180, 158, .5);
+
+    box-shadow:
+        0 0 0 3px rgba(44, 180, 158, .065);
+}
+
+
+#editTaskTitle {
+    height:
+        42px;
+
+    font-size:
+        13px;
+
+    font-weight:
+        600;
+}
+
+
+#editTaskDescription {
+    height:
+        90px;
+
+    min-height:
+        90px;
+
+    resize:
+        vertical;
+
+    line-height:
+        1.6;
+}
+
+
+#editTaskDueDate {
+    height:
+        42px;
+
+    color-scheme:
+        dark;
+}
+
+
+.edit-task-form select {
+    height:
+        42px;
+
+    cursor:
+        pointer;
+}
+
+
+.edit-task-form option {
+    background:
+        #101818;
+
+    color:
+        #ffffff;
+}
+
+
+/* =========================================================
+   EDIT BUTTONS
+   ========================================================= */
+
+.edit-task-actions {
+    display:
+        flex;
+
+    gap:
+        8px;
+
+    margin-top:
+        4px;
+}
+
+
+.edit-task-actions button {
+    flex:
+        1;
+
+    height:
+        40px;
+
+    border-radius:
+        9px;
+
+    border:
+        none;
+
+    font-family:
+        inherit;
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .16s ease,
+        opacity .16s ease,
+        background .16s ease;
+}
+
+
+#saveTaskEditBtn {
+    color:
+        white;
+
+    background:
+        rgba(26, 125, 111, .85);
+
+    border:
+        1px solid rgba(77, 205, 184, .16);
+
+    box-shadow:
+        0 7px 18px rgba(0, 0, 0, .15);
+}
+
+
+#saveTaskEditBtn:hover {
+    background:
+        rgba(31, 145, 128, .95);
+
+    transform:
+        translateY(-1px);
+}
+
+
+#cancelTaskEditBtn {
+    color:
+        rgba(255, 255, 255, .65);
+
+    background:
+        rgba(255, 255, 255, .04);
+
+    border:
+        1px solid rgba(255, 255, 255, .065);
+}
+
+
+#cancelTaskEditBtn:hover {
+    background:
+        rgba(255, 255, 255, .075);
+
+    color:
+        white;
+
+    transform:
+        translateY(-1px);
+}
+
+
+/* =========================================================
+   KANBAN DRAG / DROP
+   ========================================================= */
+
+.kanban-columns.drag-over {
+    background:
+        rgba(88, 242, 168, .025);
+
+    border-color:
+        rgba(88, 242, 168, .22);
+
+    box-shadow:
+        inset 0 0 0 1px rgba(88, 242, 168, .04),
+        0 0 30px rgba(88, 242, 168, .045);
+
+    transform:
+        translateY(-2px);
+}
+
+
+/* =========================================================
+   DROP ZONE
+   ========================================================= */
+
+.kanban-columns.drag-over #todo-column::before,
+
+.kanban-columns.drag-over #progress-column::before,
+
+.kanban-columns.drag-over #review-column::before,
+
+.kanban-columns.drag-over #doneshow-column::before,
+
+.kanban-columns.drag-over #done-column::before {
+    content:
+        "إفلات المهمة هنا";
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    min-height:
+        64px;
+
+    margin:
+        8px;
+
+    border:
+        1px dashed rgba(88, 242, 168, .25);
+
+    border-radius:
+        11px;
+
+    color:
+        rgba(255, 255, 255, .38);
+
+    font-size:
+        11px;
+
+    background:
+        rgba(88, 242, 168, .025);
+
+    animation:
+        dropZoneIn .18s ease forwards;
+}
+
+
+@keyframes dropZoneIn {
+    from {
+        opacity:
+            0;
+
+        transform:
+            scale(.98);
+    }
+
+    to {
+        opacity:
+            1;
+
+        transform:
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   DELETE CONFIRMATION
+   ========================================================= */
+
+.delete-confirm-overlay {
+    position:
+        fixed;
+
+    inset:
+        0;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        20px;
+
+    box-sizing:
+        border-box;
+
+    background:
+        rgba(0, 0, 0, .58);
+
+    backdrop-filter:
+        blur(9px);
+
+    -webkit-backdrop-filter:
+        blur(9px);
+
+    opacity:
+        0;
+
+    visibility:
+        hidden;
+
+    z-index:
+        999999;
+
+    transition:
+        opacity .2s ease,
+        visibility .2s ease;
+}
+
+
+.delete-confirm-overlay.show {
+    opacity:
+        1;
+
+    visibility:
+        visible;
+}
+
+
+.delete-confirm-box {
+    width:
+        min(380px, 100%);
+
+    padding:
+        23px;
+
+    box-sizing:
+        border-box;
+
+    background:
+        linear-gradient(145deg,
+            rgba(20, 29, 31, .97),
+            rgba(8, 13, 15, .97));
+
+    border:
+        1px solid rgba(255, 255, 255, .08);
+
+    border-radius:
+        17px;
+
+    box-shadow:
+        0 25px 80px rgba(0, 0, 0, .55),
+        0 0 35px rgba(20, 130, 120, .07);
+
+    transform:
+        translateY(15px) scale(.97);
+
+    transition:
+        transform .25s cubic-bezier(.2, .8, .2, 1);
+}
+
+
+.delete-confirm-overlay.show .delete-confirm-box {
+    transform:
+        translateY(0) scale(1);
+}
+
+
+/* =========================================================
+   DELETE ICON
+   ========================================================= */
+
+.delete-confirm-icon {
+    width:
+        40px;
+
+    height:
+        40px;
+
+    margin-bottom:
+        14px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(220, 70, 70, .08);
+
+    border:
+        1px solid rgba(220, 70, 70, .16);
+}
+
+
+.delete-confirm-icon span {
+    width:
+        21px;
+
+    height:
+        21px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    border-radius:
+        50%;
+
+    color:
+        #ff8585;
+
+    border:
+        1px solid rgba(255, 130, 130, .45);
+
+    font-size:
+        12px;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   DELETE CONTENT
+   ========================================================= */
+
+.delete-confirm-content h3 {
+    margin:
+        0 0 7px;
+
+    color:
+        #f1f5f5;
+
+    font-size:
+        16px;
+
+    font-weight:
+        600;
+}
+
+
+.delete-confirm-content p {
+    margin:
+        0;
+
+    color:
+        rgba(230, 238, 238, .65);
+
+    font-size:
+        12px;
+
+    line-height:
+        1.8;
+}
+
+
+.delete-confirm-content p span {
+    color:
+        rgba(230, 238, 238, .4);
+}
+
+
+/* =========================================================
+   DELETE ACTIONS
+   ========================================================= */
+
+.delete-confirm-actions {
+    display:
+        flex;
+
+    gap:
+        8px;
+
+    margin-top:
+        20px;
+}
+
+
+.delete-confirm-actions button {
+    height:
+        38px;
+
+    border-radius:
+        9px;
+
+    border:
+        1px solid transparent;
+
+    padding:
+        0 15px;
+
+    font-family:
+        inherit;
+
+    font-size:
+        12px;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .16s ease,
+        background .16s ease,
+        border-color .16s ease;
+}
+
+
+.delete-confirm-actions button:active {
+    transform:
+        scale(.96);
+}
+
+
+.delete-cancel-btn {
+    flex:
+        1;
+
+    color:
+        rgba(235, 242, 242, .65);
+
+    background:
+        rgba(255, 255, 255, .04);
+
+    border-color:
+        rgba(255, 255, 255, .065) !important;
+}
+
+
+.delete-cancel-btn:hover {
+    background:
+        rgba(255, 255, 255, .075);
+
+    color:
+        #fff;
+}
+
+
+.delete-confirm-btn {
+    flex:
+        1;
+
+    color:
+        #fff;
+
+    background:
+        rgba(190, 55, 55, .82);
+
+    border-color:
+        rgba(255, 110, 110, .14) !important;
+}
+
+
+.delete-confirm-btn:hover {
+    background:
+        rgba(210, 60, 60, .94);
+
+    box-shadow:
+        0 8px 22px rgba(180, 50, 50, .16);
+}
+
+
+/* =========================================================
+   TASK DETAILS META BAR
+   ========================================================= */
+
+.task-show-meta-bar {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        7px;
+
+    margin-top:
+        11px;
+
+    margin-bottom:
+        15px;
+
+    flex-wrap:
+        wrap;
+}
+
+
+.task-show-meta-item {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+
+    font-size:
+        11px;
+
+    color:
+        rgba(255, 255, 255, .62);
+
+    padding:
+        5px 9px;
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    border:
+        1px solid rgba(255, 255, 255, .055);
+}
+
+
+.task-show-meta-item svg {
+    width:
+        14px;
+
+    height:
+        14px;
+
+    color:
+        var(--accent);
+}
+
+
+.task-show-meta-item strong {
+    color:
+        #fff;
+
+    font-weight:
+        600;
+}
+
+
+.task-meta-badge {
+    padding:
+        2px 7px;
+
+    border-radius:
+        5px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   ATTACHMENTS SECTION
+   ========================================================= */
+
+.task-show-attachments-section {
+    margin-top:
+        18px;
+
+    margin-bottom:
+        21px;
+}
+
+
+.attachments-header {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    margin-bottom:
+        12px;
+}
+
+
+.attachments-title-wrap {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        7px;
+}
+
+
+.attachments-title-wrap svg {
+    width:
+        17px;
+
+    height:
+        17px;
+
+    color:
+        var(--accent);
+}
+
+
+.attachments-title-wrap h3 {
+    font-size:
+        14px;
+
+    font-weight:
+        600;
+
+    color:
+        #fff;
+
+    margin:
+        0;
+}
+
+
+.attachments-count {
+    background:
+        rgba(88, 242, 168, .08);
+
+    color:
+        var(--accent);
+
+    border:
+        1px solid rgba(88, 242, 168, .17);
+
+    padding:
+        2px 8px;
+
+    border-radius:
+        999px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        600;
+}
+
+
+/* =========================================================
+   ATTACHMENTS GRID
+   ========================================================= */
+
+.task-attachments-list {
+    display:
+        grid;
+
+    grid-template-columns:
+        repeat(auto-fill,
+            minmax(210px, 1fr));
+
+    gap:
+        9px;
+}
+
+
+.task-attachment-item {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        10px;
+
+    padding:
+        10px 11px;
+
+    background:
+        rgba(255, 255, 255, .025);
+
+    border:
+        1px solid rgba(255, 255, 255, .065);
+
+    border-radius:
+        11px;
+
+    transition:
+        .2s ease;
+}
+
+
+.task-attachment-item:hover {
+    background:
+        rgba(255, 255, 255, .045);
+
+    border-color:
+        rgba(88, 242, 168, .22);
+
+    transform:
+        translateY(-1px);
+
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, .22);
+}
+
+
+.task-attachment-item.is-image {
+    flex-direction:
+        column;
+
+    align-items:
+        stretch;
+
+    padding:
+        8px;
+}
+
+
+.task-attachment-preview {
+    width:
+        100%;
+
+    height:
+        120px;
+
+    border-radius:
+        8px;
+
+    overflow:
+        hidden;
+
+    background:
+        rgba(0, 0, 0, .3);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    margin-bottom:
+        7px;
+}
+
+
+.task-attachment-preview img {
+    width:
+        100%;
+
+    height:
+        100%;
+
+    object-fit:
+        cover;
+
+    transition:
+        transform .25s ease;
+}
+
+
+.task-attachment-item:hover .task-attachment-preview img {
+    transform:
+        scale(1.035);
+}
+
+
+/* =========================================================
+   ATTACHMENT ICON
+   ========================================================= */
+
+.task-attachment-icon {
+    width:
+        36px;
+
+    height:
+        36px;
+
+    border-radius:
+        9px;
+
+    background:
+        rgba(88, 242, 168, .07);
+
+    border:
+        1px solid rgba(88, 242, 168, .15);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    flex-shrink:
+        0;
+}
+
+
+.task-attachment-icon svg {
+    width:
+        18px;
+
+    height:
+        18px;
+
+    color:
+        var(--accent);
+}
+
+
+/* =========================================================
+   ATTACHMENT INFO
+   ========================================================= */
+
+.task-attachment-info {
+    flex:
+        1;
+
+    min-width:
+        0;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        3px;
+}
+
+
+.task-attachment-name {
+    font-size:
+        12px;
+
+    font-weight:
+        500;
+
+    color:
+        #f1f5f9;
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+}
+
+
+.task-attachment-size {
+    font-size:
+        10px;
+
+    color:
+        rgba(255, 255, 255, .35);
+}
+
+
+/* =========================================================
+   ATTACHMENT ACTIONS
+   ========================================================= */
+
+.task-attachment-actions {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+}
+
+
+.btn-attachment-action {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        4px;
+
+    padding:
+        5px 8px;
+
+    border-radius:
+        7px;
+
+    font-size:
+        10px;
+
+    font-weight:
+        500;
+
+    color:
+        rgba(255, 255, 255, .78);
+
+    background:
+        rgba(255, 255, 255, .05);
+
+    border:
+        1px solid rgba(255, 255, 255, .075);
+
+    text-decoration:
+        none;
+
+    cursor:
+        pointer;
+
+    transition:
+        .18s ease;
+}
+
+
+.btn-attachment-action svg {
+    width:
+        12px;
+
+    height:
+        12px;
+}
+
+
+.btn-attachment-action:hover {
+    background:
+        rgba(255, 255, 255, .1);
+
+    color:
+        #fff;
+}
+
+
+.btn-attachment-action.btn-download {
+    background:
+        rgba(88, 242, 168, .07);
+
+    border-color:
+        rgba(88, 242, 168, .18);
+
+    color:
+        var(--accent);
+}
+
+
+.btn-attachment-action.btn-download:hover {
+    background:
+        rgba(88, 242, 168, .14);
+
+    color:
+        #fff;
+}
+
+
+/* =========================================================
+   EMPTY ATTACHMENTS
+   ========================================================= */
+
+.attachments-empty {
+    grid-column:
+        1 / -1;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        7px;
+
+    padding:
+        21px;
+
+    border-radius:
+        11px;
+
+    background:
+        rgba(255, 255, 255, .018);
+
+    border:
+        1px dashed rgba(255, 255, 255, .07);
+
+    color:
+        rgba(255, 255, 255, .35);
+
+    font-size:
+        11px;
+}
+
+
+.attachments-empty svg {
+    width:
+        17px;
+
+    height:
+        17px;
+}
+
+
+/* =========================================================
+   CREATE FORM FILES
+   ========================================================= */
+
+.file-item-info {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        9px;
+
+    min-width:
+        0;
+
+    flex:
+        1;
+}
+
+
+.file-item-info svg {
+    width:
+        19px;
+
+    height:
+        19px;
+
+    color:
+        var(--accent);
+
+    flex-shrink:
+        0;
+}
+
+
+.file-item-details {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    min-width:
+        0;
+
+    text-align:
+        right;
+}
+
+
+.file-item-name {
+    font-size:
+        12px;
+
+    font-weight:
+        500;
+
+    color:
+        #f1f5f9;
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+}
+
+
+.file-item-size {
+    font-size:
+        10px;
+
+    color:
+        rgba(255, 255, 255, .4);
+}
+
+
+.btn-remove-file {
+    background:
+        rgba(239, 68, 68, .08);
+
+    border:
+        1px solid rgba(239, 68, 68, .17);
+
+    color:
+        #fca5a5;
+
+    border-radius:
+        7px;
+
+    width:
+        27px;
+
+    height:
+        27px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    cursor:
+        pointer;
+
+    transition:
+        .18s ease;
+
+    flex-shrink:
+        0;
+}
+
+
+.btn-remove-file:hover {
+    background:
+        rgba(239, 68, 68, .2);
+
+    color:
+        #fff;
+
+    transform:
+        scale(1.04);
+}
+
+
+.btn-remove-file svg {
+    width:
+        13px;
+
+    height:
+        13px;
+}
+
+
+/* =========================================================
+   EDIT TASK — MEMBERS
+   ========================================================= */
+
+.edit-task-section {
+    display:
+        grid;
+
+    gap:
+        7px;
+}
+
+
+.edit-task-section>label:first-child {
+    color:
+        rgba(255, 255, 255, .65);
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+}
+
+
+.edit-task-members {
+    display:
+        flex;
+
+    flex-wrap:
+        wrap;
+
+    gap:
+        6px;
+
+    min-height:
+        36px;
+}
+
+
+.edit-task-member-option {
+    padding:
+        6px 9px;
+
+    border:
+        1px solid rgba(255, 255, 255, .09);
+
+    border-radius:
+        999px;
+
+    background:
+        rgba(255, 255, 255, .04);
+
+    color:
+        rgba(255, 255, 255, .7);
+
+    font:
+        inherit;
+
+    font-size:
+        11px;
+
+    cursor:
+        pointer;
+
+    transition:
+        .18s ease;
+}
+
+
+.edit-task-member-option:hover {
+    background:
+        rgba(255, 255, 255, .07);
+}
+
+
+.edit-task-member-option.active {
+    border-color:
+        rgba(80, 255, 220, .5);
+
+    background:
+        rgba(80, 255, 220, .11);
+
+    color:
+        #d7fff4;
+}
+
+
+/* =========================================================
+   EDIT ATTACHMENTS
+   ========================================================= */
+
+.edit-task-attachments,
+.edit-task-new-files {
+    display:
+        grid;
+
+    gap:
+        5px;
+}
+
+
+.edit-task-file-item {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        9px;
+
+    padding:
+        7px 9px;
+
+    border:
+        1px solid rgba(255, 255, 255, .07);
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(255, 255, 255, .03);
+
+    color:
+        rgba(255, 255, 255, .68);
+
+    font-size:
+        11px;
+}
+
+
+.edit-task-file-item.is-new {
+    border-color:
+        rgba(80, 255, 220, .18);
+}
+
+
+.edit-task-file-item span {
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+}
+
+
+.edit-task-file-item button {
+    flex:
+        0 0 auto;
+
+    border:
+        0;
+
+    background:
+        transparent;
+
+    color:
+        #ffaaa4;
+
+    font:
+        inherit;
+
+    font-size:
+        10px;
+
+    cursor:
+        pointer;
+}
+
+
+/* =========================================================
+   EDIT UPLOAD
+   ========================================================= */
+
+.edit-task-upload {
+    display:
+        inline-flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    gap:
+        6px;
+
+    min-height:
+        37px;
+
+    border:
+        1px dashed rgba(80, 255, 220, .3);
+
+    border-radius:
+        9px;
+
+    color:
+        #9ff4df;
+
+    font-size:
+        11px;
+
+    cursor:
+        pointer;
+
+    transition:
+        .18s ease;
+}
+
+
+.edit-task-upload:hover {
+    background:
+        rgba(80, 255, 220, .06);
+
+    border-color:
+        rgba(80, 255, 220, .45);
+}
+
+
+/* =========================================================
+   RESPONSIVE — 1200
+   ========================================================= */
+
+@media (max-width: 1200px) {
+
+    #Kanban-board-container {
+        grid-template-columns:
+            repeat(5, minmax(250px, 1fr));
+
+        gap:
+            12px;
+    }
+
+    .task-form-show-container {
+        grid-template-columns:
+            minmax(0, 1fr) 260px;
+    }
+
+    .task-form-show-rightside {
+        padding:
+            25px;
+    }
+
+    .task-form-show-leftside {
+        padding:
+            25px 17px;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 900
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    #Kanban-board-container {
+        grid-template-columns:
+            repeat(5, minmax(240px, 1fr));
+    }
+
+    .task-form-show-page {
+        padding:
+            14px;
+
+        align-items:
+            flex-start;
+    }
+
+    .task-form-show-container {
+        width:
+            100%;
+
+        min-height:
+            auto;
+
+        margin:
+            20px auto;
+
+        grid-template-columns:
+            1fr;
+
+        border-radius:
+            19px;
+    }
+
+    .task-form-show-leftside {
+        order:
+            2;
+
+        border-bottom:
+            0;
+
+        border-top:
+            1px solid rgba(255, 255, 255, .065);
+
+        max-height:
+            280px;
+    }
+
+    .task-form-show-rightside {
+        order:
+            1;
+
+        border-left:
+            none;
+
+        padding:
+            25px 20px;
+    }
+
+    .task-details-actions {
+        position:
+            static;
+
+        margin-top:
+            14px;
+    }
+
+    .task-show-attachments-section {
+        margin-top:
+            18px;
+    }
+
+    .task-attachments-list {
+        grid-template-columns:
+            1fr;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE — 600
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .welcomediv {
+        min-height:
+            80px;
+
+        padding-bottom:
+            12px;
+    }
+
+    #Kanban-board-container {
+        grid-template-columns:
+            repeat(5, minmax(225px, 1fr));
+
+        gap:
+            10px;
+    }
+
+    .kanban-columns {
+        min-height:
+            360px;
+
+        padding:
+            8px;
+
+        border-radius:
+            15px;
+    }
+
+    .Kanban-task {
+        min-height:
+            140px;
+
+        padding:
+            11px;
+    }
+
+    .title-task {
+        font-size:
+            13px;
+    }
+
+    .description-task {
+        font-size:
+            11px;
+    }
+
+    #taskform {
+        width:
+            calc(100vw - 20px);
+
+        max-height:
+            92vh;
+
+        padding:
+            20px;
+
+        border-radius:
+            17px;
+    }
+
+    .row {
+        grid-template-columns:
+            1fr;
+    }
+
+    .calendar {
+        width:
+            min(310px, calc(100vw - 35px));
+    }
+
+    .task-form-show-page {
+        padding:
+            8px;
+    }
+
+    .task-form-show-container {
+        margin:
+            8px auto;
+
+        border-radius:
+            16px;
+    }
+
+    .task-form-show-rightside {
+        padding:
+            20px 15px;
+    }
+
+    .task-form-show-leftside {
+        padding:
+            20px 15px;
+    }
+
+    .edit-task-form {
+        width:
+            calc(100% - 24px);
+
+        padding:
+            18px;
+
+        border-radius:
+            14px;
+    }
+
+    .task-show-meta-bar {
+        gap:
+            5px;
+    }
+
+    .task-show-meta-item {
+        font-size:
+            10px;
+
+        padding:
+            5px 8px;
+    }
+
+    .btn-taskshowclose {
+        top:
+            12px;
+
+        right:
+            12px;
+
+        width:
+            36px;
+
+        height:
+            36px;
+    }
+
+    .task-form-show-body {
+        max-height:
+            280px;
+    }
+
+    .task-card-meta-footer {
+        gap:
+            5px;
+    }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration:
+            .01ms !important;
+
+        animation-iteration-count:
+            1 !important;
+
+        transition-duration:
+            .01ms !important;
+
+        scroll-behavior:
+            auto !important;
+    }
+}

@@ -1,0 +1,548 @@
+/* =========================================================
+   TRILLFLOW — FLOATING SIDEBAR
+   ========================================================= */
+
+.sidebar {
+    width: 78px;
+    min-width: 78px;
+    height: 100%;
+    padding: 24px 12px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 28px;
+
+    background: transparent;
+
+    border-radius: 0;
+
+    overflow: visible;
+
+    opacity: 0;
+    transform: translateX(25px);
+
+    animation: sidebarShow .7s cubic-bezier(.22, 1, .36, 1) .2s forwards;
+}
+
+#logoutbutton {
+    margin-top: 130px;
+    background: var(--surface-1);
+    border: 2px solid var(--stroke);
+    border-radius: 25px;
+    height: 45px;
+    width: 45px;
+    align-items: center;
+
+}
+
+/* =========================================================
+   SIDEBAR ANIMATION
+   ========================================================= */
+
+@keyframes sidebarShow {
+
+    0% {
+        opacity: 0;
+        transform: translateX(25px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+.sidebar__head {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.brand {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-width: auto;
+
+    text-decoration: none;
+}
+
+
+/* Logo */
+
+.brand__glyph {
+
+    width: 42px;
+    height: 42px;
+
+    display: grid;
+    place-items: center;
+
+    border-radius: 14px;
+
+    background:
+        linear-gradient(145deg,
+            #54e0b0,
+            #159d7c);
+
+    color: #062c29;
+
+    box-shadow:
+        0 10px 25px rgba(40, 220, 170, .18);
+
+    transition:
+        transform .3s cubic-bezier(.22, 1, .36, 1),
+        box-shadow .3s ease;
+}
+
+
+.brand:hover .brand__glyph {
+
+    transform:
+        translateY(-2px) rotate(-5deg) scale(1.06);
+
+    box-shadow:
+        0 14px 32px rgba(40, 220, 170, .28);
+}
+
+
+/* إخفاء اسم TrillFlow */
+
+.brand__word {}
+
+
+/* =========================================================
+   NAV
+   ========================================================= */
+
+.nav {
+
+    width: 100%;
+
+    flex: 1;
+
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    overflow: visible;
+
+    padding: 0;
+
+
+}
+
+
+/* =========================================================
+   NAV LIST
+   ========================================================= */
+
+.nav__list {
+
+    width: 100%;
+
+    list-style: none;
+
+    margin: 0;
+    padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   GROUP LABEL
+   ========================================================= */
+
+.nav__group-label {
+
+    display: none;
+}
+
+
+/* =========================================================
+   ITEM
+   ========================================================= */
+
+.nav__item {
+
+    position: relative;
+
+    width: 100%;
+
+    display: flex;
+    justify-content: center;
+
+    list-style: none;
+}
+
+
+/* =========================================================
+   NAV BUTTON
+   ========================================================= */
+
+.nav__link {
+    position: relative;
+
+    width: 50px;
+    height: 50px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 0;
+
+    border: 0;
+
+    border-radius: 17px;
+
+    background: transparent;
+
+    color: rgba(220, 240, 237, .48);
+
+    cursor: pointer;
+
+    overflow: visible;
+
+    text-align: center;
+
+    transition:
+
+        color .25s ease,
+
+        background .25s ease,
+
+        transform .3s cubic-bezier(.22, 1, .36, 1),
+
+        box-shadow .25s ease;
+}
+
+
+/* =========================================================
+   ICON
+   ========================================================= */
+
+.nav__link i {
+
+    width: 20px;
+    height: 20px;
+
+    flex: none;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 18px;
+
+    transition:
+
+        transform .3s cubic-bezier(.22, 1, .36, 1),
+
+        color .25s ease;
+}
+
+
+/* =========================================================
+   LABEL
+   ========================================================= */
+
+.nav__label {
+
+    display: none;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.nav__link:hover {
+
+    color: #ffffff;
+
+    background: rgba(255, 255, 255, .075);
+
+    transform: translateY(-2px);
+
+}
+
+
+.nav__link:hover i {
+
+    transform: scale(1.08);
+
+}
+
+
+/* =========================================================
+   ACTIVE
+   ========================================================= */
+
+.nav__link.active {
+
+    color: #ffffff;
+
+    background:
+
+        linear-gradient(145deg,
+            rgba(75, 218, 172, .95),
+            rgba(36, 167, 135, .9));
+
+    box-shadow:
+
+        0 10px 25px rgba(54, 207, 165, .22),
+
+        inset 0 1px 0 rgba(255, 255, 255, .22);
+}
+
+
+/* إزالة المؤشر القديم */
+
+.nav__link.active::before {
+
+    display: none;
+
+}
+
+
+/* Active icon */
+
+.nav__link.active i {
+
+    color: #082e2a;
+
+    transform: scale(1.05);
+
+}
+
+
+/* =========================================================
+   BADGE
+   ========================================================= */
+
+.nav__badge {
+
+    position: absolute;
+
+    top: 4px;
+    right: 2px;
+
+    min-width: 16px;
+    height: 16px;
+
+    padding: 0 4px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 99px;
+
+    background: #ff5f6d;
+
+    color: white;
+
+    font-size: 9px;
+    font-weight: 800;
+
+    border: 2px solid #012022;
+
+    margin: 0;
+
+}
+
+
+/* =========================================================
+   HOT BADGE
+   ========================================================= */
+
+.nav__badge--hot {
+
+    background: #58f2a8;
+
+    color: #062c29;
+
+}
+
+
+/* =========================================================
+   SETTINGS / BOTTOM AREA
+   ========================================================= */
+
+.sidebar>.nav:last-child {
+
+    flex: 0;
+
+}
+
+
+/* لو عندك مجموعة Settings داخل nav */
+
+.nav__list:last-child {
+
+    margin-top: auto;
+
+}
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+.sidebar .logout,
+.sidebar .nav__link.logout {
+
+    color: rgba(255, 255, 255, .4);
+
+}
+
+
+.sidebar .logout:hover,
+.sidebar .nav__link.logout:hover {
+
+    color: #ff7b84;
+
+    background: rgba(255, 95, 109, .08);
+
+}
+
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+
+.nav::-webkit-scrollbar {
+
+    width: 0;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+
+        width: 64px;
+        min-width: 64px;
+
+        padding-left: 8px;
+        padding-right: 8px;
+
+    }
+
+    .nav__link {
+
+        width: 46px;
+        height: 46px;
+
+        border-radius: 15px;
+
+    }
+
+    .brand__glyph {
+
+        width: 38px;
+        height: 38px;
+
+        border-radius: 12px;
+
+    }
+
+}
+
+/* =========================================================
+   HOVER LABEL
+   ========================================================= */
+
+.nav__label {
+
+    position: absolute;
+
+    /* يظهر على يسار الأيقونة */
+    left: -12px;
+
+    top: 50%;
+
+    transform:
+        translate(-100%, -50%) translateX(6px) scale(.95);
+
+    transform-origin: right center;
+
+    display: block;
+
+    width: max-content;
+
+    padding: 8px 12px;
+
+    border-radius: 9px;
+
+    background: rgba(19, 42, 41, .94);
+
+    border: 1px solid rgba(255, 255, 255, .07);
+
+    color: #eef8f6;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    white-space: nowrap;
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    z-index: 9999;
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, .25);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    transition:
+        opacity .18s ease,
+        visibility .18s ease,
+        transform .22s cubic-bezier(.22, 1, .36, 1);
+}
+
+
+/* يظهر الاسم عند Hover */
+
+.nav__link:hover .nav__label {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    transform:
+        translate(-100%, -50%) translateX(0) scale(1);
+}

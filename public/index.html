@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="login.css">
+</head>
+
+<body>
+
+    <!-- TRILL Preloader -->
+
+    <div class="trill-preloader" id="tpEl">
+
+        <div class="tp-field"></div>
+        <div class="tp-vignette"></div>
+
+        <div class="tp-stage">
+
+            <div class="tp-unit">
+
+                <!-- Glow -->
+                <div class="tp-glow"></div>
+
+                <!-- Ring -->
+                <svg class="tp-ring" viewBox="0 0 168 168">
+                    <circle class="tp-ring-track" cx="84" cy="84" r="75" />
+
+                    <circle class="tp-ring-arc" cx="84" cy="84" r="75" />
+                </svg>
+
+
+                <!-- Logo Mark -->
+                <div class="tp-mark">
+
+                    <svg viewBox="0 0 64 32">
+                        <path d="
+                        M2 16
+                        C10 4, 18 4, 24 16
+                        S38 28, 44 16
+                        S56 6, 62 16
+                    " />
+                    </svg>
+
+                </div>
+
+
+                <!-- Word -->
+                <div class="tp-word">
+
+                    <span>T</span>
+                    <span>r</span>
+                    <span>i</span>
+                    <span>l</span>
+                    <span>l</span>
+                    <span>F</span>
+                    <span>L</span>
+                    <span>O</span>
+                    <span>W</span>
+
+                </div>
+
+
+                <!-- Loading -->
+                <div class="tp-status">
+
+                    <span>INITIALIZING</span>
+
+                    <b id="tpPercent">0%</b>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ============================= NAV ============================= -->
+    <header class="site-nav">
+        <nav class="site-nav__inner glass">
+            <a href="index.html" class="site-nav__logo logo" aria-label="Trill">
+                <span>Trill Flow</span>
+            </a>
+            <div class="site-nav__actions">
+                <button id="hero-btn1">تسجيل دخول</button>
+                <button class="btn btn-primary" id="hero-btn2" style="padding:.5rem 1rem;"><span>TrillFlow</span>
+                    ابدأ
+                    مع</button>
+            </div>
+        </nav>
+    </header>
+    <!-- ============================= HERO ============================= -->
+    <section class="hero bg-aurora">
+        <img src="assets/aurora-bg.jpg" alt="" aria-hidden="true" class="hero__bg-img">
+        <div class="grid-lines" style="position:absolute; inset:0; opacity:.4; pointer-events:none;"></div>
+        <div class="hero__glow-wrap">
+            <div class="hero__glow-1 animate-glow-pulse"></div>
+            <div class="hero__glow-2 animate-glow-pulse"></div>
+        </div>
+        <div class="hero__content">
+            <a href="#platform" class="hero__badge glass">
+                <span class="dot animate-glow-pulse"></span>
+                <p dir="rtl">
+                    نقدّم لكم <bdi>TrillFlow 0.1</bdi> — مستقبل إدارة المشاريع، مع ذكاء اصطناعي مدمج في كل جزء من تجربة
+                    العمل.
+                </p>
+                <i data-lucide="arrow-left" class="icon"></i>
+            </a>
+            <h1>
+                <span class="text-gradient">كل ما يحتاجه فريقك</span><br>
+                <span>للعمل معًا</span><br>
+                <span class="dim">في مكان واحد</span>
+            </h1>
+            <p dir="rtl" class="hero__lead">
+                منصة واحدة لإدارة كل شيء. المشاريع، المهام، المستندات، المحادثات، والذكاء الاصطناعي. كل ما يحتاجه فريقك،
+                في <bdi>TrillFlow</bdi>.
+            </p>
+            <div class="hero__ctas">
+                <button class="btn btn-primary" id="hero-btn3"><span>TrillFlow</span> ابدأ مع</button>
+            </div>
+        </div>
+
+        <!-- ============================= login ============================= -->
+        <div class="signin" id="signinform">
+
+            <!-- error -->
+            <div id="messagebox">
+                <h1 id="message"></h1>
+            </div>
+            <img src="assets/dashboard.png" alt="" class="signimg">
+
+            <button id="btn-close">x</button>
+            <!-- Login Card -->
+            <div class="login-card" id="loginCard">
+
+                <!-- Success Overlay -->
+                <div class="success-overlay" id="successOverlay">
+                    <div class="success-check">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+                    <h3>تم تسجيل الدخول بنجاح!</h3>
+                    <p>جاري التوجيه إلى لوحة التحكم...</p>
+                </div>
+
+                <!-- Logo -->
+                <div class="logo-area">
+                    <h1><span>TrillFlow</span>تسجيل الدخول إلى </h1>
+                    <p> سجل دخولك للمتابعة</p>
+                </div>
+
+                <!-- Form signin-->
+                <form id="loginForm" autocomplete="off">
+
+                    <div class="form-group">
+                        <label for="email">البريد الإلكتروني</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="email" placeholder="name@company.com" required>
+                            <span class="input-icon">✉</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">كلمة المرور</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" placeholder="••••••••" required>
+                            <span class="input-icon">🔒</span>
+                            <button type="button" class="toggle-password" id="togglePassword">👁</button>
+                        </div>
+                    </div>
+
+                    <div class="form-options">
+                        <label class="remember">
+                            <input type="checkbox" id="remember">
+                            <span>تذكرني</span>
+                        </label>
+                        <!-- <a href="#" class="forgot-link">نسيت كلمة المرور؟</a> -->
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="loginbtn">
+                        <span class="btn-text" id="signinbtntext">تسجيل الدخول</span>
+                        <span class="btn-spinner" id="btnspinner"></span>
+                    </button>
+                </form>
+
+
+                <div class="divider">أو</div>
+
+                <div class="social-login">
+                    <button class="social-btn" type="button">
+                        <svg viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
+                            <path fill="currentColor"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                            <path fill="currentColor"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                            <path fill="currentColor"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                        </svg>
+                        Google
+                    </button>
+
+                </div>
+
+                <div class="footer-text">
+                    <button id="showSigninBtn">ليس لديك حساب؟ إنشاء حساب جديد</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- /////////////////////signup////////////////// -->
+        <div class="signup" id="signupform">
+
+            <!-- error -->
+            <div id="messagebox2">
+                <h1 id="message2">sdfsadfsdafsfsdf</h1>
+            </div>
+            <img src="assets/dashboard.png" alt="" class="signimg">
+            <!-- Login Card -->
+            <div class="login-card" id="loginCard2">
+
+                <!-- Success Overlay -->
+                <div class="success-overlay" id="successOverlay">
+                    <div class="success-check">
+                        <svg viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                    </div>
+                    <h3>تم تسجيل الدخول بنجاح!</h3>
+                    <p>جاري التوجيه إلى لوحة التحكم...</p>
+                </div>
+
+                <!-- Logo -->
+                <div class="logo-area">
+                    <button id="btn-close2">x</button>
+                    <h1><span>TrillFlow</span>تسجيل الدخول إلى </h1>
+                    <p> أنشئ حساب للمتابعة</p>
+                </div>
+                <!-- Form signin-->
+                <form id="loginForm" autocomplete="off">
+                    <div class="form-group">
+                        <label for="username">اسم المستخدم</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="signupusername" placeholder="User name" required>
+                            <span class="input-icon">👤</span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">البريد الإلكتروني</label>
+                        <div class="input-wrapper">
+                            <input type="email" id="signupemail" placeholder="name@company.com" required>
+                            <span class="input-icon">✉</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">كلمة المرور</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="signuppassword" placeholder="••••••••" required>
+                            <span class="input-icon">🔒</span>
+                            <button type="button" class="toggle-password" id="togglePassword">👁</button>
+                        </div>
+                    </div>
+
+
+
+                    <button type="submit" class="submit-btn" id="signupbtn">
+                        <span class="btn-text" id="btntext2">انشاء حساب</span>
+                        <span class="btn-spinner"></span>
+                    </button>
+                </form>
+
+
+            </div>
+    </section>
+
+
+    <script src="login.js"></script>
+</body>
+
+</html>

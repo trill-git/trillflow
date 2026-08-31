@@ -1,0 +1,2836 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>trillFLOW — مساحة عمل ذكية</title>
+  <meta name="description" content="trillFLOW مساحة عمل ذكية متميزة لتخطيط أعمال المنتج ومتابعتها وإطلاقها." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&family=Cairo:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="/dashboad.css" />
+  <link rel="stylesheet" href="../components/sidbar.css">
+  <link rel="stylesheet" href="../components/navbar.css">
+  <link rel="stylesheet" href="../components/projects.css">
+  <link rel="stylesheet" href="../components/Kanban board.css">
+  <link rel="stylesheet" href="../components/members.css">
+  <link rel="stylesheet" href="../components/profile.css">
+  <link rel="stylesheet" href="../components/settings.css">
+  <link rel="stylesheet" href="../components/calendar.css">
+  <link rel="stylesheet" href="../components/myTasks.css">
+  <link rel="stylesheet" href="../components/ChannelsPage.css">
+</head>
+
+<body>
+  <!-- DELETE CONFIRMATION -->
+  <div id="deleteConfirmOverlay" class="delete-confirm-overlay">
+
+    <div id="deleteConfirmBox" class="delete-confirm-box">
+
+      <div class="delete-confirm-icon">
+        <span>!</span>
+      </div>
+
+      <div class="delete-confirm-content">
+
+        <h3>حذف التاسك؟</h3>
+
+        <p>
+          هل أنت متأكد من حذف هذا التاسك؟
+          <br>
+          <span>لا يمكن التراجع عن هذا الإجراء.</span>
+        </p>
+
+      </div>
+
+      <div class="delete-confirm-actions">
+
+        <button type="button" id="cancelDeleteBtn" class="delete-cancel-btn">
+          إلغاء
+        </button>
+
+        <button type="button" id="confirmDeleteBtn" class="delete-confirm-btn">
+          حذف التاسك
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Message Box -->
+  <div id="messageBox" class="message-box">
+    <div class="message-box-icon" id="messageBoxIcon">
+      ✓
+    </div>
+
+    <div class="message-box-content">
+      <div id="messageBoxTitle" class="message-box-title">
+        تم بنجاح
+      </div>
+
+      <div id="messageBoxText" class="message-box-text">
+        تم تنفيذ العملية بنجاح.
+      </div>
+    </div>
+
+    <button id="messageBoxClose" class="message-box-close">
+      ×
+    </button>
+  </div>
+
+  <!-- ══════════ الهيكل الرئيسي للتطبيق ══════════ -->
+  <div class="app-shell">
+
+    <!-- ══════════ side bar (مشترك بين كل الصفحات) ══════════ -->
+    <div id="sidebar-container"></div>
+
+    <!-- ══════════ المنطقة اليمنى: نافبار + المحتوى ══════════ -->
+    <div class="main-area">
+
+      <!-- ══════════ navbar (مشترك بين كل الصفحات) ══════════ -->
+      <div id="navbar-container"></div>
+
+      <!-- ══════════ محتوى الصفحات ══════════ -->
+      <div class="pages-wrapper">
+
+        <!-- //////////////////////////////////////////////////////////////////////////////// -->
+
+        <section id="dashboard" hidden>
+
+          <!-- DASHBOARD LOADING -->
+          <div id="dashboardLoader" class="dashboard-loader">
+
+            <div class="loader-top">
+              <div class="skeleton skeleton-title"></div>
+              <div class="skeleton skeleton-subtitle"></div>
+            </div>
+
+            <div class="skeleton-summary">
+              <div class="skeleton skeleton-card"></div>
+              <div class="skeleton skeleton-card"></div>
+              <div class="skeleton skeleton-card"></div>
+              <div class="skeleton skeleton-card"></div>
+            </div>
+
+            <div class="skeleton-grid">
+              <div class="skeleton skeleton-large"></div>
+              <div class="skeleton skeleton-large"></div>
+            </div>
+
+            <div class="skeleton skeleton-full"></div>
+
+          </div>
+
+
+          <!-- DASHBOARD CONTENT -->
+          <div id="dashboardContent" class="dashboard-content dashboard-hidden">
+
+            <!-- WELCOME -->
+            <div class="welcomediv">
+              <div>
+                <span class="dashboard-kicker">نظرة عامة</span>
+                <h1 id="username"></h1>
+                <p id="dashboardDate"></p>
+              </div>
+
+              <div class="dashboard-live">
+                <span class="live-dot"></span>
+                البيانات محدثة الآن
+              </div>
+            </div>
+
+
+            <!-- TASK SUMMARY -->
+            <div id="TaskSummarydiv">
+
+              <div class="TaskSummarycard">
+                <div id="h1andtext">
+                  <i data-lucide="clock-8" id="taskicon"></i>
+                  <h1>المهام النشطة</h1>
+                </div>
+
+                <div class="summary-number">
+                  <h1 id="activeTasksCount">0</h1>
+                  <span>مهمة حالياً</span>
+                </div>
+              </div>
+
+
+              <div class="TaskSummarycard danger-card">
+                <div id="h1andtext">
+                  <i data-lucide="clock-alert" id="taskicon"></i>
+                  <h1>المهام المتأخرة</h1>
+                </div>
+
+                <div class="summary-number">
+                  <h1 id="lateTasksCount">0</h1>
+                  <span>تحتاج متابعة</span>
+                </div>
+              </div>
+
+
+              <div class="TaskSummarycard success-card">
+                <div id="h1andtext">
+                  <i data-lucide="check" id="taskicon"></i>
+                  <h1>المهام المكتملة</h1>
+                </div>
+
+                <div class="summary-number">
+                  <h1 id="completedTasksCount">0</h1>
+                  <span>إجمالي الإنجاز</span>
+                </div>
+              </div>
+
+
+              <div class="TaskSummarycard">
+                <div id="h1andtext">
+                  <i data-lucide="users" id="taskicon"></i>
+                  <h1>أعضاء الفريق</h1>
+                </div>
+
+                <div class="summary-number">
+                  <h1 id="teamMembersCount">0</h1>
+                  <span>عضو في الفريق</span>
+                </div>
+              </div>
+
+            </div>
+
+
+            <!-- ANALYTICS GRID -->
+            <div class="analytics-grid">
+
+
+              <!-- COMPLETION -->
+              <div class="completion-card dashboard-card">
+
+                <div class="completion-header">
+
+                  <div>
+                    <span class="completion-label">الأداء العام</span>
+                    <h3>معدل الإنجاز</h3>
+                  </div>
+
+                  <div class="period-badge">
+                    <i class="fa-solid fa-chart-line"></i>
+                    هذا الشهر
+                  </div>
+
+                </div>
+
+
+                <div class="completion-main">
+
+                  <div class="completion-circle">
+
+                    <svg viewBox="0 0 120 120">
+
+                      <circle class="circle-bg" cx="60" cy="60" r="50" />
+
+                      <circle class="circle-progress" cx="60" cy="60" r="50" />
+
+                    </svg>
+
+                    <div class="completion-value">
+                      <strong id="completionPercent">0%</strong>
+                      <span>إنجاز</span>
+                    </div>
+
+                  </div>
+
+
+                  <div class="completion-info">
+
+                    <div class="completion-growth">
+
+                      <i id="growthIcon" class="fa-solid fa-arrow-trend-up"></i>
+
+                      <strong id="completionGrowth">0%</strong>
+
+                      <span>عن الفترة السابقة</span>
+
+                    </div>
+
+                    <div class="completion-description" id="completionDescription">
+                      جاري تحليل أداء الفريق...
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+                <div class="completion-stats">
+
+                  <div class="stat-item">
+
+                    <span class="stat-dot done"></span>
+
+                    <div>
+                      <small>مكتملة</small>
+                      <strong id="completedStat">0</strong>
+                    </div>
+
+                  </div>
+
+
+                  <div class="stat-item">
+
+                    <span class="stat-dot progress"></span>
+
+                    <div>
+                      <small>قيد التنفيذ</small>
+                      <strong id="progressStat">0</strong>
+                    </div>
+
+                  </div>
+
+
+                  <div class="stat-item">
+
+                    <span class="stat-dot late"></span>
+
+                    <div>
+                      <small>متأخرة</small>
+                      <strong id="lateStat">0</strong>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- TASK STATUS -->
+              <div class="task-status-card dashboard-card">
+
+                <div class="card-header">
+                  <div>
+                    <span>تحليل المهام</span>
+                    <h3>توزيع حالات المهام</h3>
+                  </div>
+
+                  <i class="fa-solid fa-chart-pie card-header-icon"></i>
+                </div>
+
+
+                <div class="task-status-content">
+
+                  <div class="donut-chart">
+
+                    <svg viewBox="0 0 120 120">
+
+                      <circle class="donut-bg" cx="60" cy="60" r="42" />
+
+                      <circle class="donut-completed" cx="60" cy="60" r="42" />
+
+                      <circle class="donut-progress" cx="60" cy="60" r="42" />
+
+                      <circle class="donut-late" cx="60" cy="60" r="42" />
+
+                    </svg>
+
+                    <div class="donut-center">
+                      <strong id="totalTasksCount">0</strong>
+                      <span>إجمالي</span>
+                    </div>
+
+                  </div>
+
+
+                  <div class="donut-legend">
+
+                    <div>
+                      <span class="legend-dot done"></span>
+                      <span>مكتملة</span>
+                      <strong id="donutCompleted">0</strong>
+                    </div>
+
+                    <div>
+                      <span class="legend-dot progress"></span>
+                      <span>قيد التنفيذ</span>
+                      <strong id="donutProgress">0</strong>
+                    </div>
+
+                    <div>
+                      <span class="legend-dot late"></span>
+                      <span>متأخرة</span>
+                      <strong id="donutLate">0</strong>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- SECOND ANALYTICS GRID -->
+            <div class="analytics-grid analytics-grid-2">
+
+
+              <!-- PRODUCTIVITY -->
+              <div class="productivity-card dashboard-card">
+
+                <div class="card-header">
+
+                  <div>
+                    <span>الإنتاجية</span>
+                    <h3>نشاط الفريق</h3>
+                  </div>
+
+                  <i class="fa-solid fa-chart-column card-header-icon"></i>
+
+                </div>
+
+
+                <div class="activity-chart" id="activityChart"></div>
+
+
+                <div class="chart-footer">
+
+                  <span>الأسبوع الماضي</span>
+
+                  <strong id="weeklyCompleted">
+                    0 مهمة مكتملة
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <!-- PROJECTS AT RISK -->
+              <div class="risk-card dashboard-card">
+
+                <div class="card-header">
+
+                  <div>
+                    <span>تحتاج انتباه</span>
+                    <h3>المشاريع المعرضة للخطر</h3>
+                  </div>
+
+                  <div class="risk-count">
+                    <strong id="riskProjectsCount">0</strong>
+                  </div>
+
+                </div>
+
+
+                <div class="risk-projects-list" id="riskProjectsList">
+
+                  <div class="empty-analytics">
+                    <i class="fa-solid fa-shield-heart"></i>
+                    <span>جاري فحص المشاريع...</span>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+
+            <!-- TEAM PERFORMANCE -->
+            <div class="team-performance-card dashboard-card">
+
+              <div class="card-header">
+
+                <div>
+                  <span>أداء الفريق</span>
+                  <h3>أفضل الأعضاء</h3>
+                </div>
+
+                <div class="leaderboard-badge">
+                  <i class="fa-solid fa-trophy"></i>
+                  Leaderboard
+                </div>
+
+              </div>
+
+
+              <div class="team-performance-list" id="teamPerformanceList"></div>
+
+            </div>
+
+
+
+
+
+            <!-- ACTIVE PROJECTS -->
+            <div class="active-projects-card dashboard-card">
+
+              <div class="active-projects-header">
+
+                <div>
+                  <span>المشاريع</span>
+                  <h3>المشاريع النشطة</h3>
+                </div>
+
+                <div class="active-count">
+                  <strong id="activeProjectsCount">0</strong>
+                  <small>نشطة</small>
+                </div>
+
+              </div>
+
+
+              <div class="projects-progress">
+
+                <div class="projects-progress-top">
+                  <span>التقدم الإجمالي</span>
+                  <strong id="projectsProgress">0%</strong>
+                </div>
+
+                <div class="progress-track">
+                  <div class="progress-fill" id="projectsProgressBar"></div>
+                </div>
+
+              </div>
+
+
+              <div class="active-projects-list" id="activeProjectsList"></div>
+
+
+              <button class="view-projects-btn" id="viewProjectsBtn">
+                عرض جميع المشاريع
+                <i class="fa-solid fa-arrow-left"></i>
+              </button>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- =======================================
+        ||           projectPage           ||
+        ========================================= -->
+        <section id="projectsPage" hidden>
+
+          <div id="divtitle">
+
+            <h1 id="title">المشاريع</h1>
+
+            <button id="addProjectbtn">
+              إنشاء مشروع
+            </button>
+
+          </div>
+
+
+          <!-- ==============================
+         PROJECTS
+    =============================== -->
+
+          <div id="projectContent">
+
+          </div>
+
+
+          <!-- ==============================
+         PROJECT MEMBERS MODAL
+    =============================== -->
+
+          <div id="projectMembersModal" class="project-members-modal" style="display: none;">
+
+            <div class="project-members-box">
+
+              <button id="closeProjectMembers" class="close-project-members">
+                ×
+              </button>
+
+
+              <h2>
+                أعضاء المشروع
+              </h2>
+
+
+              <!-- أعضاء المشروع -->
+
+              <div id="projectMembersList">
+
+                <p class="no-project-members">
+                  لا يوجد أعضاء في هذا المشروع.
+                </p>
+
+              </div>
+
+
+              <!-- إضافة عضو -->
+
+              <div class="add-project-member">
+
+                <select id="projectMemberSelect">
+
+                  <option value="">
+                    اختر مستخدم
+                  </option>
+
+                </select>
+
+
+                <button id="addProjectMemberBtn">
+
+                  إضافة عضو
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- Project Workspace -->
+        <section id="projectDetailsPage" hidden>
+          <main class="project-workspace-shell" aria-live="polite">
+            <div id="workspaceLoadingState" class="workspace-loading-state" hidden>
+              <span class="workspace-spinner" aria-hidden="true"></span>
+              <span>جارٍ تجهيز مساحة عمل المشروع...</span>
+            </div>
+
+            <header class="workspace-header">
+              <div class="workspace-header-topbar">
+                <button type="button" id="backToProjectsBtn" class="workspace-back">← جميع المشاريع</button>
+                <div class="workspace-header-actions">
+                  <button type="button" id="editProjectBtn" class="workspace-action workspace-action-secondary"
+                    hidden>تعديل المشروع</button>
+                  <button type="button" id="workspaceAddTaskBtn" class="workspace-action workspace-action-primary"
+                    hidden>+ مهمة جديدة</button>
+                </div>
+              </div>
+
+              <div class="workspace-project-hero">
+                <div id="projectDetailsIdentity" class="workspace-project-identity"></div>
+                <div class="workspace-project-copy">
+                  <div class="workspace-eyebrow">Project Workspace</div>
+                  <h1 id="projectDetailsTitle">المشروع</h1>
+                  <p id="projectDetailsDescription">لا يوجد وصف لهذا المشروع.</p>
+                  <div class="workspace-project-badges">
+                    <span id="workspaceStatus" class="workspace-badge workspace-status">قيد الانتظار</span>
+                    <span id="workspacePriority" class="workspace-badge workspace-priority">أولوية غير محددة</span>
+                  </div>
+                </div>
+                <div class="workspace-progress-card">
+                  <div class="workspace-progress-label"><span>نسبة الإنجاز</span><strong
+                      id="workspaceProgressValue">0%</strong></div>
+                  <div class="workspace-progress-track"><span id="workspaceProgressBar" style="width:0%"></span></div>
+                  <small id="workspaceProgressHint">لا توجد مهام بعد</small>
+                </div>
+              </div>
+
+              <div class="workspace-meta-strip">
+                <div class="workspace-meta-item"><span>تاريخ البدء</span><strong id="workspaceStartDate">غير
+                    محدد</strong></div>
+                <div class="workspace-meta-item"><span>تاريخ التسليم</span><strong id="workspaceDueDate">غير
+                    محدد</strong></div>
+                <div class="workspace-meta-item"><span>أعضاء المشروع</span><strong id="workspaceMemberCount">0</strong>
+                </div>
+                <div class="workspace-meta-item"><span>إجمالي التاسكات</span><strong id="workspaceTaskCount">0</strong>
+                </div>
+              </div>
+            </header>
+
+            <nav class="workspace-navigation" aria-label="أقسام المشروع">
+              <button type="button" class="workspace-nav-link is-active"
+                data-workspace-target="workspaceOverviewPanel">نظرة عامة</button>
+              <button type="button" class="workspace-nav-link" data-workspace-target="workspaceFilesPanel">Project Files
+                <span id="workspaceFileCount">0</span></button>
+              <button type="button" class="workspace-nav-link" data-workspace-target="workspaceTasksPanel">Tasks /
+                Kanban</button>
+            </nav>
+
+            <div id="workspaceOverviewPanel" class="workspace-panel workspace-overview-panel">
+              <div class="workspace-section-heading">
+                <div><span>نظرة سريعة</span>
+                  <h2>تقدم المشروع</h2>
+                </div>
+                <p>راقب حالة العمل، الفريق، والمهام من مكان واحد.</p>
+              </div>
+              <div class="workspace-stat-grid">
+                <article class="workspace-stat-card"><span>المهام المكتملة</span><strong
+                    id="workspaceCompletedCount">0</strong><small id="workspaceCompletedHint">من أصل 0 مهمة</small>
+                </article>
+                <article class="workspace-stat-card"><span>المهام المتبقية</span><strong
+                    id="workspaceRemainingCount">0</strong><small>تحتاج إلى متابعة</small></article>
+                <article class="workspace-stat-card workspace-members-card"><span>فريق المشروع</span>
+                  <div id="workspaceMembersList" class="workspace-members-list"></div>
+                </article>
+              </div>
+            </div>
+
+            <div id="workspaceFilesPanel" class="workspace-panel workspace-files-panel">
+              <div class="workspace-section-heading workspace-files-heading">
+                <div><span>Project Files</span>
+                  <h2>ملفات المشروع</h2>
+                  <p>ملفات مستقلة للمشروع، منفصلة تمامًا عن ملفات التاسكات.</p>
+                </div>
+                <label id="workspaceFilesUploadLabel" class="workspace-upload-button" hidden>رفع ملفات<input type="file"
+                    id="workspaceFilesInput" multiple hidden></label>
+              </div>
+              <div id="workspaceFilesDropzone" class="workspace-files-dropzone" hidden>
+                <strong>اسحب الملفات هنا أو اخترها من جهازك</strong><span>يمكن رفع أكثر من ملف في المرة الواحدة</span>
+              </div>
+              <div id="workspaceFilesFeedback" class="workspace-files-feedback" hidden></div>
+              <div id="workspaceFilesList" class="workspace-files-list"></div>
+            </div>
+
+            <div id="workspaceTasksPanel" class="workspace-panel workspace-tasks-panel">
+              <div class="workspace-section-heading workspace-tasks-heading">
+                <div><span>Tasks / Kanban</span>
+                  <h2>لوحة المهام <small id="projectName"></small></h2>
+                  <p>نظّم سير العمل واسحب التاسكات بين الحالات.</p>
+                </div>
+                <button id="addTaskbtn" class="workspace-action workspace-action-primary">+ مهمة جديدة</button>
+              </div>
+              <div id="workspaceTasksError" class="workspace-inline-error" hidden></div>
+              <div id="workspaceTasksEmpty" class="workspace-empty-state" hidden>
+                <span>✦</span>
+                <h3>ابدأ أول خطوة في المشروع</h3>
+                <p>أضف مهمة جديدة لتظهر هنا ضمن لوحة العمل.</p>
+              </div>
+              <div id="Kanban-board-container">
+
+
+                <!-- =========================================
+             قيد الانتظار
+        ========================================== -->
+
+                <div class="kanban-columns" data-status="قيد الانتظار">
+
+                  <div class="kanban-columns-header1">
+
+                    <h3>
+                      قيد الانتظار
+                    </h3>
+
+                  </div>
+
+                  <div class="border-header1"></div>
+
+                  <div id="todo-column"></div>
+
+                </div>
+
+
+
+                <!-- =========================================
+             قيد التنفيذ
+        ========================================== -->
+
+                <div class="kanban-columns" data-status="قيد التنفيذ">
+
+                  <div class="kanban-columns-header2">
+
+                    <h3>
+                      قيد التنفيذ
+                    </h3>
+
+                  </div>
+
+                  <div class="border-header2"></div>
+
+                  <div id="progress-column"></div>
+
+                </div>
+
+                <!-- =========================================
+             قيد المراجعة
+        ========================================== -->
+
+                <div class="kanban-columns" data-status="قيد المراجعة">
+
+                  <div class="kanban-columns-header3">
+
+                    <h3>
+                      قيد المراجعة
+                    </h3>
+
+                  </div>
+
+                  <div class="border-header3"></div>
+
+                  <div id="review-column"></div>
+
+                </div>
+
+
+                <!-- =========================================
+             تم التسليم
+        ========================================== -->
+
+                <div class="kanban-columns" data-status="تم التسليم">
+
+                  <div class="kanban-columns-header4">
+
+                    <h3>
+                      تم التسليم
+                    </h3>
+
+                  </div>
+
+                  <div class="border-header4"></div>
+
+                  <div id="doneshow-column"></div>
+
+                </div>
+
+                <!-- =========================================
+             مكتمل
+        ========================================== -->
+
+                <div class="kanban-columns" data-status="مكتمل">
+
+                  <div class="kanban-columns-header3">
+
+                    <h3>
+                      مكتمل
+                    </h3>
+
+                  </div>
+
+                  <div class="border-header3"></div>
+
+                  <div id="done-column"></div>
+
+                </div>
+
+
+
+              </div>
+            </div>
+          </main>
+
+          <div id="editProjectModal" class="edit-project-modal" hidden>
+            <form id="editProjectForm" class="edit-project-form">
+              <button type="button" id="closeEditProjectBtn" class="edit-project-close">×</button>
+              <h2>تعديل المشروع</h2>
+              <label>اسم المشروع<input id="editProjectTitle" required></label>
+              <label>الوصف<textarea id="editProjectDescription"></textarea></label>
+              <div class="edit-project-row">
+                <label>الأولوية<select id="editProjectPriority">
+                    <option value="عاجل">عاجل</option>
+                    <option value="متوسطة">متوسطة</option>
+                    <option value="منخفضة">منخفضة</option>
+                  </select></label>
+                <label>الحالة<select id="editProjectStatus">
+                    <option value="قيد الانتظار">قيد الانتظار</option>
+                    <option value="قيد التنفيذ">قيد التنفيذ</option>
+                    <option value="قيد المراجعة">قيد المراجعة</option>
+                    <option value="مكتمل">مكتمل</option>
+                  </select></label>
+              </div>
+              <div class="edit-project-row">
+                <label>تاريخ البدء<input type="date" id="editProjectStartDate"></label>
+                <label>تاريخ التسليم<input type="date" id="editProjectDueDate"></label>
+              </div>
+              <label class="edit-project-image-label">تغيير صورة المشروع<input type="file" id="editProjectImage"
+                  accept="image/png,image/jpeg,image/webp" hidden></label>
+              <div class="edit-project-form-actions"><button type="button"
+                  id="cancelEditProjectBtn">إلغاء</button><button type="submit">حفظ التعديلات</button></div>
+            </form>
+          </div>
+
+          <div id="projectFilePreviewModal" class="project-file-preview-modal" hidden>
+            <div class="project-file-preview-dialog" role="dialog" aria-modal="true"
+              aria-labelledby="projectFilePreviewTitle">
+              <div class="project-file-preview-header"><strong id="projectFilePreviewTitle">معاينة الملف</strong><button
+                  type="button" id="closeProjectFilePreviewBtn" aria-label="إغلاق المعاينة">×</button></div>
+              <div id="projectFilePreviewContent" class="project-file-preview-content"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- =======================================
+        ||           calendarPage           ||
+        ========================================= -->
+        <section id="calendarPage" hidden>
+
+          <div class="calendarsummry-card">
+
+            <!-- HEADER -->
+            <div class="calendarsummry-header">
+
+              <div class="calendarsummry-title">
+                <span>المواعيد والمهام</span>
+                <h3>التقويم</h3>
+              </div>
+
+              <button class="calendarsummry-today" id="calendarsummryToday">
+                اليوم
+              </button>
+
+            </div>
+
+
+            <!-- NAVIGATION -->
+            <div class="calendarsummry-navigation">
+
+              <button id="calendarsummryPrev" class="calendarsummry-nav-btn">
+
+                <i class="fa-solid fa-chevron-right"></i>
+
+              </button>
+
+
+              <strong id="calendarsummryMonth">
+                أغسطس 2026
+              </strong>
+
+
+              <button id="calendarsummryNext" class="calendarsummry-nav-btn">
+
+                <i class="fa-solid fa-chevron-left"></i>
+
+              </button>
+
+            </div>
+
+
+            <!-- WEEKDAYS -->
+            <div class="calendarsummry-weekdays">
+
+              <span>أحد</span>
+              <span>إثنين</span>
+              <span>ثلاثاء</span>
+              <span>أربعاء</span>
+              <span>خميس</span>
+              <span>جمعة</span>
+              <span>سبت</span>
+
+            </div>
+
+
+            <!-- CALENDAR TABLE -->
+            <div class="calendarsummry-days" id="calendarsummryDays">
+            </div>
+
+
+            <!-- SELECTED DAY TASKS -->
+            <div class="calendarsummry-events">
+
+              <div class="calendarsummry-events-header">
+
+                <span>مهام اليوم</span>
+
+                <small id="calendarsummryEventsCount">
+                  0 مهام
+                </small>
+
+              </div>
+
+
+              <div id="calendarsummryEventsList">
+
+                <div class="calendarsummry-empty">
+                  اختر يومًا لعرض المهام
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+        </section>
+        <!-- ========================================= -->
+        <!-- ChannelsPage -->
+        <!-- ========================================= -->
+
+        <section id="ChannelsPage" class="channels-page">
+
+          <!-- ========================================= -->
+          <!-- SIDEBAR -->
+          <!-- ========================================= -->
+
+          <aside class="channels-sidebar">
+
+            <div class="channels-sidebar-header">
+
+              <div>
+                <span class="channels-eyebrow">
+                  TRILL FLOW
+                </span>
+
+                <h2>
+                  القنوات
+                </h2>
+              </div>
+
+              <button id="createChannelBtn" class="channel-create-btn" type="button">
+                <i data-lucide="plus"></i>
+              </button>
+
+            </div>
+
+
+            <!-- Search -->
+
+            <div class="channels-search">
+
+              <i data-lucide="search"></i>
+
+              <input id="channelSearch" type="text" placeholder="البحث عن قناة..." autocomplete="off">
+
+            </div>
+
+
+            <!-- Channel List -->
+
+            <div id="channelsList" class="channels-list">
+
+              <div class="channels-loading">
+                جاري تحميل القنوات...
+              </div>
+
+            </div>
+
+          </aside>
+
+
+          <!-- ========================================= -->
+          <!-- MAIN CHAT -->
+          <!-- ========================================= -->
+
+          <main class="channel-main">
+
+            <!-- Empty -->
+
+            <div id="channelEmpty" class="channel-empty">
+
+              <div class="channel-empty-icon">
+                <i data-lucide="messages-square"></i>
+              </div>
+
+              <h2>
+                اختر قناة
+              </h2>
+
+              <p>
+                اختر قناة من القائمة لبدء المحادثة
+              </p>
+
+            </div>
+
+
+            <!-- Chat -->
+
+            <div id="channelChat" class="channel-chat hidden">
+
+              <!-- Header -->
+
+              <header class="channel-header">
+
+                <div class="channel-header-info">
+
+                  <div id="channelHeaderImage" class="channel-header-image">
+                    <i data-lucide="hash"></i>
+                  </div>
+
+                  <div>
+
+                    <h2 id="channelHeaderName">
+                      -
+                    </h2>
+
+                    <p id="channelHeaderDescription">
+                      -
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+                <div class="channel-header-actions">
+
+                  <button id="channelMembersBtn" type="button" title="الأعضاء">
+                    <i data-lucide="users"></i>
+                  </button>
+
+                  <button id="editChannelBtn" type="button" title="تعديل القناة" class="admin-only">
+                    <i data-lucide="settings-2"></i>
+                  </button>
+
+                  <button id="deleteChannelBtn" type="button" title="حذف القناة" class="admin-only danger">
+                    <i data-lucide="trash-2"></i>
+                  </button>
+
+                </div>
+
+              </header>
+
+
+              <!-- Pinned -->
+
+              <div id="pinnedMessageBar" class="pinned-message-bar hidden">
+
+                <i data-lucide="pin"></i>
+
+                <span id="pinnedMessageText"></span>
+
+              </div>
+
+
+              <!-- Messages -->
+
+              <div id="channelMessages" class="channel-messages">
+              </div>
+
+
+              <!-- Typing -->
+
+              <div id="typingIndicator" class="typing-indicator hidden">
+                جاري الكتابة...
+              </div>
+
+
+              <!-- Composer -->
+
+              <form id="channelMessageForm" class="channel-composer">
+                <!-- ATTACHMENT INPUT -->
+
+                <input id="messageAttachmentInput" type="file" hidden multiple
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
+
+
+                <!-- ATTACH BUTTON -->
+
+                <button type="button" id="attachMessageBtn" class="composer-icon" title="إرفاق ملف"
+                  aria-label="إرفاق ملف">
+                  <i data-lucide="paperclip"></i>
+                </button>
+
+
+                <!-- INPUT -->
+
+                <input id="channelMessageInput" type="text" placeholder="اكتب رسالة..." autocomplete="off">
+
+
+                <!-- SEND -->
+
+                <button type="submit" class="send-message-btn" title="إرسال" aria-label="إرسال">
+                  <i data-lucide="send"></i>
+                </button>
+
+              </form>
+
+              <!-- ===================================================== -->
+
+              <!-- ATTACHMENT PREVIEW -->
+
+              <!-- ===================================================== -->
+
+              <div id="messageAttachmentPreview" class="message-attachment-preview hidden"></div>
+
+
+            </div>
+
+          </main>
+
+        </section>
+
+
+        <!-- ========================================= -->
+        <!-- CHANNEL MODAL -->
+        <!-- ========================================= -->
+
+        <div id="channelModal" class="channel-modal hidden">
+
+          <div class="channel-modal-box">
+
+            <div class="channel-modal-header">
+
+              <div>
+
+                <span class="channels-eyebrow">
+                  CHANNEL
+                </span>
+
+                <h2 id="channelModalTitle">
+                  إنشاء قناة
+                </h2>
+
+              </div>
+
+              <button type="button" id="closeChannelModal">
+                <i data-lucide="x"></i>
+              </button>
+
+            </div>
+
+
+            <form id="channelForm">
+
+              <input id="channelId" type="hidden">
+
+
+              <!-- Image -->
+
+              <div class="channel-image-upload">
+
+                <div id="channelImagePreview" class="channel-image-preview">
+                  <i data-lucide="hash"></i>
+                </div>
+
+                <label for="channelImage" class="channel-image-btn">
+                  <i data-lucide="camera"></i>
+                  صورة القناة
+                </label>
+
+                <input id="channelImage" type="file" accept="image/*" hidden>
+
+              </div>
+
+
+              <!-- Name -->
+
+              <div class="form-field">
+
+                <label>
+                  اسم القناة
+                </label>
+
+                <input id="channelName" type="text" maxlength="50" placeholder="مثال: general" required>
+
+              </div>
+
+
+              <!-- Description -->
+
+              <div class="form-field">
+
+                <label>
+                  الوصف
+                </label>
+
+                <textarea id="channelDescription" maxlength="300" placeholder="وصف القناة..."></textarea>
+
+              </div>
+
+
+              <!-- Privacy -->
+
+              <div class="channel-privacy">
+
+                <label class="privacy-option">
+
+                  <input type="radio" name="channelPrivacy" value="private" checked>
+
+                  <span class="privacy-icon">
+                    <i data-lucide="lock"></i>
+                  </span>
+
+                  <span>
+
+                    <strong>
+                      خاصة
+                    </strong>
+
+                    <small>
+                      الأشخاص الذين تضيفهم فقط
+                    </small>
+
+                  </span>
+
+                </label>
+
+
+                <label class="privacy-option">
+
+                  <input type="radio" name="channelPrivacy" value="public">
+
+                  <span class="privacy-icon">
+                    <i data-lucide="globe-2"></i>
+                  </span>
+
+                  <span>
+
+                    <strong>
+                      عامة
+                    </strong>
+
+                    <small>
+                      جميع أعضاء النظام
+                    </small>
+
+                  </span>
+
+                </label>
+
+              </div>
+
+
+              <!-- Members -->
+
+              <div class="form-field">
+
+                <label>
+                  أعضاء القناة
+                </label>
+
+                <div id="channelUsers" class="channel-users">
+                  جاري تحميل الأعضاء...
+                </div>
+
+              </div>
+
+
+              <div class="channel-modal-footer">
+
+                <button type="button" id="cancelChannelBtn" class="secondary-btn">
+                  إلغاء
+                </button>
+
+                <button type="submit" class="primary-btn">
+                  <i data-lucide="check"></i>
+
+                  حفظ القناة
+
+                </button>
+
+              </div>
+
+            </form>
+
+          </div>
+
+        </div>
+
+
+        <!-- ========================================= -->
+        <!-- MEMBERS MODAL -->
+        <!-- ========================================= -->
+
+        <div id="membersModal" class="channel-modal hidden">
+
+          <div class="channel-modal-box members-box">
+
+            <div class="channel-modal-header">
+
+              <div>
+
+                <span class="channels-eyebrow">
+                  MEMBERS
+                </span>
+
+                <h2>
+                  أعضاء القناة
+                </h2>
+
+              </div>
+
+              <button type="button" id="closeMembersModal">
+                <i data-lucide="x"></i>
+              </button>
+
+            </div>
+
+            <div id="channelMembersList" class="channel-members-list"></div>
+
+          </div>
+
+        </div>
+        <!-- ========================================= -->
+        <!-- DELETE CHANNEL MODAL -->
+        <!-- ========================================= -->
+
+        <div id="deleteChannelModal" class="delete-channel-overlay hidden">
+
+          <div class="delete-channel-modal">
+
+            <div class="delete-channel-icon">
+              <i data-lucide="trash-2"></i>
+            </div>
+
+            <div class="delete-channel-content">
+
+              <span class="channels-eyebrow">
+                DELETE CHANNEL
+              </span>
+
+              <h2>
+                حذف القناة
+              </h2>
+
+              <p>
+                هل أنت متأكد أنك تريد حذف قناة
+                <strong id="deleteChannelName">
+                  هذه القناة
+                </strong>؟
+              </p>
+
+              <span class="delete-channel-warning">
+                سيتم حذف القناة وجميع رسائلها وأعضائها نهائياً.
+                لا يمكن التراجع عن هذا الإجراء.
+              </span>
+
+            </div>
+
+            <div class="delete-channel-actions">
+
+              <button type="button" id="cancelDeleteChannelBtn" class="delete-cancel-btn">
+                إلغاء
+              </button>
+
+              <button type="button" id="confirmDeleteChannelBtn" class="delete-confirm-btn">
+                <i data-lucide="trash-2"></i>
+                حذف القناة
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+        <!-- =======================================
+        ||          MyTasksPage           ||
+        ========================================= -->
+
+        <section id="myTasksSection" class="my-tasks-section">
+
+          <!-- HEADER -->
+          <div class="my-tasks-header">
+
+            <div>
+              <span class="dashboard-kicker">المهام</span>
+              <h2>مهامي</h2>
+              <p>جميع المهام المسندة إليك</p>
+            </div>
+
+            <button type="button" class="my-tasks-refresh-btn" id="refreshMyTasksBtn">
+
+              <i data-lucide="refresh-cw"></i>
+              تحديث
+            </button>
+
+          </div>
+
+
+          <!-- =================================================
+         STATISTICS
+    ================================================= -->
+
+          <div class="my-tasks-stats">
+
+            <div class="my-task-stat-card">
+
+              <div class="my-task-stat-icon">
+                <i data-lucide="list-checks"></i>
+              </div>
+
+              <div>
+                <span>إجمالي المهام</span>
+                <strong id="myTasksTotal">0</strong>
+              </div>
+
+            </div>
+
+
+            <div class="my-task-stat-card">
+
+              <div class="my-task-stat-icon">
+                <i data-lucide="clock-3"></i>
+              </div>
+
+              <div>
+                <span>المهام النشطة</span>
+                <strong id="myTasksActive">0</strong>
+              </div>
+
+            </div>
+
+
+            <div class="my-task-stat-card my-task-danger">
+
+              <div class="my-task-stat-icon">
+                <i data-lucide="triangle-alert"></i>
+              </div>
+
+              <div>
+                <span>المتأخرة</span>
+                <strong id="myTasksOverdue">0</strong>
+              </div>
+
+            </div>
+
+
+            <div class="my-task-stat-card my-task-success">
+
+              <div class="my-task-stat-icon">
+                <i data-lucide="circle-check"></i>
+              </div>
+
+              <div>
+                <span>المكتملة</span>
+                <strong id="myTasksCompleted">0</strong>
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <!-- =================================================
+         FILTERS
+    ================================================= -->
+
+          <div class="my-tasks-toolbar">
+
+            <div class="my-tasks-search">
+
+              <i data-lucide="search"></i>
+
+              <input type="text" id="myTasksSearch" placeholder="ابحث عن مهمة..." autocomplete="off">
+
+            </div>
+
+
+            <div class="my-tasks-filters">
+
+              <select id="myTasksStatusFilter">
+
+                <option value="all">
+                  كل الحالات
+                </option>
+
+                <option value="waiting">
+                  قيد الانتظار
+                </option>
+
+                <option value="in_progress">
+                  قيد التنفيذ
+                </option>
+
+                <option value="in_review">
+                  قيد المراجعة
+                </option>
+
+                <option value="delivered">
+                  تم التسليم
+                </option>
+
+                <option value="completed">
+                  مكتمل
+                </option>
+
+
+              </select>
+
+
+              <select id="myTasksPriorityFilter">
+
+                <option value="all">كل الأولويات</option>
+                <option value="high">عالية</option>
+                <option value="medium">متوسطة</option>
+                <option value="low">منخفضة</option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <!-- =================================================
+         TASKS
+    ================================================= -->
+
+          <div class="my-tasks-container">
+
+            <div id="myTasksLoading" class="my-tasks-state">
+
+              <div class="my-tasks-spinner"></div>
+
+              <span>جاري تحميل المهام...</span>
+
+            </div>
+
+
+            <div id="myTasksEmpty" class="my-tasks-state my-tasks-empty" style="display:none;">
+
+              <div class="my-tasks-empty-icon">
+                <i data-lucide="clipboard-check"></i>
+              </div>
+
+              <h3>لا توجد مهام</h3>
+
+              <p>
+                لا توجد مهام مسندة إليك حالياً.
+              </p>
+
+            </div>
+
+
+            <div id="myTasksError" class="my-tasks-state my-tasks-error" style="display:none;">
+
+              <div class="my-tasks-empty-icon">
+                <i data-lucide="circle-alert"></i>
+              </div>
+
+              <h3>حدث خطأ</h3>
+
+              <p id="myTasksErrorMessage">
+                تعذر تحميل المهام.
+              </p>
+
+              <button type="button" id="retryMyTasksBtn">
+
+                إعادة المحاولة
+
+              </button>
+
+            </div>
+
+
+            <div id="myTasksList" class="my-tasks-list" style="display:none;">
+            </div>
+
+          </div>
+
+        </section>
+        <!-- =======================================
+        ||           teamPage           ||
+        ========================================= -->
+        <section id="teamPage" hidden>
+
+          <div class="welcomediv">
+            <div>
+              <h4>الفريق</h4>
+              <h1>أعضاء المساحة</h1>
+            </div>
+            <button id="addMemberBtn"> دعوة عضو </button>
+
+          </div>
+
+          <div class="members-container" id="membersContainer">
+          </div>
+          <div id="addMemberModal" class="modal" style="display:none;">
+
+            <div class="modal-content">
+
+              <h2>إضافة عضو</h2>
+
+              <input type="text" id="newMemberUsername" placeholder="اسم المستخدم">
+
+              <input type="email" id="newMemberEmail" placeholder="البريد الإلكتروني">
+
+              <input type="password" id="newMemberPassword" placeholder="كلمة المرور">
+
+              <select id="newMemberRole">
+
+                <option value="member">
+                  Member
+                </option>
+
+                <option value="manager">
+                  Manager
+                </option>
+
+                <option value="admin">
+                  Admin
+                </option>
+
+                <option value="owner">
+                  Owner
+                </option>
+
+              </select>
+
+              <button id="createMemberBtn">
+                إضافة العضو
+              </button>
+
+              <button id="closeAddMemberBtn">
+                إلغاء
+              </button>
+
+            </div>
+
+          </div>
+          <!-- ==================================================
+EDIT USER MODAL
+================================================== -->
+
+          <div id="editUserModal">
+
+            <div class="edit-user-content">
+
+              <button id="closeEditUserBtn" class="edit-user-close" type="button">
+                ×
+              </button>
+
+              <div class="edit-user-header">
+
+                <span id="editUserAvatar" class="avatar avatar--md">
+                  ك
+                </span>
+
+                <div>
+                  <h2>بيانات المستخدم</h2>
+                  <p>تعديل معلومات عضو النظام</p>
+                </div>
+
+              </div>
+
+              <input type="hidden" id="editUserId">
+
+              <div class="edit-user-field">
+
+                <label>اسم المستخدم</label>
+
+                <input type="text" id="editUsername" placeholder="اسم المستخدم">
+
+              </div>
+
+              <div class="edit-user-field">
+
+                <label>البريد الإلكتروني</label>
+
+                <input type="email" id="editUserEmail" placeholder="البريد الإلكتروني">
+
+              </div>
+
+              <div class="edit-user-field">
+
+                <label>كلمة المرور الجديدة</label>
+
+                <input type="password" id="editUserPassword" placeholder="اتركها فارغة إذا لا تريد تغييرها">
+
+              </div>
+
+              <div class="edit-user-field">
+
+                <label>الصلاحية</label>
+
+                <select id="editUserRole">
+
+                  <option value="member">
+                    Member
+                  </option>
+
+                  <option value="manager">
+                    Manager
+                  </option>
+
+                  <option value="admin">
+                    Admin
+                  </option>
+
+                  <option value="owner">
+                    Owner
+                  </option>
+
+                </select>
+
+              </div>
+
+              <div class="edit-user-actions">
+
+                <button id="saveUserChangesBtn" type="button">
+                  حفظ التعديلات
+                </button>
+
+
+                <button id="deleteUserBtn" class="delete-user-btn" type="button" hidden>
+                  حذف العضو
+                </button>
+
+                <button id="cancelEditUserBtn" type="button">
+                  إلغاء
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        <!-- =======================================
+        ||           settingsPage           ||
+        ========================================= -->
+        <!-- =========================================================
+     SETTINGS PAGE — TRILLFLOW
+========================================================= -->
+
+        <section id="settingsPage" class="tf-settings-page" hidden>
+
+          <div class="tf-settings-header">
+            <div>
+              <span class="tf-settings-kicker">TRILLFLOW</span>
+              <h1>الإعدادات</h1>
+              <p>تحكم بحسابك وتفضيلات النظام من مكان واحد.</p>
+            </div>
+          </div>
+
+
+          <div class="tf-settings-layout">
+
+            <!-- =================================================
+             SIDEBAR
+        ================================================== -->
+
+            <aside class="tf-settings-sidebar">
+
+              <button type="button" class="tf-settings-nav active" data-settings-tab="account">
+                <span class="tf-settings-nav-icon">
+                  <i class="fa-solid fa-user"></i>
+                </span>
+
+                <span class="tf-settings-nav-text">
+                  <strong>الحساب</strong>
+                  <small>بيانات حسابك</small>
+                </span>
+              </button>
+
+
+              <button type="button" class="tf-settings-nav" data-settings-tab="notifications">
+                <span class="tf-settings-nav-icon">
+                  <i class="fa-solid fa-bell"></i>
+                </span>
+
+                <span class="tf-settings-nav-text">
+                  <strong>الإشعارات</strong>
+                  <small>إعدادات التنبيهات</small>
+                </span>
+              </button>
+
+
+              <button type="button" class="tf-settings-nav" data-settings-tab="appearance">
+                <span class="tf-settings-nav-icon">
+                  <i class="fa-solid fa-palette"></i>
+                </span>
+
+                <span class="tf-settings-nav-text">
+                  <strong>المظهر</strong>
+                  <small>تخصيص الواجهة</small>
+                </span>
+              </button>
+
+
+              <button type="button" class="tf-settings-nav" data-settings-tab="security">
+                <span class="tf-settings-nav-icon">
+                  <i class="fa-solid fa-shield-halved"></i>
+                </span>
+
+                <span class="tf-settings-nav-text">
+                  <strong>الأمان</strong>
+                  <small>كلمة المرور والحماية</small>
+                </span>
+              </button>
+
+            </aside>
+
+
+            <!-- =================================================
+             CONTENT
+        ================================================== -->
+
+            <main class="tf-settings-content">
+
+
+              <!-- =================================================
+                 ACCOUNT
+            ================================================== -->
+
+              <div class="tf-settings-panel active" data-settings-panel="account">
+
+                <div class="tf-settings-panel-heading">
+                  <h2>الحساب</h2>
+                  <p>إدارة معلومات حسابك الأساسية.</p>
+                </div>
+
+
+                <div class="tf-settings-card">
+
+                  <div class="tf-profile-preview">
+
+                    <div id="tfSettingsAvatar" class="tf-settings-avatar">
+                      ك
+                    </div>
+
+                    <div>
+                      <h3 id="tfSettingsDisplayName">
+                        جاري التحميل...
+                      </h3>
+
+                      <span id="tfSettingsRole">
+                        -
+                      </span>
+                    </div>
+
+                  </div>
+
+
+                  <div class="tf-settings-divider"></div>
+
+
+                  <div class="tf-settings-form">
+
+                    <div class="tf-settings-field">
+
+                      <label for="tfSettingsUsername">
+                        الاسم
+                      </label>
+
+                      <input type="text" id="tfSettingsUsername" autocomplete="name" placeholder="أدخل اسمك">
+
+                    </div>
+
+
+                    <div class="tf-settings-field">
+
+                      <label for="tfSettingsEmail">
+                        البريد الإلكتروني
+                      </label>
+
+                      <input type="email" id="tfSettingsEmail" autocomplete="email" placeholder="example@email.com">
+
+                    </div>
+
+
+                    <div class="tf-settings-actions">
+
+                      <button type="button" id="tfSaveAccountBtn" class="tf-settings-primary-btn">
+                        <i class="fa-solid fa-check"></i>
+                        حفظ التغييرات
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- =================================================
+                 NOTIFICATIONS
+            ================================================== -->
+
+              <div class="tf-settings-panel" data-settings-panel="notifications">
+
+                <div class="tf-settings-panel-heading">
+                  <h2>الإشعارات</h2>
+                  <p>اختر التنبيهات التي تريد استقبالها.</p>
+                </div>
+
+
+                <div class="tf-settings-card">
+
+
+                  <div class="tf-settings-option">
+
+                    <div class="tf-settings-option-info">
+
+                      <strong>
+                        إشعارات البريد الإلكتروني
+                      </strong>
+
+                      <span>
+                        استقبال التنبيهات المهمة عبر البريد الإلكتروني.
+                      </span>
+
+                    </div>
+
+
+                    <label class="tf-switch">
+
+                      <input type="checkbox" id="tfEmailNotifications" checked>
+
+                      <span class="tf-switch-slider"></span>
+
+                    </label>
+
+                  </div>
+
+
+                  <div class="tf-settings-divider"></div>
+
+
+                  <div class="tf-settings-option">
+
+                    <div class="tf-settings-option-info">
+
+                      <strong>
+                        إشعارات المهام
+                      </strong>
+
+                      <span>
+                        التنبيه عند إنشاء أو تعديل المهام.
+                      </span>
+
+                    </div>
+
+
+                    <label class="tf-switch">
+
+                      <input type="checkbox" id="tfTaskNotifications" checked>
+
+                      <span class="tf-switch-slider"></span>
+
+                    </label>
+
+                  </div>
+
+
+                  <div class="tf-settings-divider"></div>
+
+
+                  <div class="tf-settings-option">
+
+                    <div class="tf-settings-option-info">
+
+                      <strong>
+                        إشعارات المنشن
+                      </strong>
+
+                      <span>
+                        التنبيه عندما يقوم أحد بذكرك.
+                      </span>
+
+                    </div>
+
+
+                    <label class="tf-switch">
+
+                      <input type="checkbox" id="tfMentionNotifications" checked>
+
+                      <span class="tf-switch-slider"></span>
+
+                    </label>
+
+                  </div>
+
+
+                  <div class="tf-settings-actions">
+
+                    <button type="button" id="tfSaveNotificationsBtn" class="tf-settings-primary-btn">
+                      <i class="fa-solid fa-check"></i>
+                      حفظ الإشعارات
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- =================================================
+                 APPEARANCE
+            ================================================== -->
+
+              <div class="tf-settings-panel" data-settings-panel="appearance">
+
+                <div class="tf-settings-panel-heading">
+                  <h2>المظهر</h2>
+                  <p>خصص طريقة ظهور TrillFlow لديك.</p>
+                </div>
+
+
+                <div class="tf-settings-card">
+
+                  <div class="tf-settings-option">
+
+                    <div class="tf-settings-option-info">
+
+                      <strong>
+                        الوضع الداكن
+                      </strong>
+
+                      <span>
+                        استخدام الواجهة الداكنة لـ TrillFlow.
+                      </span>
+
+                    </div>
+
+
+                    <label class="tf-switch">
+
+                      <input type="checkbox" id="tfDarkMode" checked>
+
+                      <span class="tf-switch-slider"></span>
+
+                    </label>
+
+                  </div>
+
+
+                  <div class="tf-settings-divider"></div>
+
+
+                  <div class="tf-settings-option">
+
+                    <div class="tf-settings-option-info">
+
+                      <strong>
+                        الوضع المضغوط
+                      </strong>
+
+                      <span>
+                        تقليل المسافات وحجم العناصر داخل النظام.
+                      </span>
+
+                    </div>
+
+
+                    <label class="tf-switch">
+
+                      <input type="checkbox" id="tfCompactMode">
+
+                      <span class="tf-switch-slider"></span>
+
+                    </label>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <!-- =================================================
+                 SECURITY
+            ================================================== -->
+
+              <div class="tf-settings-panel" data-settings-panel="security">
+
+                <div class="tf-settings-panel-heading">
+                  <h2>الأمان</h2>
+                  <p>قم بتحديث كلمة المرور الخاصة بحسابك.</p>
+                </div>
+
+
+                <div class="tf-settings-card">
+
+                  <div class="tf-settings-form">
+
+                    <div class="tf-settings-field">
+
+                      <label for="tfCurrentPassword">
+                        كلمة المرور الحالية
+                      </label>
+
+                      <div class="tf-password-wrapper">
+
+                        <input type="password" id="tfCurrentPassword" autocomplete="current-password"
+                          placeholder="كلمة المرور الحالية">
+
+                        <button type="button" class="tf-password-toggle" data-password-target="tfCurrentPassword">
+                          <i class="fa-solid fa-eye"></i>
+                        </button>
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="tf-settings-field">
+
+                      <label for="tfNewPassword">
+                        كلمة المرور الجديدة
+                      </label>
+
+                      <div class="tf-password-wrapper">
+
+                        <input type="password" id="tfNewPassword" autocomplete="new-password"
+                          placeholder="كلمة المرور الجديدة">
+
+                        <button type="button" class="tf-password-toggle" data-password-target="tfNewPassword">
+                          <i class="fa-solid fa-eye"></i>
+                        </button>
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="tf-settings-field">
+
+                      <label for="tfConfirmPassword">
+                        تأكيد كلمة المرور الجديدة
+                      </label>
+
+                      <div class="tf-password-wrapper">
+
+                        <input type="password" id="tfConfirmPassword" autocomplete="new-password"
+                          placeholder="أعد كتابة كلمة المرور الجديدة">
+
+                        <button type="button" class="tf-password-toggle" data-password-target="tfConfirmPassword">
+                          <i class="fa-solid fa-eye"></i>
+                        </button>
+
+                      </div>
+
+                    </div>
+
+
+                    <div class="tf-password-hint">
+                      <i class="fa-solid fa-circle-info"></i>
+
+                      <span>
+                        استخدم كلمة مرور قوية تحتوي على أحرف وأرقام ورموز.
+                      </span>
+
+                    </div>
+
+
+                    <div class="tf-settings-actions">
+
+                      <button type="button" id="tfChangePasswordBtn" class="tf-settings-primary-btn">
+                        <i class="fa-solid fa-lock"></i>
+                        تغيير كلمة المرور
+                      </button>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+            </main>
+
+          </div>
+
+
+          <!-- =========================================================
+         TOAST
+    ========================================================== -->
+
+          <div id="tfSettingsToast" class="tf-settings-toast">
+
+            <span class="tf-toast-icon">
+              <i class="fa-solid fa-check"></i>
+            </span>
+
+            <div>
+              <strong id="tfToastTitle">
+                تم بنجاح
+              </strong>
+
+              <p id="tfToastMessage">
+                تم حفظ التغييرات.
+              </p>
+            </div>
+
+          </div>
+
+        </section>
+
+
+      </div><!-- end pages-wrapper -->
+
+    </div><!-- end main-area -->
+
+    <!-- /////////////////////////////////////// ai trill ///////////////////////////////////////// -->
+    <div class="aitrill-container">
+      <div class="ai-container-header">
+        <i data-lucide="astroid" class="ai-img"></i>
+        <div class="ai-container-title">
+          <h3>Trill AI</h3>
+          <h5>مساعدك الذكي</h5>
+        </div>
+        <button class="aitrill-container-closebtn">X</button>
+      </div>
+      <div class="ai-message-box-container">
+      </div>
+      <div class="ai-container-footer">
+        <input type="text" class="ai-input" placeholder="اسالنى عن اى شىء">
+        <button class="ai-submit-btn"><i data-lucide="send"></i></button>
+      </div>
+    </div>
+
+    <!-- /////////////////////////////////////// profile-menu ///////////////////////////////////////// -->
+    <div class="profile-menu-container">
+      <div>
+        <h2 id="profileusername">خالد احمد </h2>
+      </div>
+      <div id="profile-buttons-container">
+        <button id="profile-menu-btn"><i data-lucide="circle-user-round"></i>الملف الشخصي </button>
+        <button><i data-lucide="settings"></i>الاعدادات </button>
+      </div>
+
+    </div>
+    <!-- /////////////////////////////////////// projectform ///////////////////////////////////////// -->
+
+    <div id="projectform">
+
+      <!-- زر الإغلاق -->
+      <button class="close-btn2" id="closeBtn2" type="button">
+        <i data-lucide="x"></i>
+      </button>
+
+      <h2>إنشاء مشروع</h2>
+
+
+      <!-- =========================================
+       عنوان المشروع
+  ========================================== -->
+
+      <div class="form-group">
+
+        <label>عنوان المشروع</label>
+
+        <input type="text" placeholder="مثال: تصميم واجهة المشروع" id="projectTitle">
+
+      </div>
+
+
+      <!-- =========================================
+       وصف المشروع
+  ========================================== -->
+
+      <div class="form-group">
+
+        <label>الوصف</label>
+
+        <textarea id="projectDescription" placeholder="وصف المشروع، التفاصيل، الأهداف..."></textarea>
+
+      </div>
+
+
+      <!-- =========================================
+       الحالة + الأولوية + تاريخ الاستحقاق
+  ========================================== -->
+
+      <div class="row">
+
+        <!-- الحالة -->
+
+        <div class="form-group">
+
+          <label>الحالة</label>
+
+          <select id="projectstatus">
+
+            <option value="قيد الانتظار">
+              قيد الانتظار
+            </option>
+
+            <option value="قيد التنفيذ">
+              قيد التنفيذ
+            </option>
+
+            <option value="قيد المراجعة">
+              قيد المراجعة
+            </option>
+
+            <option value="مكتمل">
+              مكتمل
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- الأولوية -->
+
+        <div class="form-group">
+
+          <label>الأولوية</label>
+
+          <select id="projectPriority">
+
+            <option value="عاجل">
+              عاجل
+            </option>
+
+            <option value="متوسطة">
+              متوسطة
+            </option>
+
+            <option value="منخفضة">
+              منخفضة
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- تاريخ الاستحقاق -->
+
+        <div class="form-group">
+
+          <label>تاريخ الاستحقاق</label>
+
+          <input type="date" id="projectduedate">
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+       أعضاء المشروع
+  ========================================== -->
+
+      <div class="form-group">
+
+        <label>أعضاء المشروع</label>
+
+        <div id="projectMembersSelect" class="members">
+
+          <!-- الأعضاء يظهرون هنا بواسطة JavaScript -->
+
+        </div>
+
+      </div>
+
+
+      <!-- =========================================
+       صورة المشروع
+  ========================================== -->
+
+      <div class="form-group">
+
+        <label>صورة المشروع</label>
+
+        <div class="project-image-upload">
+
+          <!-- input الصورة -->
+
+          <input type="file" id="projectImage" accept="image/png,image/jpeg,image/webp" hidden>
+
+
+          <!-- زر اختيار الصورة -->
+
+          <label for="projectImage" class="project-image-upload-box">
+
+            <i data-lucide="image-plus"></i>
+
+            <span>
+              إضافة صورة للمشروع
+            </span>
+
+            <small>
+              PNG / JPG / WEBP
+            </small>
+
+          </label>
+
+
+          <!-- معاينة الصورة -->
+
+          <div id="projectImagePreview" class="project-image-preview"></div>
+
+        </div>
+
+      </div>
+
+      <div class="form-group">
+        <label>ملفات وصور المشروع</label>
+        <label for="projectFiles" class="project-image-upload-box">
+          <i data-lucide="paperclip"></i>
+          <span>إضافة مرفقات للمشروع</span>
+          <small>يمكن اختيار عدة ملفات</small>
+        </label>
+        <input type="file" id="projectFiles" multiple hidden>
+        <div id="projectFilesPreview" class="project-files-preview"></div>
+      </div>
+
+
+      <!-- =========================================
+       زر إنشاء المشروع
+  ========================================== -->
+
+      <div class="actions">
+
+        <button id="createProjectbtn" type="button">
+          إنشاء المشروع
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- /////////////////////////////////////// taskform ///////////////////////////////////////// -->
+    <div id="taskform">
+      <button class="close-btn" id="closeBtn">
+        <i data-lucide="x"></i>
+      </button>
+      <h2>إنشاء مهمة</h2>
+      <!-- العنوان -->
+      <div class="form-group">
+        <label>العنوان</label>
+        <input type="text" placeholder="مثال: تصميم واجهة المشروع" id="titletask">
+      </div>
+      <!-- الوصف -->
+      <div class="form-group">
+        <label>الوصف</label>
+        <textarea placeholder="السياق، معايير القبول، الروابط..." id="taskdescription"></textarea>
+      </div>
+      <!-- الصف الأول -->
+      <div class="row">
+
+        <div class="form-group">
+          <label>الأولوية</label>
+          <select id="taskPriority">
+            <option value="عاجل">عاجل</option>
+            <option value="متوسطة">متوسطة</option>
+            <option value="منخفضة">منخفضة</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>الحالة</label>
+          <select id="taskStatus">
+            <option value="قيد التنفيذ">قيد التنفيذ</option>
+            <option value="قيد المراجعة">قيد المراجعة</option>
+            <option value="مكتمل">مكتمل</option>
+            <option value="تم التسليم">تم التسليم</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>تاريخ الاستحقاق</label>
+          <input type="date" id="taskduedate">
+        </div>
+
+      </div>
+
+      <!-- التصنيفات -->
+      <div class="form-group"></div>
+
+      <!-- الأعضاء -->
+      <div class="form-group">
+        <!-- الأعضاء -->
+        <div class="form-group">
+          <label>الأعضاء</label>
+
+          <div class="members" id="taskMembersSelect">
+            <!-- الأعضاء الحقيقيون يظهرون هنا بواسطة JavaScript -->
+          </div>
+        </div>
+
+      </div>
+      <!-- الملفات المرفقة -->
+      <div class="form-group">
+
+        <label>الملفات المرفقة</label>
+
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="taskFiles" multiple hidden>
+
+          <div class="upload-content">
+            <i data-lucide="upload-cloud"></i>
+            <h3>اسحب الملفات هنا</h3>
+            <p>أو اضغط لاختيار الملفات</p>
+          </div>
+
+          <div id="uploadStatus" class="upload-status"></div>
+
+          <div id="fileList"></div>
+        </div>
+
+
+      </div>
+
+      <!-- الأزرار -->
+
+      <div class="actions">
+
+
+        <button id="createTaskbtn">
+          إنشاء مهمة
+        </button>
+
+      </div>
+
+
+    </div>
+    <!-- /////////////////////////////////////// taskformshow ///////////////////////////////////////// -->
+    <div class="task-form-show-page" id="taskformshow">
+
+      <button class="btn-taskshowclose" id="btnTaskshowclose" type="button">
+        <i data-lucide="x"></i>
+      </button>
+
+
+      <div class="task-form-show-container">
+
+
+        <!-- =====================================================
+             RIGHT SIDE — TASK DETAILS
+             ===================================================== -->
+
+        <div class="task-form-show-rightside">
+
+          <!-- TASK HEADER -->
+
+          <div class="task-show-header">
+
+            <span class="task-show-label">
+              تفاصيل المهمة
+            </span>
+
+            <h1 class="title-task" id="showTaskTitle">
+              تصميم
+            </h1>
+
+            <!-- TASK META: DUE DATE & STATUS & PRIORITY -->
+            <div class="task-show-meta-bar" id="showTaskMetaBar">
+              <div class="task-show-meta-item" id="showTaskDueDateItem">
+                <i data-lucide="calendar"></i>
+                <span>تاريخ الاستحقاق:</span>
+                <strong id="showTaskDueDate">--</strong>
+              </div>
+              <div class="task-show-meta-item" id="showTaskPriorityItem">
+                <i data-lucide="flag"></i>
+                <span class="task-meta-badge" id="showTaskPriority">--</span>
+              </div>
+              <div class="task-show-meta-item" id="showTaskStatusItem">
+                <i data-lucide="check-circle-2"></i>
+                <span class="task-meta-badge" id="showTaskStatus">--</span>
+              </div>
+            </div>
+
+            <div class="task-details-actions">
+
+              <button type="button" id="editTaskBtn" class="task-edit-btn">
+                ✏️ تعديل التاسك
+              </button>
+
+              <button type="button" id="deleteTaskBtn" class="task-delete-btn">
+                🗑️ حذف التاسك
+              </button>
+
+            </div>
+          </div>
+
+
+
+          <!-- DESCRIPTION -->
+
+          <div class="task-show-description">
+
+            <h3 class="title-des">
+              الوصف
+            </h3>
+
+            <div class="description-task" id="showTaskDescription">
+              تصميم بوست انستا
+            </div>
+
+          </div>
+
+          <!-- ATTACHMENTS -->
+          <div class="task-show-attachments-section" id="showTaskAttachmentsSection">
+            <div class="attachments-header">
+              <div class="attachments-title-wrap">
+                <i data-lucide="paperclip"></i>
+                <h3>الملفات المرفقة</h3>
+              </div>
+              <span class="attachments-count" id="showTaskAttachmentsCount">0</span>
+            </div>
+            <div class="task-attachments-list" id="showTaskAttachmentsList">
+              <!-- Attached files will be rendered here -->
+            </div>
+          </div>
+
+
+          <!-- COMMENTS -->
+
+          <div class="task-show-comments-section">
+
+            <div class="comments-header">
+
+              <h2>
+                التعليقات
+              </h2>
+
+              <span class="comments-count" id="taskCommentsCount">
+                0
+              </span>
+
+            </div>
+
+
+            <div class="task-form-show-body" id="taskCommentsContainer">
+              <!-- comments -->
+            </div>
+
+
+            <!-- COMMENT INPUT -->
+
+            <div class="task-form-show-footer">
+
+              <input type="text" placeholder="أضف تعليقًا..." class="inputs-task-comment" id="taskCommentInput">
+
+              <button type="button" class="btn-taskcomment-submit" id="btnTaskCommentSubmit" aria-label="إضافة تعليق">
+                <i data-lucide="send"></i>
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- =====================================================
+             LEFT SIDE — MEMBERS
+             ===================================================== -->
+
+        <aside class="task-form-show-leftside">
+
+          <div class="members-header">
+
+            <h2>
+              الأعضاء
+            </h2>
+
+            <span class="members-count" id="taskShowMembersCount">
+              0
+            </span>
+
+          </div>
+
+
+          <div id="taskShowMembersList">
+            <!-- Dynamic task members rendered here -->
+          </div>
+
+        </aside>
+
+        <!-- /////////////////taskformshowedit////////////// -->
+        <div id="editTaskForm" class="edit-task-form">
+
+          <input type="text" id="editTaskTitle" placeholder="عنوان التاسك">
+
+          <textarea id="editTaskDescription" placeholder="وصف التاسك"></textarea>
+
+          <input type="date" id="editTaskDueDate">
+
+          <select id="editTaskPriority">
+            <option value="عاجل">عاجل</option>
+            <option value="متوسطة">متوسطة</option>
+            <option value="منخفضة">منخفضة</option>
+          </select>
+
+          <select id="editTaskStatus">
+            <option value="قيد الانتظار">قيد الانتظار</option>
+            <option value="قيد التنفيذ">قيد التنفيذ</option>
+            <option value="قيد المراجعة">قيد المراجعة</option>
+            <option value="مكتمل">مكتمل</option>
+            <option value="تم التسليم">تم التسليم</option>
+          </select>
+
+          <div class="edit-task-section">
+            <label>أعضاء المهمة</label>
+            <div id="editTaskMembersSelect" class="edit-task-members"></div>
+          </div>
+
+          <div class="edit-task-section">
+            <label>الملفات المرفقة</label>
+            <div id="editTaskAttachments" class="edit-task-attachments"></div>
+            <label class="edit-task-upload" for="editTaskFiles">
+              <i data-lucide="paperclip"></i>
+              إضافة ملفات
+              <input type="file" id="editTaskFiles" multiple hidden>
+            </label>
+            <div id="editTaskNewFiles" class="edit-task-new-files"></div>
+          </div>
+
+          <div class="edit-task-actions">
+
+            <button type="button" id="saveTaskEditBtn">
+              حفظ التعديل
+            </button>
+
+            <button type="button" id="cancelTaskEditBtn">
+              إلغاء
+            </button>
+
+          </div>
+        </div>
+
+
+
+        <!-- =====================================================
+     DELETE CHANNEL MODAL
+===================================================== -->
+
+        <div id="deleteChannelModal" class="delete-channel-overlay hidden">
+
+          <div class="delete-channel-modal">
+
+            <div class="delete-channel-icon">
+              <i data-lucide="trash-2"></i>
+            </div>
+
+            <div class="delete-channel-content">
+
+              <h3>
+                حذف القناة
+              </h3>
+
+              <p>
+                هل أنت متأكد من حذف القناة
+                <strong id="deleteChannelName"></strong>؟
+              </p>
+
+              <span class="delete-channel-warning">
+                سيتم حذف جميع الرسائل والمحتوى داخل القناة،
+                ولا يمكن التراجع عن هذا الإجراء.
+              </span>
+
+            </div>
+
+            <div class="delete-channel-actions">
+
+              <button type="button" id="cancelDeleteChannelBtn" class="delete-cancel-btn">
+                إلغاء
+              </button>
+
+              <button type="button" id="confirmDeleteChannelBtn" class="delete-confirm-btn">
+                <i data-lucide="trash-2"></i>
+                حذف القناة
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div><!-- end app-shell -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../components/sidbar.js"></script>
+  <script src="../components/navbar.js"></script>
+  <script src="../components/Projects.js"></script>
+  <script src="../components/ProjectWorkspace.js"></script>
+  <script src="../components/Kanbanboard.js"></script>
+  <script src="../components/calendar.js"></script>
+  <script src="../components/members.js"></script>
+  <script src="../components/myTasks.js"></script>
+  <script src="../components/ChannelsPage.js"></script>
+  <script src="../components/settings.js"></script>
+  <script src="/dashboard.js"></script>
+</body>
+
+</html>
