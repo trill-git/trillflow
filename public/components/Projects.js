@@ -200,10 +200,6 @@ projectContent?.addEventListener(
     "click",
     async (e) => {
 
-        console.log(
-            "تم الضغط:",
-            e.target
-        );
 
 
         // ==================================================
@@ -346,10 +342,6 @@ projectContent?.addEventListener(
         }
 
 
-        console.log(
-            "فتح المشروع:",
-            projectId
-        );
 
 
         // ==================================================
@@ -403,10 +395,7 @@ async function checkProjectPermission() {
         projectCurrentUserRole = user.role;
 
 
-        console.log(
-            "Current user:",
-            user
-        );
+
 
 
         // العضو العادي لا يستطيع إضافة مشروع
@@ -545,10 +534,6 @@ async function loadProjects() {
             await response.json();
 
 
-        console.log(
-            "Projects:",
-            projects
-        );
 
 
         if (!projectContent) {
@@ -582,13 +567,6 @@ async function loadProjects() {
             return;
 
         }
-        console.table(
-            projects.map(project => ({
-                id: project.id,
-                title: project.ProjectTitle,
-                image_url: project.image_url
-            }))
-        );
 
         // ==================================================
         // RENDER PROJECTS
@@ -792,9 +770,7 @@ async function loadUsersForProjectForm() {
 
     try {
 
-        console.log(
-            "Loading users for project form..."
-        );
+
 
 
         const response =
@@ -833,10 +809,6 @@ async function loadUsersForProjectForm() {
             await response.json();
 
 
-        console.log(
-            "Users:",
-            users
-        );
 
 
         if (!projectMembersSelect) {
@@ -952,10 +924,7 @@ async function loadUsersForProjectForm() {
                         }
 
 
-                        console.log(
-                            "Selected project members:",
-                            selectedProjectMembers
-                        );
+
 
                     }
                 );
@@ -1044,10 +1013,7 @@ createProjectBtn?.addEventListener(
                 ];
 
 
-            console.log(
-                "Selected members before create:",
-                membersToAdd
-            );
+
 
 
             // ==================================================
@@ -1093,10 +1059,7 @@ createProjectBtn?.addEventListener(
             }
 
 
-            console.log(
-                "Members to add:",
-                membersToAdd
-            );
+
 
 
             // ==================================================
@@ -1188,9 +1151,7 @@ createProjectBtn?.addEventListener(
             // DEBUG FORM DATA
             // ==================================================
 
-            console.log(
-                "========== PROJECT FORM DATA =========="
-            );
+
 
 
             for (
@@ -1201,11 +1162,6 @@ createProjectBtn?.addEventListener(
                 of formData.entries()
             ) {
 
-                console.log(
-                    key,
-                    ":",
-                    value
-                );
 
             }
 
@@ -1237,10 +1193,7 @@ createProjectBtn?.addEventListener(
                 await response.json();
 
 
-            console.log(
-                "Create project response:",
-                data
-            );
+
 
 
             // ==================================================
@@ -1353,8 +1306,30 @@ createProjectBtn?.addEventListener(
             // ==================================================
             // RELOAD PROJECTS
             // ==================================================
+            // ==================================================
+            // RELOAD PROJECTS
+            // ==================================================
 
+            // تحميل المشاريع مباشرة
             await loadProjects();
+
+            // إعادة التحميل بعد انتهاء رفع الصورة إلى Google Drive
+            setTimeout(async () => {
+
+                try {
+
+                    await loadProjects();
+
+                } catch (error) {
+
+                    console.error(
+                        "Reload projects after Drive upload ERROR:",
+                        error
+                    );
+
+                }
+
+            }, 2000);
 
 
         } catch (error) {
@@ -1974,7 +1949,6 @@ document.getElementById("editProjectForm")?.addEventListener("submit", async eve
 
 loadProjects();
 
-
 // ==================================================
 // INITIAL LOAD USERS
 // ==================================================
@@ -1982,6 +1956,3 @@ loadProjects();
 loadUsersForProjectForm();
 
 
-console.log(
-    "PROJECT MEMBERS JS LOADED"
-);

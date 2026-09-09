@@ -178,10 +178,17 @@ function Navbar() {
 
                     <span
                         class="avatar avatar--md"
+                        id="navProfileAvatar"
                         style="--a:152; --b:190"
                     >
-                        كريم
+                        م
                     </span>
+
+                    <span class="nav-profile-name" id="navProfileName">
+                        مستخدم
+                    </span>
+
+                    <i data-lucide="chevron-down" class="nav-profile-arrow"></i>
 
                 </button>
 
@@ -192,8 +199,16 @@ function Navbar() {
                     hidden
                 >
 
+                    <div class="dropdown__user-info">
+                        <span class="dropdown__user-name" id="dropdownUserName">مستخدم</span>
+                        <span class="dropdown__user-email" id="dropdownUserEmail">user@example.com</span>
+                    </div>
+
+                    <div class="dropdown__sep"></div>
+
                     <button
                         class="dropdown__item"
+                        id="navProfileItemProfile"
                         type="button"
                     >
 
@@ -208,6 +223,7 @@ function Navbar() {
 
                     <button
                         class="dropdown__item"
+                        id="navProfileItemSettings"
                         type="button"
                     >
 
@@ -222,19 +238,34 @@ function Navbar() {
 
                     <button
                         class="dropdown__item"
+                        id="navProfileItemActivity"
                         type="button"
                     >
 
                         <i data-lucide="activity"></i>
 
                         <span>
-                            النشاط
+                            لوحة التحكم
                         </span>
 
                     </button>
 
 
                     <div class="dropdown__sep"></div>
+
+                    <button
+                        class="dropdown__item dropdown__item--danger"
+                        id="navProfileItemLogout"
+                        type="button"
+                    >
+
+                        <i data-lucide="log-out"></i>
+
+                        <span>
+                            تسجيل الخروج
+                        </span>
+
+                    </button>
 
                 </div>
 
@@ -1653,7 +1684,104 @@ function escapeNotification(
 
 
 // =====================================================
-// PROFILE MENU
+// LOAD NAVBAR USER PROFILE
+// =====================================================
+
+async function loadNavbarUserProfile() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/user",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+        if (!response.ok) {
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        const user =
+            data.user || data;
+
+        const username =
+            user.username || user.name || "مستخدم";
+
+        const email =
+            user.email || "";
+
+        updateNavbarUser(
+            username,
+            email
+        );
+
+    } catch (error) {
+
+        console.error(
+            "❌ Load navbar user profile error:",
+            error
+        );
+
+    }
+
+}
+
+
+// =====================================================
+// UPDATE NAVBAR USER DOM
+// =====================================================
+
+function updateNavbarUser(username, email) {
+
+    const cleanName =
+        (username || "مستخدم").trim();
+
+    const initial =
+        cleanName.charAt(0).toUpperCase() || "م";
+
+    const navAvatar =
+        document.getElementById("navProfileAvatar");
+
+    if (navAvatar) {
+        navAvatar.textContent = initial;
+    }
+
+    const navName =
+        document.getElementById("navProfileName");
+
+    if (navName) {
+        navName.textContent = cleanName;
+    }
+
+    const dropdownName =
+        document.getElementById("dropdownUserName");
+
+    if (dropdownName) {
+        dropdownName.textContent = cleanName;
+    }
+
+    const dropdownEmail =
+        document.getElementById("dropdownUserEmail");
+
+    if (dropdownEmail) {
+        dropdownEmail.textContent = email || "مستخدم TrillFlow";
+    }
+
+}
+
+// إتاحة الدالة لباقي أجزاء التطبيق
+window.updateNavbarUser = updateNavbarUser;
+window.loadNavbarUserProfile = loadNavbarUserProfile;
+
+
+// =====================================================
+// PROFILE MENU & ACTIONS
 // =====================================================
 
 function initializeProfile() {
@@ -1673,6 +1801,26 @@ function initializeProfile() {
             "profileWrap"
         );
 
+    const itemProfile =
+        document.getElementById(
+            "navProfileItemProfile"
+        );
+
+    const itemSettings =
+        document.getElementById(
+            "navProfileItemSettings"
+        );
+
+    const itemActivity =
+        document.getElementById(
+            "navProfileItemActivity"
+        );
+
+    const itemLogout =
+        document.getElementById(
+            "navProfileItemLogout"
+        );
+
 
     if (
         !button ||
@@ -1685,6 +1833,10 @@ function initializeProfile() {
     }
 
 
+    // =================================================
+    // TOGGLE MENU
+    // =================================================
+
     button.addEventListener(
         "click",
         function (event) {
@@ -1692,10 +1844,7 @@ function initializeProfile() {
             event.preventDefault();
             event.stopPropagation();
 
-
-            if (
-                menu.hidden
-            ) {
+            if (menu.hidden) {
 
                 menu.hidden = false;
 
@@ -1750,6 +1899,151 @@ function initializeProfile() {
 
         }
     );
+
+
+    // =================================================
+    // NAVIGATION: الملف الشخصي
+    // =================================================
+
+    if (itemProfile) {
+
+        itemProfile.addEventListener(
+            "click",
+            function () {
+
+                menu.hidden = true;
+
+                button.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                if (typeof window.openPage === "function") {
+                    window.openPage("settingsPage");
+                }
+
+                if (typeof window.setSettingsTab === "function") {
+                    window.setSettingsTab("account");
+                } else if (window.TrillFlowSettings && typeof window.TrillFlowSettings.setTab === "function") {
+                    window.TrillFlowSettings.setTab("account");
+                }
+
+            }
+        );
+
+    }
+
+
+    // =================================================
+    // NAVIGATION: الإعدادات
+    // =================================================
+
+    if (itemSettings) {
+
+        itemSettings.addEventListener(
+            "click",
+            function () {
+
+                menu.hidden = true;
+
+                button.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                if (typeof window.openPage === "function") {
+                    window.openPage("settingsPage");
+                }
+
+                if (typeof window.setSettingsTab === "function") {
+                    window.setSettingsTab("account");
+                } else if (window.TrillFlowSettings && typeof window.TrillFlowSettings.setTab === "function") {
+                    window.TrillFlowSettings.setTab("account");
+                }
+
+            }
+        );
+
+    }
+
+
+    // =================================================
+    // NAVIGATION: لوحة التحكم / النشاط
+    // =================================================
+
+    if (itemActivity) {
+
+        itemActivity.addEventListener(
+            "click",
+            function () {
+
+                menu.hidden = true;
+
+                button.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                if (typeof window.openPage === "function") {
+                    window.openPage("dashboard");
+                }
+
+            }
+        );
+
+    }
+
+
+    // =================================================
+    // LOGOUT
+    // =================================================
+
+    if (itemLogout) {
+
+        itemLogout.addEventListener(
+            "click",
+            async function () {
+
+                menu.hidden = true;
+
+                button.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                try {
+
+                    await fetch(
+                        "/logout",
+                        {
+                            method: "POST",
+                            credentials: "include"
+                        }
+                    );
+
+                    localStorage.removeItem("currentPage");
+
+                    window.location.href = "/";
+
+                } catch (error) {
+
+                    console.error("Logout error:", error);
+
+                    window.location.href = "/";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // =================================================
+    // LOAD USER PROFILE DATA
+    // =================================================
+
+    loadNavbarUserProfile();
 
 }
 

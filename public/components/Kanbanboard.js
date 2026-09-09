@@ -64,12 +64,17 @@ const btnTaskshowclose =
 
 
 // ==================================================
-// COMMENTS
+// COMMENTS & LINK MODAL
 // ==================================================
 
 const taskCommentsContainer =
     document.getElementById(
         "taskCommentsContainer"
+    );
+
+const taskCommentsCount =
+    document.getElementById(
+        "taskCommentsCount"
     );
 
 const taskCommentInput =
@@ -80,6 +85,46 @@ const taskCommentInput =
 const btnTaskCommentSubmit =
     document.getElementById(
         "btnTaskCommentSubmit"
+    );
+
+const btnTaskCommentLink =
+    document.getElementById(
+        "btnTaskCommentLink"
+    );
+
+const taskCommentLinkModal =
+    document.getElementById(
+        "taskCommentLinkModal"
+    );
+
+const taskCommentLinkBackdrop =
+    document.getElementById(
+        "taskCommentLinkBackdrop"
+    );
+
+const commentLinkUrlInput =
+    document.getElementById(
+        "commentLinkUrlInput"
+    );
+
+const commentLinkTitleInput =
+    document.getElementById(
+        "commentLinkTitleInput"
+    );
+
+const btnCloseCommentLinkModal =
+    document.getElementById(
+        "btnCloseCommentLinkModal"
+    );
+
+const btnCommentLinkCancel =
+    document.getElementById(
+        "btnCommentLinkCancel"
+    );
+
+const btnCommentLinkInsert =
+    document.getElementById(
+        "btnCommentLinkInsert"
     );
 
 
@@ -3027,6 +3072,78 @@ window.openTaskFromNotification = function (
 
 };
 // ==================================================
+// استخراج نطاق الموقع (Domain)
+// ==================================================
+
+function getDomainFromUrl(urlStr) {
+    try {
+        const fullUrl = (urlStr.startsWith("http://") || urlStr.startsWith("https://"))
+            ? urlStr
+            : `https://${urlStr}`;
+        const parsed = new URL(fullUrl);
+        return parsed.hostname.replace(/^www\./, "");
+    } catch (e) {
+        return "";
+    }
+}
+
+
+// ==================================================
+// حماية النص
+// ==================================================
+
+function escapeHtml(text) {
+    if (text === null || text === undefined) return "";
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+
+// ==================================================
+// تنسيق محتوى التعليق وتحويل الروابط لعناصر تفاعلية
+// ==================================================
+
+function formatCommentContent(text) {
+    if (!text) return "";
+
+    // 1. حماية وتشفير أي HTML غير آمن أولاً
+    let safe = escapeHtml(text);
+
+    // 2. معالجة روابط الماركداون: [النص](الرابط)
+    safe = safe.replace(
+        /\[([^\]]+)\]\(((?:https?:\/\/)[^\s\)]+)\)/gi,
+        (match, label, url) => {
+            const domain = getDomainFromUrl(url);
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="comment-link-pill" title="${url}"><i data-lucide="link-2" class="comment-link-icon"></i><span class="comment-link-text">${label}</span>${domain ? `<span class="comment-link-domain">${domain}</span>` : ""}<i data-lucide="external-link" class="comment-link-ext"></i></a>`;
+        }
+    );
+
+    // 3. معالجة الروابط المباشرة (URLs) غير المحاطة بروابط
+    const rawUrlRegex = /(^|[\s\(\[\{\>])((https?:\/\/|www\.)[^\s<\]\)\}"']+)/gi;
+    safe = safe.replace(rawUrlRegex, (match, prefix, url) => {
+        let cleanUrl = url;
+        let trailing = "";
+        const trailingMatch = cleanUrl.match(/[.,!?;:)]+$/);
+        if (trailingMatch) {
+            trailing = trailingMatch[0];
+            cleanUrl = cleanUrl.slice(0, -trailing.length);
+        }
+
+        const href = cleanUrl.startsWith("www.") ? `https://${cleanUrl}` : cleanUrl;
+        const domain = getDomainFromUrl(href);
+        const linkHtml = `<a href="${href}" target="_blank" rel="noopener noreferrer" class="comment-link-pill" title="${cleanUrl}"><i data-lucide="globe" class="comment-link-icon"></i><span class="comment-link-text">${cleanUrl}</span>${domain ? `<span class="comment-link-domain">${domain}</span>` : ""}<i data-lucide="external-link" class="comment-link-ext"></i></a>`;
+        return `${prefix}${linkHtml}${trailing}`;
+    });
+
+    return safe;
+}
+
+
+// ==================================================
 // جلب التعليقات
 // ==================================================
 
@@ -3038,11 +3155,9 @@ async function loadTaskComments(
         return;
     }
 
-
     if (!taskCommentsContainer) {
         return;
     }
-
 
     taskCommentsContainer.innerHTML = `
         <div class="comments-loading">
@@ -3050,26 +3165,19 @@ async function loadTaskComments(
         </div>
     `;
 
-
     try {
 
         const response =
             await fetch(
                 `/tasks/${taskId}/comments`,
                 {
-
                     method: "GET",
-
-                    credentials:
-                        "include"
-
+                    credentials: "include"
                 }
             );
 
-
         const data =
             await response.json();
-
 
         if (!response.ok) {
 
@@ -3082,10 +3190,13 @@ async function loadTaskComments(
                 </div>
             `;
 
+            if (taskCommentsCount) {
+                taskCommentsCount.textContent = "0";
+            }
+
             return;
 
         }
-
 
         if (
             !Array.isArray(data) ||
@@ -3098,14 +3209,19 @@ async function loadTaskComments(
                 </div>
             `;
 
+            if (taskCommentsCount) {
+                taskCommentsCount.textContent = "0";
+            }
+
             return;
 
         }
 
+        if (taskCommentsCount) {
+            taskCommentsCount.textContent = String(data.length);
+        }
 
-        taskCommentsContainer.innerHTML =
-            "";
-
+        taskCommentsContainer.innerHTML = "";
 
         data.forEach(
             comment => {
@@ -3115,77 +3231,58 @@ async function loadTaskComments(
                         "div"
                     );
 
-
                 commentElement.className =
                     "task-form-show-comments";
 
-
-                const avatar =
-                    document.createElement(
-                        "span"
-                    );
-
-
-                avatar.className =
-                    "avatar avatar--md";
-
-
-                avatar.style.setProperty(
-                    "--a",
-                    "152"
+                commentElement.setAttribute(
+                    "data-comment-id",
+                    comment.id
                 );
 
+                const usernameStr =
+                    (comment.username || "مستخدم").trim();
 
-                avatar.style.setProperty(
-                    "--b",
-                    "190"
-                );
+                const userInitial =
+                    usernameStr.charAt(0).toUpperCase() || "م";
 
+                let timeStr = "";
+                if (comment.created_at) {
+                    try {
+                        const d = new Date(comment.created_at);
+                        timeStr = d.toLocaleDateString("ar-SA", {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        });
+                    } catch (e) {
+                        timeStr = "";
+                    }
+                }
 
-                avatar.textContent =
-                    comment.username ||
-                    "م";
+                const isOwner = Boolean(comment.isOwner);
 
-
-                const username =
-                    document.createElement(
-                        "h3"
-                    );
-
-
-                username.textContent =
-                    `${comment.username || "مستخدم"} :`;
-
-
-                const commentText =
-                    document.createElement(
-                        "h4"
-                    );
-
-
-                commentText.className =
-                    "comment-description";
-
-
-                commentText.textContent =
-                    comment.comment ||
-                    "";
-
-
-                commentElement.appendChild(
-                    avatar
-                );
-
-
-                commentElement.appendChild(
-                    username
-                );
-
-
-                commentElement.appendChild(
-                    commentText
-                );
-
+                commentElement.innerHTML = `
+                    <span class="avatar avatar--md" style="--a: 152; --b: 190;">
+                        ${escapeHtml(userInitial)}
+                    </span>
+                    <div class="comment-content-wrap">
+                        <div class="comment-header-row">
+                            <div class="comment-user-info">
+                                <h3 class="comment-user-name">${escapeHtml(usernameStr)}</h3>
+                                ${timeStr ? `<span class="comment-time">${escapeHtml(timeStr)}</span>` : ""}
+                            </div>
+                            ${isOwner ? `
+                                <button type="button" class="btn-comment-delete" title="حذف التعليق" data-comment-id="${escapeHtml(String(comment.id))}" aria-label="حذف التعليق">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            ` : ""}
+                        </div>
+                        <div class="comment-description">
+                            ${formatCommentContent(comment.comment || "")}
+                        </div>
+                    </div>
+                `;
 
                 taskCommentsContainer.appendChild(
                     commentElement
@@ -3194,22 +3291,26 @@ async function loadTaskComments(
             }
         );
 
-    }
+        if (typeof lucide !== "undefined" && lucide.createIcons) {
+            lucide.createIcons();
+        }
 
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Comments error:",
             error
         );
 
-
         taskCommentsContainer.innerHTML = `
             <div class="comments-error">
                 حدث خطأ أثناء جلب التعليقات.
             </div>
         `;
+
+        if (taskCommentsCount) {
+            taskCommentsCount.textContent = "0";
+        }
 
     }
 
@@ -3235,19 +3336,18 @@ async function addTaskComment() {
 
     if (!currentTaskId) {
 
-        showMessage(
-            "لم يتم تحديد المهمة",
-            "warning"
-        );
+        if (typeof showMessage === "function") {
+            showMessage(
+                "لم يتم تحديد المهمة",
+                "warning"
+            );
+        }
 
         return;
     }
 
     if (btnTaskCommentSubmit) {
-
-        btnTaskCommentSubmit.disabled =
-            true;
-
+        btnTaskCommentSubmit.disabled = true;
     }
 
     try {
@@ -3256,106 +3356,51 @@ async function addTaskComment() {
             await fetch(
                 `/tasks/${currentTaskId}/comments`,
                 {
-
                     method: "POST",
-
-                    credentials:
-                        "include",
-
+                    credentials: "include",
                     headers: {
-
-                        "Content-Type":
-                            "application/json",
-
-                        "Accept":
-                            "application/json"
-
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
                     },
-
-                    body:
-                        JSON.stringify({
-                            comment:
-                                comment
-                        })
-
+                    body: JSON.stringify({
+                        comment: comment
+                    })
                 }
             );
-
-
-        // ==================================================
-        // قراءة الرد كنص أولاً
-        // ==================================================
 
         const responseText =
             await response.text();
 
-
-        console.log(
-            "💬 Comment Response:",
-            response.status,
-            responseText
-        );
-
-
-        // ==================================================
-        // محاولة تحويل الرد إلى JSON
-        // ==================================================
-
         let data = {};
 
         try {
-
-            data =
-                responseText
-                    ? JSON.parse(responseText)
-                    : {};
-
+            data = responseText ? JSON.parse(responseText) : {};
         } catch (parseError) {
-
-            console.error(
-                "❌ Server returned non-JSON:",
-                responseText
-            );
-
-            showMessage(
-                `السيرفر رجّع استجابة غير صحيحة (${response.status})`,
-                "error"
-            );
-
+            console.error("❌ Server returned non-JSON:", responseText);
+            if (typeof showMessage === "function") {
+                showMessage(
+                    `السيرفر رجّع استجابة غير صحيحة (${response.status})`,
+                    "error"
+                );
+            }
             return;
-
         }
-
-
-        // ==================================================
-        // SERVER ERROR
-        // ==================================================
 
         if (!response.ok) {
-
-            showMessage(
-                data.message ||
-                "فشل إضافة التعليق",
-                "error"
-            );
-
+            if (typeof showMessage === "function") {
+                showMessage(
+                    data.message || "فشل إضافة التعليق",
+                    "error"
+                );
+            }
             return;
-
         }
 
-
-        // ==================================================
-        // SUCCESS
-        // ==================================================
-
-        taskCommentInput.value =
-            "";
-
+        taskCommentInput.value = "";
 
         await loadTaskComments(
             currentTaskId
         );
-
 
     } catch (error) {
 
@@ -3364,24 +3409,200 @@ async function addTaskComment() {
             error
         );
 
-
-        showMessage(
-            "حدث خطأ أثناء إضافة التعليق",
-            "error"
-        );
+        if (typeof showMessage === "function") {
+            showMessage(
+                "حدث خطأ أثناء إضافة التعليق",
+                "error"
+            );
+        }
 
     } finally {
 
         if (btnTaskCommentSubmit) {
-
-            btnTaskCommentSubmit.disabled =
-                false;
-
+            btnTaskCommentSubmit.disabled = false;
         }
 
     }
 
 }
+
+
+// ==================================================
+// نافذة إرفاق الرابط في التعليقات
+// ==================================================
+
+function openCommentLinkModal() {
+    if (!taskCommentLinkModal) return;
+    taskCommentLinkModal.style.display = "flex";
+    if (commentLinkUrlInput) {
+        commentLinkUrlInput.value = "";
+        setTimeout(() => commentLinkUrlInput.focus(), 60);
+    }
+    if (commentLinkTitleInput) {
+        commentLinkTitleInput.value = "";
+    }
+    if (typeof lucide !== "undefined" && lucide.createIcons) {
+        lucide.createIcons();
+    }
+}
+
+function closeCommentLinkModal() {
+    if (!taskCommentLinkModal) return;
+    taskCommentLinkModal.style.display = "none";
+}
+
+function handleInsertCommentLink() {
+    if (!commentLinkUrlInput) return;
+    let url = commentLinkUrlInput.value.trim();
+    if (!url) {
+        if (typeof showMessage === "function") {
+            showMessage("يرجى إدخال الرابط أولاً", "warning");
+        }
+        commentLinkUrlInput.focus();
+        return;
+    }
+
+    // إضافة بروتوكول https:// إن لم يكن موجوداً
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        url = `https://${url}`;
+    }
+
+    const title = commentLinkTitleInput ? commentLinkTitleInput.value.trim() : "";
+    const formattedLink = title ? `[${title}](${url})` : url;
+
+    if (taskCommentInput) {
+        const currentVal = taskCommentInput.value;
+        if (currentVal && !currentVal.endsWith(" ")) {
+            taskCommentInput.value = `${currentVal} ${formattedLink} `;
+        } else {
+            taskCommentInput.value = `${currentVal}${formattedLink} `;
+        }
+        taskCommentInput.focus();
+    }
+
+    closeCommentLinkModal();
+}
+
+
+// ==================================================
+// أحداث زر وروابط التعليق
+// ==================================================
+
+if (btnTaskCommentLink) {
+    btnTaskCommentLink.addEventListener(
+        "click",
+        openCommentLinkModal
+    );
+}
+
+if (btnCloseCommentLinkModal) {
+    btnCloseCommentLinkModal.addEventListener(
+        "click",
+        closeCommentLinkModal
+    );
+}
+
+if (btnCommentLinkCancel) {
+    btnCommentLinkCancel.addEventListener(
+        "click",
+        closeCommentLinkModal
+    );
+}
+
+if (taskCommentLinkBackdrop) {
+    taskCommentLinkBackdrop.addEventListener(
+        "click",
+        closeCommentLinkModal
+    );
+}
+
+if (btnCommentLinkInsert) {
+    btnCommentLinkInsert.addEventListener(
+        "click",
+        handleInsertCommentLink
+    );
+}
+
+if (commentLinkUrlInput) {
+    commentLinkUrlInput.addEventListener(
+        "keydown",
+        (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                if (commentLinkTitleInput && !commentLinkTitleInput.value.trim()) {
+                    commentLinkTitleInput.focus();
+                } else {
+                    handleInsertCommentLink();
+                }
+            } else if (e.key === "Escape") {
+                closeCommentLinkModal();
+            }
+        }
+    );
+}
+
+if (commentLinkTitleInput) {
+    commentLinkTitleInput.addEventListener(
+        "keydown",
+        (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                handleInsertCommentLink();
+            } else if (e.key === "Escape") {
+                closeCommentLinkModal();
+            }
+        }
+    );
+}
+
+
+// ==================================================
+// حذف التعليقات
+// ==================================================
+
+if (taskCommentsContainer) {
+    taskCommentsContainer.addEventListener(
+        "click",
+        async (e) => {
+            const deleteBtn = e.target.closest(".btn-comment-delete");
+            if (!deleteBtn) return;
+            const commentId = deleteBtn.getAttribute("data-comment-id");
+            if (!commentId) return;
+
+            if (!confirm("هل أنت متأكد من حذف هذا التعليق؟")) {
+                return;
+            }
+
+            try {
+                deleteBtn.disabled = true;
+                const res = await fetch(`/comments/${commentId}`, {
+                    method: "DELETE",
+                    credentials: "include"
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (typeof showMessage === "function") {
+                        showMessage("تم حذف التعليق بنجاح", "success");
+                    }
+                    await loadTaskComments(currentTaskId);
+                } else {
+                    if (typeof showMessage === "function") {
+                        showMessage(data.message || "فشل حذف التعليق", "error");
+                    }
+                    deleteBtn.disabled = false;
+                }
+            } catch (err) {
+                console.error("Delete comment error:", err);
+                if (typeof showMessage === "function") {
+                    showMessage("حدث خطأ أثناء حذف التعليق", "error");
+                }
+                deleteBtn.disabled = false;
+            }
+        }
+    );
+}
+
+
 // ==================================================
 // زر إرسال التعليق
 // ==================================================
@@ -3419,27 +3640,6 @@ if (taskCommentInput) {
 
         }
     );
-
-}
-
-
-// ==================================================
-// حماية النص
-// ==================================================
-
-function escapeHtml(text) {
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.textContent =
-        text ?? "";
-
-
-    return div.innerHTML;
 
 }
 

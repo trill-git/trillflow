@@ -1,8 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    console.log("🔥 DOM READY");
 
-    loadMembers();
 
 });
 // ==================================================
@@ -37,10 +35,6 @@ async function checkMemberPermission() {
         currentUserId =
             String(user.id);
 
-        console.log(
-            "Current User Role:",
-            currentUserRole
-        );
 
 
         if (
@@ -1147,3 +1141,4 @@ deleteUserBtn?.addEventListener(
 
     }
 );
+loadMembers();

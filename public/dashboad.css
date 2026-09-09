@@ -2713,7 +2713,8 @@ ol {
   height: 550px;
   border-radius: 25px;
   border: 1px solid var(--stroke);
-  background: var(--grad-panel);
+  background:
+    rgba(7, 25, 24, .97);
   border: 1px solid var(--stroke);
   backdrop-filter: blur(18px);
   box-shadow: var(--sh-md);

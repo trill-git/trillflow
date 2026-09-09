@@ -194,11 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tasks = data;
 
 
-            console.log(
-                "📅 Calendar Tasks:",
-                tasks
-            );
-
+    
 
             renderCalendar();
 
@@ -916,11 +912,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
 
 
-                        console.log(
-                            "📅 Opening task from calendar:",
-                            taskId
-                        );
-
+              
 
                         /*
                            حفظ ID المهمة في localStorage

@@ -400,11 +400,7 @@
             }
 
 
-            console.log(
-                "✅ SETTINGS USER LOADED:",
-                user
-            );
-
+    
 
         } catch (error) {
 
@@ -472,9 +468,6 @@
             "true"
         ) {
 
-            console.log(
-                "ℹ️ Settings Tabs already initialized"
-            );
 
             return;
 
@@ -485,9 +478,7 @@
             "true";
 
 
-        console.log(
-            "🟢 Initializing Settings Tabs"
-        );
+   
 
 
         /* =================================================
@@ -539,10 +530,6 @@
                 }
 
 
-                console.log(
-                    "🟢 SETTINGS TAB CLICK:",
-                    tab
-                );
 
 
                 setSettingsTab(
@@ -780,13 +767,7 @@
             );
 
 
-            console.log(
-                "Panels الموجودة:",
-                panels.map(
-                    panel =>
-                        panel.dataset.settingsPanel
-                )
-            );
+
 
 
             return;
@@ -794,10 +775,7 @@
         }
 
 
-        console.log(
-            "✅ SETTINGS TAB:",
-            tab
-        );
+
 
 
         /* =================================================
@@ -956,6 +934,19 @@
                     getInitials(
                         savedUsername
                     );
+
+            }
+
+
+            if (
+                typeof window.updateNavbarUser ===
+                "function"
+            ) {
+
+                window.updateNavbarUser(
+                    savedUsername,
+                    savedEmail
+                );
 
             }
 
@@ -1698,9 +1689,6 @@
         }
 
 
-        console.log(
-            "🚀 TRILLFLOW SETTINGS INIT"
-        );
 
 
         initSettingsTabs();
@@ -1764,9 +1752,6 @@
         }
 
 
-        console.log(
-            "⚙️ OPEN SETTINGS"
-        );
 
 
         /* =================================================

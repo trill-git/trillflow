@@ -37,6 +37,13 @@ async function loadUsername() {
                 `صباح الخير ${user.username || ""}`;
         }
 
+        if (typeof window.updateNavbarUser === "function") {
+            window.updateNavbarUser(
+                user.username || "",
+                user.email || ""
+            );
+        }
+
     } catch (error) {
 
         console.error(
@@ -343,9 +350,7 @@ if (
 
                     } catch (error) {
 
-                        console.log(
-                            "تعذر قراءة رسالة الخطأ"
-                        );
+            
 
                     }
 
@@ -2105,11 +2110,7 @@ async function loadDashboardAnalytics() {
             await response.json();
 
 
-        console.log(
-            "📊 Dashboard Analytics:",
-            analytics
-        );
-
+     
 
         // =================================================
         // SUMMARY

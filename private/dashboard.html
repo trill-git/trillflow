@@ -1107,12 +1107,7 @@
                   accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar">
 
 
-                <!-- ATTACH BUTTON -->
 
-                <button type="button" id="attachMessageBtn" class="composer-icon" title="إرفاق ملف"
-                  aria-label="إرفاق ملف">
-                  <i data-lucide="paperclip"></i>
-                </button>
 
 
                 <!-- INPUT -->
@@ -2675,12 +2670,60 @@ EDIT USER MODAL
 
             <div class="task-form-show-footer">
 
-              <input type="text" placeholder="أضف تعليقًا..." class="inputs-task-comment" id="taskCommentInput">
+              <button type="button" class="btn-taskcomment-link" id="btnTaskCommentLink" title="إرفاق رابط"
+                aria-label="إرفاق رابط">
+                <i data-lucide="link-2"></i>
+              </button>
+
+              <input type="text" placeholder="أضف تعليقًا أو الصق رابطًا..." class="inputs-task-comment"
+                id="taskCommentInput">
 
               <button type="button" class="btn-taskcomment-submit" id="btnTaskCommentSubmit" aria-label="إضافة تعليق">
                 <i data-lucide="send"></i>
               </button>
 
+            </div>
+
+            <!-- TASK COMMENT LINK MODAL -->
+            <div class="task-comment-link-modal" id="taskCommentLinkModal" style="display: none;">
+              <div class="task-comment-link-backdrop" id="taskCommentLinkBackdrop"></div>
+              <div class="task-comment-link-dialog">
+                <div class="comment-link-dialog-header">
+                  <div class="comment-link-dialog-title">
+                    <i data-lucide="link"></i>
+                    <span>إرفاق رابط في التعليق</span>
+                  </div>
+                  <button type="button" class="btn-close-comment-link-modal" id="btnCloseCommentLinkModal"
+                    aria-label="إغلاق">
+                    <i data-lucide="x"></i>
+                  </button>
+                </div>
+                <div class="comment-link-dialog-body">
+                  <div class="comment-link-input-group">
+                    <label for="commentLinkUrlInput">الرابط (URL) <span class="required">*</span></label>
+                    <div class="input-with-icon">
+                      <i data-lucide="globe"></i>
+                      <input type="url" id="commentLinkUrlInput" placeholder="https://example.com" dir="ltr"
+                        autocomplete="off">
+                    </div>
+                  </div>
+                  <div class="comment-link-input-group">
+                    <label for="commentLinkTitleInput">عنوان أو وصف الرابط (اختياري)</label>
+                    <div class="input-with-icon">
+                      <i data-lucide="type"></i>
+                      <input type="text" id="commentLinkTitleInput" placeholder="مثال: ملف التصميم على Figma"
+                        autocomplete="off">
+                    </div>
+                  </div>
+                </div>
+                <div class="comment-link-dialog-footer">
+                  <button type="button" class="btn-comment-link-cancel" id="btnCommentLinkCancel">إلغاء</button>
+                  <button type="button" class="btn-comment-link-insert" id="btnCommentLinkInsert">
+                    <i data-lucide="plus"></i>
+                    <span>إدراج الرابط</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
           </div>

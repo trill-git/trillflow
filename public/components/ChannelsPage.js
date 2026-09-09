@@ -173,15 +173,7 @@
 
         if (!isPollingRequest) {
 
-            console.log(
-                "🌐 CHANNEL API:",
-                {
-                    url,
-                    method:
-                        fetchOptions.method ||
-                        "GET"
-                }
-            );
+
 
         }
 
@@ -213,17 +205,7 @@
 
         if (!isPollingRequest) {
 
-            console.log(
-                "🌐 CHANNEL RESPONSE:",
-                {
-                    url,
-                    status:
-                        response.status,
-                    ok:
-                        response.ok,
-                    data
-                }
-            );
+
 
         }
 
@@ -279,10 +261,6 @@
         ChannelsState.initPromise =
             (async () => {
 
-                console.log(
-                    "🚀 TRILL FLOW CHANNELS INIT"
-                );
-
 
                 stopMessagePolling();
 
@@ -316,9 +294,7 @@
                     true;
 
 
-                console.log(
-                    "✅ TRILL FLOW CHANNELS READY"
-                );
+
 
             })();
 
@@ -374,12 +350,6 @@
 
         ChannelsState.eventsBound =
             true;
-
-
-        console.log(
-            "🔗 Setting channel events..."
-        );
-
 
         // =================================================
         // CREATE CHANNEL
@@ -723,9 +693,6 @@
         }
 
 
-        console.log(
-            "✅ Channel events ready"
-        );
 
     }
 
@@ -952,9 +919,7 @@
         }
 
 
-        console.log(
-            "😀 Emoji picker ready."
-        );
+
 
     }
 
@@ -1789,9 +1754,6 @@
 
     function setupAttachmentSystem() {
 
-        console.log(
-            "📎 Setting attachment system..."
-        );
 
 
         const attachButton =
@@ -1874,15 +1836,11 @@
             }
 
 
-            console.log(
-                "✅ Attachment button connected."
-            );
+
 
         } else {
 
-            console.warn(
-                "⚠️ Attachment button not found."
-            );
+
 
         }
 
@@ -2603,7 +2561,6 @@
 
     }
 
-
     // =====================================================
     // RENDER CHANNELS
     // =====================================================
@@ -2696,10 +2653,11 @@
 
                         image = `
 
-                            <img
-                                src="${escapeAttribute(
+                   <img
+    src="${escapeAttribute(
                             channel.image_url
                         )}"
+    onload="console.log('✅ CHANNEL IMAGE LOADED:', this.src)"
                                 alt="${escapeAttribute(
                             channel.name || ""
                         )}"
@@ -2728,7 +2686,6 @@
                         channel.last_message
                             ?.message ||
                         "لا توجد رسائل";
-
 
                     return `
 
@@ -2862,10 +2819,7 @@
 
         try {
 
-            console.log(
-                "📂 OPEN CHANNEL:",
-                channelId
-            );
+
 
 
             const channel =
@@ -5400,11 +5354,6 @@
                 );
 
 
-            console.log(
-                "✅ DELETE SERVER SUCCESS:",
-                result
-            );
-
 
             stopMessagePolling();
 
@@ -5848,11 +5797,6 @@
             );
 
 
-        console.log(
-            "🔄 MESSAGE POLLING STARTED:",
-            channelId
-        );
-
     }
 
 
@@ -6072,10 +6016,6 @@
 
     };
 
-
-    console.log(
-        "✅ TRILL FLOW CHANNELS JS LOADED"
-    );
 
 
 })();

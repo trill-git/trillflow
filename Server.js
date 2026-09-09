@@ -10,12 +10,558 @@ const helmet = require("helmet");
 const upload = multer({
     storage: multer.memoryStorage()
 });
+// =====================================================
+// GOOGLE DRIVE
+// =====================================================
+
+const { google } = require("googleapis");
+const { Readable } = require("stream");
+
+
+// =====================================================
+// CREATE EXPRESS APP
+// =====================================================
 
 const app = express();
+
 app.disable("x-powered-by");
-app.use(helmet({
-    contentSecurityPolicy: false
-}));
+
+app.use(
+    helmet({
+        contentSecurityPolicy: false
+    })
+);
+
+
+// =====================================================
+// GOOGLE DRIVE OAUTH CLIENT
+// =====================================================
+
+const oauth2Client =
+    new google.auth.OAuth2(
+
+        process.env.GOOGLE_CLIENT_ID,
+
+        process.env.GOOGLE_CLIENT_SECRET,
+
+        process.env.GOOGLE_REDIRECT_URI
+
+    );
+
+
+// =====================================================
+// CREATE GOOGLE DRIVE CLIENT
+// =====================================================
+
+function getGoogleDriveClient() {
+
+    if (!process.env.GOOGLE_REFRESH_TOKEN) {
+
+        throw new Error(
+            "GOOGLE_REFRESH_TOKEN is missing"
+        );
+
+    }
+
+    oauth2Client.setCredentials({
+
+        refresh_token:
+            process.env.GOOGLE_REFRESH_TOKEN
+
+    });
+
+    return google.drive({
+
+        version: "v3",
+
+        auth: oauth2Client
+
+    });
+
+}
+
+
+// =====================================================
+// GOOGLE AUTH URL
+// =====================================================
+
+function getGoogleAuthUrl() {
+
+    return oauth2Client.generateAuthUrl({
+
+        access_type: "offline",
+
+        prompt: "consent",
+
+        scope: [
+
+            "https://www.googleapis.com/auth/drive.file"
+
+        ]
+
+    });
+
+}
+
+
+// =====================================================
+// EXCHANGE GOOGLE CODE FOR TOKENS
+// =====================================================
+
+async function exchangeCodeForTokens(code) {
+
+    const { tokens } =
+        await oauth2Client.getToken(code);
+
+    return tokens;
+
+}
+
+
+// =====================================================
+// SET REFRESH TOKEN
+// =====================================================
+
+function setRefreshToken(refreshToken) {
+
+    oauth2Client.setCredentials({
+
+        refresh_token:
+            refreshToken
+
+    });
+
+}
+
+
+// =====================================================
+// UPLOAD FILE TO GOOGLE DRIVE
+// =====================================================
+
+async function uploadToGoogleDrive(file) {
+
+    const drive =
+        getGoogleDriveClient();
+
+
+    // =====================================================
+    // UPLOAD FILE
+    // =====================================================
+
+    const response =
+        await drive.files.create({
+
+            requestBody: {
+
+                name:
+                    file.originalname,
+
+                parents: [
+
+                    process.env
+                        .GOOGLE_DRIVE_FOLDER_ID
+
+                ]
+
+            },
+
+            media: {
+
+                mimeType:
+                    file.mimetype,
+
+                body:
+                    Readable.from(
+                        file.buffer
+                    )
+
+            },
+
+            fields:
+                "id,name,mimeType"
+
+        });
+
+
+    const fileId =
+        response.data.id;
+
+
+    // =====================================================
+    // MAKE FILE PUBLIC
+    // =====================================================
+
+    await drive.permissions.create({
+
+        fileId: fileId,
+
+        requestBody: {
+
+            role: "reader",
+
+            type: "anyone"
+
+        }
+
+    });
+
+
+    // =====================================================
+    // RETURN FILE DATA
+    // =====================================================
+
+    return {
+
+        id:
+            fileId,
+
+        name:
+            response.data.name,
+
+        mimeType:
+            response.data.mimeType,
+
+        directUrl:
+            `https://drive.google.com/uc?export=view&id=${fileId}`,
+
+        webViewLink:
+            `https://drive.google.com/file/d/${fileId}/view`
+
+    };
+
+}
+app.get(
+    "/projects/file/:fileId",
+    async (req, res) => {
+
+        try {
+
+            const fileId = req.params.fileId;
+
+            if (!fileId) {
+                return res.status(400).send("File ID is required");
+            }
+
+            const drive = getGoogleDriveClient();
+
+            // جلب metadata الملف أولاً
+            const meta = await drive.files.get({
+                fileId,
+                fields: "id,name,mimeType,size"
+            });
+
+            const driveResponse = await drive.files.get(
+                { fileId, alt: "media" },
+                { responseType: "stream" }
+            );
+
+            res.setHeader("Content-Type", meta.data.mimeType || "application/octet-stream");
+            res.setHeader("Cache-Control", "public, max-age=86400");
+            if (meta.data.size) res.setHeader("Content-Length", meta.data.size);
+
+            driveResponse.data.pipe(res);
+
+        } catch (error) {
+
+            console.error("❌ PROJECT FILE ERROR:", error.message);
+            return res.status(404).send("File not found");
+
+        }
+
+    }
+);
+
+app.get(
+    "/projects/image/:fileId",
+    async (req, res) => {
+
+        try {
+
+            const fileId = req.params.fileId;
+
+            if (!fileId) {
+                return res.status(400).send("File ID is required");
+            }
+
+            const drive = getGoogleDriveClient();
+
+            const meta = await drive.files.get({
+                fileId,
+                fields: "id,mimeType,size"
+            });
+
+            const driveResponse = await drive.files.get(
+                { fileId, alt: "media" },
+                { responseType: "stream" }
+            );
+
+            res.setHeader("Content-Type", meta.data.mimeType || "image/jpeg");
+            res.setHeader("Cache-Control", "public, max-age=86400");
+            if (meta.data.size) res.setHeader("Content-Length", meta.data.size);
+
+            driveResponse.data.pipe(res);
+
+        } catch (error) {
+
+            console.error("❌ PROJECT IMAGE ERROR:", error.message);
+            return res.status(404).send("Image not found");
+
+        }
+
+    }
+);
+
+// =====================================================
+// SERVE CHANNEL IMAGE FROM GOOGLE DRIVE
+// =====================================================
+
+app.get(
+    "/channels/image/:fileId",
+    async (req, res) => {
+
+        try {
+
+            const fileId = req.params.fileId;
+
+            if (!fileId) {
+                return res.status(400).send("File ID is required");
+            }
+
+            const drive = getGoogleDriveClient();
+
+            const meta = await drive.files.get({
+                fileId,
+                fields: "id,mimeType,size"
+            });
+
+            const driveResponse = await drive.files.get(
+                { fileId, alt: "media" },
+                { responseType: "stream" }
+            );
+
+            res.setHeader("Content-Type", meta.data.mimeType || "image/jpeg");
+            res.setHeader("Cache-Control", "public, max-age=86400");
+            if (meta.data.size) res.setHeader("Content-Length", meta.data.size);
+
+            driveResponse.data.pipe(res);
+
+        } catch (error) {
+
+            console.error("❌ CHANNEL IMAGE ERROR:", error.message);
+            return res.status(404).send("Image not found");
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// GOOGLE DRIVE OAUTH ROUTE
+// =====================================================
+
+// فتح صفحة تسجيل الدخول وربط Google Drive
+
+app.get(
+    "/auth/google",
+    (req, res) => {
+
+        const url =
+            getGoogleAuthUrl();
+
+        res.redirect(url);
+
+    }
+);
+
+
+// =====================================================
+// GOOGLE OAUTH CALLBACK
+// =====================================================
+
+app.get("/auth/google/callback", async (req, res) => {
+
+    try {
+
+        const { code } = req.query;
+
+        if (!code) {
+
+            return res.status(400).send(
+                "Google authorization code is missing"
+            );
+
+        }
+
+        const tokens =
+            await exchangeCodeForTokens(code);
+
+        console.log("=================================");
+        console.log("GOOGLE TOKENS");
+        console.log(tokens);
+        console.log("=================================");
+
+        res.send(`
+
+            <html>
+
+                <head>
+                    <title>Google Drive</title>
+                </head>
+
+                <body>
+
+                    <h2>
+                        Google Drive connected successfully ✅
+                    </h2>
+
+                    <p>
+                        You can close this window.
+                    </p>
+
+                </body>
+
+            </html>
+
+        `);
+
+    } catch (error) {
+
+        console.error(
+            "Google OAuth Error:",
+            error
+        );
+
+        res.status(500).send(`
+
+            <html>
+
+                <head>
+                    <title>Google Drive Error</title>
+                </head>
+
+                <body>
+
+                    <h2>
+                        Google Drive connection failed ❌
+                    </h2>
+
+                    <pre>
+${error.message}
+                    </pre>
+
+                </body>
+
+            </html>
+
+        `);
+
+    }
+
+});
+
+
+// =====================================================
+// TEST GOOGLE DRIVE UPLOAD
+// =====================================================
+
+app.post(
+    "/test-google-drive",
+    upload.single("file"),
+    async (req, res) => {
+
+        try {
+
+            // -------------------------------------------------
+            // CHECK FILE
+            // -------------------------------------------------
+
+            if (!req.file) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    error:
+                        "No file uploaded"
+
+                });
+
+            }
+
+
+            // -------------------------------------------------
+            // UPLOAD TO GOOGLE DRIVE
+            // -------------------------------------------------
+
+            const result =
+                await uploadToGoogleDrive(
+                    req.file
+                );
+
+
+            // -------------------------------------------------
+            // LOG RESULT
+            // -------------------------------------------------
+
+            console.log(
+                "GOOGLE DRIVE UPLOAD RESULT:",
+                result
+            );
+
+
+            // -------------------------------------------------
+            // RESPONSE
+            // -------------------------------------------------
+
+            return res.json({
+
+                success: true,
+
+                message:
+                    "File uploaded to Google Drive successfully",
+
+                file: {
+
+                    id:
+                        result.id,
+
+                    name:
+                        result.name,
+
+                    mimeType:
+                        result.mimeType,
+
+                    directUrl:
+                        result.directUrl,
+
+                    webViewLink:
+                        result.webViewLink
+
+                }
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Google Drive Upload Error:",
+                error
+            );
+
+            return res.status(500).json({
+
+                success: false,
+
+                error:
+                    error.message
+
+            });
+
+        }
+
+    }
+);
 // =====================================================
 // N8N NOTIFICATION SERVICE
 // =====================================================
@@ -799,76 +1345,188 @@ function legacyProjectFilePayload(file, projectId) {
 
 async function uploadProjectFile({ projectId, file, userId }) {
 
-    await ensureProjectFilesBucket();
+    const originalName =
+        String(file.originalname || "file").trim() || "file";
 
-    const originalName = String(file.originalname || "file").trim() || "file";
-    const safeFileName = originalName.replace(/[\\/]/g, "-");
-    const extension = getFileExtension(safeFileName);
-    const storagePath = `projects/${projectId}/${Date.now()}-${Math.random().toString(36).slice(2, 10)}${extension}`;
+    const safeFileName =
+        originalName.replace(/[\\/]/g, "-");
 
-    const { error: uploadError } = await supabase.storage
-        .from(PROJECT_FILES_BUCKET)
-        .upload(storagePath, file.buffer, {
-            contentType: file.mimetype || "application/octet-stream",
-            upsert: false
-        });
+    // ==========================================
+    // رفع الملف إلى Google Drive
+    // ==========================================
 
-    if (uploadError) {
-        throw uploadError;
-    }
+    const uploadedFile =
+        await uploadToGoogleDrive(file);
 
-    const { data: savedFile, error: insertError } = await supabase
+    const googleDriveFileId =
+        uploadedFile.id;
+
+    // ==========================================
+    // رابط الملف من السيرفر
+    // ==========================================
+
+    const fileUrl =
+        `/projects/file/${googleDriveFileId}`;
+
+    // ==========================================
+    // حفظ بيانات الملف في Supabase
+    // ==========================================
+
+    const {
+        data: savedFile,
+        error: insertError
+    } = await supabase
         .from("project_files")
         .insert({
-            project_id: projectId,
-            file_name: safeFileName,
-            storage_path: storagePath,
-            file_type: file.mimetype || "application/octet-stream",
-            file_size: Number(file.size || 0),
-            uploaded_by: userId
+            project_id:
+                projectId,
+
+            file_name:
+                safeFileName,
+
+            storage_path:
+                fileUrl,
+
+            file_type:
+                file.mimetype ||
+                "application/octet-stream",
+
+            file_size:
+                Number(file.size || 0),
+
+            uploaded_by:
+                userId
         })
         .select(`
             id,
+            project_id,
             file_name,
+            storage_path,
             file_type,
             file_size,
             uploaded_by,
             created_at,
-            users ( id, username, email )
+            users (
+                id,
+                username,
+                email
+            )
         `)
         .single();
 
     if (insertError) {
-        await supabase.storage.from(PROJECT_FILES_BUCKET).remove([storagePath]);
+
+        console.error(
+            "PROJECT FILE DATABASE ERROR:",
+            insertError
+        );
+
         throw insertError;
     }
 
-    return savedFile;
+    console.log(
+        "✅ PROJECT FILE UPLOADED TO GOOGLE DRIVE:",
+        {
+            projectId,
+            fileName: safeFileName,
+            googleDriveFileId
+        }
+    );
 
+    return {
+        ...savedFile,
+
+        google_drive_file_id:
+            googleDriveFileId,
+
+        file_url:
+            fileUrl
+    };
 }
-
 async function streamProjectFile(req, res, { file, disposition }) {
 
-    const { data: blob, error: downloadError } = await supabase.storage
-        .from(PROJECT_FILES_BUCKET)
-        .download(file.storage_path);
+    const drive = getGoogleDriveClient();
 
-    if (downloadError) {
-        throw downloadError;
+    // استخراج Google Drive File ID من storage_path
+    const googleDriveFileId =
+        String(file.storage_path || "")
+            .split("/")
+            .filter(Boolean)
+            .pop();
+
+    if (!googleDriveFileId) {
+        const error = new Error(
+            "معرف ملف Google Drive غير موجود."
+        );
+
+        error.status = 404;
+        throw error;
     }
 
-    const buffer = Buffer.from(await blob.arrayBuffer());
-    const fileName = encodeURIComponent(file.file_name || "download");
+    console.log(
+        "🔥 GOOGLE DRIVE STREAM:",
+        {
+            projectId: req.params.id,
+            fileId: req.params.fileId,
+            storagePath: file.storage_path,
+            googleDriveFileId,
+            fileName: file.file_name
+        }
+    );
 
-    res.setHeader("Content-Type", file.file_type || "application/octet-stream");
+    // جلب معلومات الملف
+    const metadataResponse =
+        await drive.files.get({
+            fileId: googleDriveFileId,
+            fields: "id,name,mimeType,size"
+        });
+
+    const driveFile = metadataResponse.data;
+
+    // تحميل الملف من Google Drive كـ Stream
+    const driveResponse =
+        await drive.files.get(
+            {
+                fileId: googleDriveFileId,
+                alt: "media"
+            },
+            {
+                responseType: "stream"
+            }
+        );
+
+    const fileName =
+        encodeURIComponent(
+            file.file_name ||
+            driveFile.name ||
+            "download"
+        );
+
+    res.setHeader(
+        "Content-Type",
+        file.file_type ||
+        driveFile.mimeType ||
+        "application/octet-stream"
+    );
+
     res.setHeader(
         "Content-Disposition",
         `${disposition}; filename="${fileName}"; filename*=UTF-8''${fileName}`
     );
-    res.setHeader("Cache-Control", "private, no-store");
 
-    return res.send(buffer);
+    res.setHeader(
+        "Cache-Control",
+        "private, no-store"
+    );
 
+    if (driveFile.size) {
+        res.setHeader(
+            "Content-Length",
+            driveFile.size
+        );
+    }
+
+    driveResponse.data.pipe(res);
 }
 
 // =====================================================
@@ -2094,7 +2752,6 @@ app.post(
 // =====================================================
 // إضافة مشروع
 // =====================================================
-
 app.post(
     "/addproject",
     verifyToken,
@@ -2134,14 +2791,10 @@ app.post(
 
             }
 
-            // ==========================================
-            // المستخدم الذي أنشأ المشروع
-            // ==========================================
-
             const userId = req.user.id;
 
             // ==========================================
-            // معالجة أعضاء المشروع
+            // معالجة الأعضاء
             // ==========================================
 
             let selectedMembers = [];
@@ -2166,74 +2819,61 @@ app.post(
             }
 
             // ==========================================
-            // رفع صورة المشروع
+            // تحديد الأعضاء
             // ==========================================
 
-            let imageUrl = null;
+            let membersToAdd = [];
 
-            if (projectImageFile) {
+            if (
+                Array.isArray(selectedMembers) &&
+                selectedMembers.length > 0
+            ) {
 
-                const fileExtension =
-                    path.extname(
-                        projectImageFile.originalname
-                    ).toLowerCase() || ".png";
-
-                const fileName =
-                    `project-${Date.now()}-${Math.random()
-                        .toString(36)
-                        .substring(2, 10)}${fileExtension}`;
-
-                const {
-                    error: uploadError
-                } =
-                    await supabase.storage
-                        .from("project-images")
-                        .upload(
-                            fileName,
-                            projectImageFile.buffer,
-                            {
-                                contentType:
-                                    projectImageFile.mimetype,
-
-                                upsert: false
-                            }
+                membersToAdd =
+                    selectedMembers
+                        .map(id => Number(id))
+                        .filter(id =>
+                            Number.isInteger(id)
                         );
 
-                if (uploadError) {
+            } else {
+
+                const {
+                    data: users,
+                    error: usersError
+                } =
+                    await supabase
+                        .from("users")
+                        .select("id");
+
+                if (usersError) {
 
                     console.error(
-                        "Project image upload error:",
-                        uploadError
+                        "Get users error:",
+                        usersError
                     );
 
                     return res.status(500).json({
                         message:
-                            "فشل رفع صورة المشروع.",
-                        error:
-                            uploadError.message
+                            usersError.message
                     });
 
                 }
 
-                const {
-                    data: imageData
-                } =
-                    supabase.storage
-                        .from("project-images")
-                        .getPublicUrl(fileName);
-
-                imageUrl =
-                    imageData?.publicUrl || null;
-
-                console.log(
-                    "PROJECT IMAGE URL:",
-                    imageUrl
-                );
+                membersToAdd =
+                    (users || [])
+                        .map(user => Number(user.id))
+                        .filter(id =>
+                            Number.isInteger(id)
+                        );
 
             }
 
+            membersToAdd =
+                [...new Set(membersToAdd)];
+
             // ==========================================
-            // إنشاء المشروع
+            // إنشاء المشروع مباشرة
             // ==========================================
 
             const {
@@ -2267,7 +2907,7 @@ app.post(
                                 null,
 
                             image_url:
-                                imageUrl,
+                                null,
 
                             user_id:
                                 userId
@@ -2286,6 +2926,7 @@ app.post(
                 return res.status(500).json({
                     message:
                         "فشل إنشاء المشروع.",
+
                     error:
                         projectError.message
                 });
@@ -2296,96 +2937,7 @@ app.post(
                 project.id;
 
             // ==========================================
-            // رفع ملفات المشروع
-            // ==========================================
-
-            for (const file of projectFiles) {
-
-                try {
-
-                    await uploadProjectFile({
-                        projectId,
-                        file,
-                        userId
-                    });
-
-                } catch (attachmentError) {
-
-                    console.error(
-                        "CREATE PROJECT ATTACHMENT ERROR:",
-                        attachmentError
-                    );
-
-                    return res.status(500).json({
-                        message:
-                            "تم إنشاء المشروع لكن فشل رفع أحد الملفات. تأكد من تطبيق ترقية قاعدة بيانات ملفات المشروع."
-                    });
-
-                }
-
-            }
-
-            // ==========================================
-            // تحديد أعضاء المشروع
-            // ==========================================
-
-            let membersToAdd = [];
-
-            if (
-                Array.isArray(selectedMembers) &&
-                selectedMembers.length > 0
-            ) {
-
-                membersToAdd =
-                    selectedMembers
-                        .map(id => Number(id))
-                        .filter(id => Number.isInteger(id));
-
-            } else {
-
-                // ==========================================
-                // إذا لم يتم تحديد أعضاء
-                // إضافة جميع المستخدمين
-                // ==========================================
-
-                const {
-                    data: users,
-                    error: usersError
-                } =
-                    await supabase
-                        .from("users")
-                        .select("id");
-
-                if (usersError) {
-
-                    console.error(
-                        "Get users error:",
-                        usersError
-                    );
-
-                    return res.status(500).json({
-                        message:
-                            usersError.message
-                    });
-
-                }
-
-                membersToAdd =
-                    (users || [])
-                        .map(user => Number(user.id))
-                        .filter(id => Number.isInteger(id));
-
-            }
-
-            // ==========================================
-            // إزالة التكرار
-            // ==========================================
-
-            membersToAdd =
-                [...new Set(membersToAdd)];
-
-            // ==========================================
-            // إضافة أعضاء المشروع
+            // إضافة الأعضاء مباشرة
             // ==========================================
 
             if (membersToAdd.length > 0) {
@@ -2413,9 +2965,13 @@ app.post(
                         membersError
                     );
 
+                    // المشروع موجود بالفعل
+                    // لذلك لا نحذف المشروع
+                    // فقط نبلغ بالخطأ
+
                     return res.status(500).json({
                         message:
-                            membersError.message,
+                            "تم إنشاء المشروع لكن فشل إضافة الأعضاء.",
 
                         error:
                             membersError.message
@@ -2426,38 +2982,156 @@ app.post(
             }
 
             // ==========================================
-            // إرسال إشعار للأعضاء
+            // الرد للمستخدم فورًا
             // ==========================================
 
-            try {
+            res.status(201).json({
 
-                if (
-                    Array.isArray(membersToAdd) &&
-                    membersToAdd.length > 0
-                ) {
+                message:
+                    "تم إنشاء المشروع بنجاح.",
 
-                    const {
-                        data: projectUsers,
-                        error: projectUsersError
-                    } =
-                        await supabase
-                            .from("users")
-                            .select(
-                                "id, username, email"
-                            )
-                            .in(
-                                "id",
-                                membersToAdd
-                            );
+                project: {
 
-                    if (projectUsersError) {
+                    ...project,
 
-                        console.error(
-                            "PROJECT MEMBER NOTIFICATION USERS ERROR:",
-                            projectUsersError
+                    image_url:
+                        null
+
+                }
+
+            });
+
+            // ==================================================
+            // من هنا العمليات الخلفية
+            // ==================================================
+            // لا تستخدم await قبلها
+            // المستخدم استلم الرد بالفعل
+            // ==================================================
+
+            setImmediate(async () => {
+
+                // ==========================================
+                // رفع صورة المشروع
+                // ==========================================
+
+                if (projectImageFile) {
+
+                    try {
+
+                        console.log(
+                            `📤 رفع صورة المشروع ${projectId} إلى Google Drive...`
                         );
 
-                    } else {
+                        const uploadedImage =
+                            await uploadToGoogleDrive(
+                                projectImageFile
+                            );
+
+                        const imageUrl =
+                            `/projects/image/${uploadedImage.id}`;
+
+                        await supabase
+                            .from("projects")
+                            .update({
+                                image_url:
+                                    imageUrl
+                            })
+                            .eq(
+                                "id",
+                                projectId
+                            );
+
+                        console.log(
+                            `✅ تم رفع صورة المشروع ${projectId}`
+                        );
+
+                    } catch (imageError) {
+
+                        console.error(
+                            `❌ PROJECT IMAGE UPLOAD ERROR [${projectId}]:`,
+                            imageError
+                        );
+
+                    }
+
+                }
+
+                // ==========================================
+                // رفع ملفات المشروع
+                // ==========================================
+
+                if (projectFiles.length > 0) {
+
+                    console.log(
+                        `📤 رفع ${projectFiles.length} ملف للمشروع ${projectId}...`
+                    );
+
+                    for (const file of projectFiles) {
+
+                        try {
+
+                            await uploadProjectFile({
+
+                                projectId,
+
+                                file,
+
+                                userId
+
+                            });
+
+                            console.log(
+                                `✅ تم رفع الملف: ${file.originalname}`
+                            );
+
+                        } catch (attachmentError) {
+
+                            console.error(
+                                `❌ CREATE PROJECT ATTACHMENT ERROR [${projectId}]:`,
+                                attachmentError
+                            );
+
+                        }
+
+                    }
+
+                }
+
+                // ==========================================
+                // إرسال الإشعارات والإيميلات
+                // ==========================================
+
+                try {
+
+                    if (
+                        Array.isArray(membersToAdd) &&
+                        membersToAdd.length > 0
+                    ) {
+
+                        const {
+                            data: projectUsers,
+                            error: projectUsersError
+                        } =
+                            await supabase
+                                .from("users")
+                                .select(
+                                    "id, username, email"
+                                )
+                                .in(
+                                    "id",
+                                    membersToAdd
+                                );
+
+                        if (projectUsersError) {
+
+                            console.error(
+                                "PROJECT MEMBER NOTIFICATION USERS ERROR:",
+                                projectUsersError
+                            );
+
+                            return;
+
+                        }
 
                         let addedByName = null;
 
@@ -2480,82 +3154,80 @@ app.post(
 
                         }
 
-                        for (
-                            const projectUser of projectUsers || []
-                        ) {
+                        // ==========================================
+                        // إرسال الإيميلات بالتوازي
+                        // ==========================================
 
-                            try {
+                        await Promise.allSettled(
 
-                                await sendNotificationEmail({
+                            (projectUsers || []).map(
+                                async projectUser => {
 
-                                    user: {
+                                    try {
 
-                                        id:
-                                            projectUser.id,
+                                        await sendNotificationEmail({
 
-                                        username:
-                                            projectUser.username,
+                                            user: {
 
-                                        email:
-                                            projectUser.email
+                                                id:
+                                                    projectUser.id,
 
-                                    },
+                                                username:
+                                                    projectUser.username,
 
-                                    type:
-                                        NotificationType.PROJECT_MEMBER_ADDED,
+                                                email:
+                                                    projectUser.email
 
-                                    data: {
+                                            },
 
-                                        projectId:
-                                            project.id,
+                                            type:
+                                                NotificationType.PROJECT_MEMBER_ADDED,
 
-                                        projectName:
-                                            project.ProjectTitle ||
-                                            title.trim() ||
-                                            "مشروع",
+                                            data: {
 
-                                        addedBy:
-                                            addedByName
+                                                projectId:
+                                                    project.id,
+
+                                                projectName:
+                                                    project.ProjectTitle ||
+                                                    title.trim() ||
+                                                    "مشروع",
+
+                                                addedBy:
+                                                    addedByName
+
+                                            }
+
+                                        });
+
+                                    } catch (emailError) {
+
+                                        console.error(
+                                            "PROJECT MEMBER EMAIL ERROR:",
+                                            emailError
+                                        );
 
                                     }
 
-                                });
+                                }
+                            )
 
-                            } catch (emailError) {
-
-                                console.error(
-                                    "PROJECT MEMBER EMAIL ERROR:",
-                                    emailError
-                                );
-
-                            }
-
-                        }
+                        );
 
                     }
 
+                } catch (notificationError) {
+
+                    console.error(
+                        "PROJECT_MEMBER_ADDED notification error:",
+                        notificationError
+                    );
+
                 }
 
-            } catch (notificationError) {
-
-                console.error(
-                    "PROJECT_MEMBER_ADDED notification error:",
-                    notificationError
+                console.log(
+                    `🎉 اكتملت العمليات الخلفية للمشروع ${projectId}`
                 );
-
-            }
-
-            // ==========================================
-            // الرد النهائي
-            // ==========================================
-
-            return res.status(201).json({
-
-                message:
-                    "تم إنشاء المشروع بنجاح.",
-
-                project:
-                    project
 
             });
 
@@ -2566,20 +3238,26 @@ app.post(
                 error
             );
 
-            return res.status(500).json({
+            // إذا لم يتم إرسال response بعد
+            if (!res.headersSent) {
 
-                message:
-                    "حدث خطأ في السيرفر.",
+                return res.status(500).json({
 
-                error:
-                    error.message
+                    message:
+                        "حدث خطأ في السيرفر.",
 
-            });
+                    error:
+                        error.message
+
+                });
+
+            }
 
         }
 
     }
 );
+
 
 
 // =====================================================
@@ -2840,42 +3518,23 @@ app.patch(
             };
 
             // ==========================================
-            // تحديث صورة المشروع
+            // تحديث صورة المشروع — Google Drive
             // ==========================================
 
             if (req.file) {
 
-                const extension =
-                    path.extname(
-                        req.file.originalname
-                    ).toLowerCase() || ".png";
+                try {
 
-                const storageKey =
-                    `project-${Date.now()}-${Math.random()
-                        .toString(36)
-                        .substring(2, 10)}${extension}`;
+                    const uploadedImage =
+                        await uploadToGoogleDrive(req.file);
 
-                const {
-                    error: imageError
-                } =
-                    await supabase.storage
-                        .from("project-images")
-                        .upload(
-                            storageKey,
-                            req.file.buffer,
-                            {
-                                contentType:
-                                    req.file.mimetype,
+                    updateData.image_url =
+                        `/projects/image/${uploadedImage.id}`;
 
-                                upsert:
-                                    false
-                            }
-                        );
-
-                if (imageError) {
+                } catch (imageError) {
 
                     console.error(
-                        "PROJECT IMAGE UPDATE ERROR:",
+                        "PROJECT IMAGE UPDATE ERROR (Google Drive):",
                         imageError
                     );
 
@@ -2885,18 +3544,6 @@ app.patch(
                     });
 
                 }
-
-                const {
-                    data: imageData
-                } =
-                    supabase.storage
-                        .from("project-images")
-                        .getPublicUrl(
-                            storageKey
-                        );
-
-                updateData.image_url =
-                    imageData?.publicUrl || null;
 
             }
 
@@ -2975,6 +3622,10 @@ async function canAccessProjectFiles(
 // المرفقات القديمة للمشروع
 // =====================================================
 
+// =====================================================
+// جلب مرفقات المشروع — Google Drive
+// =====================================================
+
 app.get(
     "/projects/:id/attachments",
     verifyToken,
@@ -3013,32 +3664,41 @@ app.get(
 
             }
 
-            const folder =
-                `projects/${projectId}`;
+            // ==========================================
+            // جلب الملفات من جدول project_files
+            // ==========================================
 
             const {
                 data: files,
                 error
             } =
-                await supabase.storage
-                    .from("task-files")
-                    .list(
-                        folder,
+                await supabase
+                    .from("project_files")
+                    .select(`
+                        id,
+                        project_id,
+                        file_name,
+                        storage_path,
+                        file_type,
+                        file_size,
+                        uploaded_by,
+                        created_at
+                    `)
+                    .eq(
+                        "project_id",
+                        projectId
+                    )
+                    .order(
+                        "created_at",
                         {
-                            limit: 100,
-                            sortBy: {
-                                column:
-                                    "created_at",
-                                order:
-                                    "desc"
-                            }
+                            ascending: false
                         }
                     );
 
             if (error) {
 
                 console.error(
-                    "GET PROJECT ATTACHMENTS ERROR:",
+                    "GET PROJECT ATTACHMENTS DATABASE ERROR:",
                     error
                 );
 
@@ -3049,42 +3709,42 @@ app.get(
 
             }
 
+            // ==========================================
+            // تحويل بيانات قاعدة البيانات إلى الشكل
+            // الذي تتوقعه الواجهة
+            // ==========================================
+
             const attachments =
                 (files || []).map(file => {
 
-                    const filePath =
-                        `${folder}/${file.name}`;
-
-                    const {
-                        data
-                    } =
-                        supabase.storage
-                            .from("task-files")
-                            .getPublicUrl(
-                                filePath
-                            );
-
                     return {
 
+                        id:
+                            file.id,
+
                         name:
-                            decodeURIComponent(
-                                file.name.replace(
-                                    /^\d+_[a-z0-9]+_/i,
-                                    ""
-                                )
-                            ),
+                            file.file_name ||
+                            "ملف مرفق",
 
                         path:
-                            filePath,
+                            file.storage_path,
 
                         url:
-                            data?.publicUrl || null,
+                            file.storage_path,
 
                         size:
-                            file.metadata?.size || 0,
+                            Number(
+                                file.file_size || 0
+                            ),
 
                         type:
-                            file.metadata?.mimetype || ""
+                            file.file_type || "",
+
+                        uploaded_by:
+                            file.uploaded_by,
+
+                        created_at:
+                            file.created_at
 
                     };
 
@@ -3111,9 +3771,8 @@ app.get(
     }
 );
 
-
 // =====================================================
-// رفع مرفقات المشروع القديمة
+// رفع مرفقات المشروع — Google Drive
 // =====================================================
 
 app.post(
@@ -3187,74 +3846,117 @@ app.post(
 
             for (const file of req.files) {
 
+                // ==========================================
+                // رفع الملف إلى Google Drive
+                // ==========================================
+
+                const uploadedFile =
+                    await uploadToGoogleDrive(file);
+
+                const googleDriveFileId =
+                    uploadedFile.id;
+
+                // ==========================================
+                // رابط الملف من السيرفر
+                // ==========================================
+
+                const fileUrl =
+                    `/projects/file/${googleDriveFileId}`;
+
+                // ==========================================
+                // اسم الملف
+                // ==========================================
+
                 const safeName =
-                    encodeURIComponent(
+                    String(
                         file.originalname ||
                         "file"
-                    );
+                    ).trim() || "file";
 
-                const storageKey =
-                    `projects/${projectId}/${Date.now()}_${Math.random()
-                        .toString(36)
-                        .substring(2, 10)}_${safeName}`;
+                // ==========================================
+                // حفظ بيانات الملف في Supabase
+                // ==========================================
 
                 const {
-                    error: uploadError
+                    data: savedFile,
+                    error: insertError
                 } =
-                    await supabase.storage
-                        .from("task-files")
-                        .upload(
-                            storageKey,
-                            file.buffer,
-                            {
-                                contentType:
-                                    file.mimetype ||
-                                    "application/octet-stream",
+                    await supabase
+                        .from("project_files")
+                        .insert({
 
-                                upsert:
-                                    false
-                            }
-                        );
+                            project_id:
+                                projectId,
 
-                if (uploadError) {
+                            file_name:
+                                safeName,
+
+                            storage_path:
+                                fileUrl,
+
+                            file_type:
+                                file.mimetype ||
+                                "application/octet-stream",
+
+                            file_size:
+                                Number(
+                                    file.size || 0
+                                ),
+
+                            uploaded_by:
+                                req.user.id
+
+                        })
+                        .select(`
+                            id,
+                            project_id,
+                            file_name,
+                            storage_path,
+                            file_type,
+                            file_size,
+                            uploaded_by,
+                            created_at
+                        `)
+                        .single();
+
+                if (insertError) {
 
                     console.error(
-                        "PROJECT FILE UPLOAD ERROR:",
-                        uploadError
+                        "PROJECT FILE DATABASE ERROR:",
+                        insertError
                     );
 
                     return res.status(500).json({
                         message:
-                            "فشل رفع أحد ملفات المشروع."
+                            "تم رفع الملف ولكن فشل حفظ بياناته."
                     });
 
                 }
 
-                const {
-                    data
-                } =
-                    supabase.storage
-                        .from("task-files")
-                        .getPublicUrl(
-                            storageKey
-                        );
-
                 uploaded.push({
 
+                    id:
+                        savedFile.id,
+
                     name:
-                        file.originalname,
+                        safeName,
 
                     path:
-                        storageKey,
+                        fileUrl,
 
                     url:
-                        data?.publicUrl || null,
+                        fileUrl,
 
                     size:
-                        file.size || 0,
+                        Number(
+                            file.size || 0
+                        ),
 
                     type:
-                        file.mimetype || ""
+                        file.mimetype || "",
+
+                    google_drive_file_id:
+                        googleDriveFileId
 
                 });
 
@@ -3286,7 +3988,6 @@ app.post(
 
     }
 );
-
 
 // =====================================================
 // حذف مرفق مشروع قديم
@@ -3471,14 +4172,8 @@ async function getWorkspaceMembers(
 // لا يوجد أي JOIN مع users هنا.
 // =====================================================
 
-async function listProjectFiles(
-    projectId
-) {
-
-    const {
-        data: savedFiles,
-        error: filesError
-    } =
+async function listProjectFiles(projectId) {
+    const { data: savedFiles, error: filesError } =
         await supabase
             .from("project_files")
             .select(`
@@ -3491,75 +4186,33 @@ async function listProjectFiles(
                 uploaded_by,
                 created_at
             `)
-            .eq(
-                "project_id",
-                projectId
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
+            .eq("project_id", projectId)
+            .order("created_at", {
+                ascending: false
+            });
 
     if (filesError) {
+        if (filesError.code === "PGRST205") {
+            const migrationError = new Error(
+                "قاعدة بيانات ملفات المشروع غير مهيأة. طبّق ترقية project_files ثم أعد المحاولة."
+            );
 
-        if (
-            filesError.code ===
-            "PGRST205"
-        ) {
-
-            const migrationError =
-                new Error(
-                    "قاعدة بيانات ملفات المشروع غير مهيأة. طبّق ترقية project_files ثم أعد المحاولة."
-                );
-
-            migrationError.status =
-                503;
+            migrationError.status = 503;
 
             throw migrationError;
-
         }
 
         throw filesError;
-
     }
 
-    // ==========================================
-    // الملفات القديمة
-    // ==========================================
-
-    const {
-        data: legacyFiles,
-        error: legacyError
-    } =
-        await supabase.storage
-            .from(
-                LEGACY_PROJECT_FILES_BUCKET
+    return (savedFiles || [])
+        .map(file =>
+            projectFilePayload(
+                file,
+                projectId
             )
-            .list(
-                `projects/${projectId}`,
-                {
-                    limit: 100,
-
-                    sortBy: {
-                        column:
-                            "created_at",
-
-                        order:
-                            "desc"
-                    }
-                }
-            );
-
-    if (legacyError) {
-
-        console.error(
-            "LIST LEGACY PROJECT FILES ERROR:",
-            legacyError
         );
 
-    }
 
     // ==========================================
     // دمج الملفات
@@ -3984,7 +4637,10 @@ async function getProjectFileForRequest(
         !Number.isInteger(fileId) ||
         fileId <= 0
     ) {
-
+        console.log("❌ INVALID PROJECT FILE ID:", {
+            raw: req.params.fileId,
+            parsed: fileId
+        });
         res.status(400).json({
             message:
                 "معرف الملف غير صحيح."
@@ -5194,7 +5850,7 @@ app.post(
             }
 
             // =================================================
-            // رفع الملفات
+            // رفع الملفات إلى Google Drive
             // =================================================
 
             let attachmentUrl = null;
@@ -5216,48 +5872,28 @@ app.post(
                         // ignore
                     }
 
-                    const ext = path.extname(displayName).toLowerCase() || "";
-                    const storageKey = `${Date.now()}_${Math.random().toString(36).substring(2, 10)}${ext}`;
+                    try {
 
-                    const {
-                        error: uploadError
-                    } = await supabase.storage
-                        .from("task-files")
-                        .upload(
-                            storageKey,
-                            file.buffer,
-                            {
-                                contentType:
-                                    file.mimetype || "application/octet-stream",
-                                upsert: false
-                            }
-                        );
+                        const uploadedFile =
+                            await uploadToGoogleDrive(file);
 
-                    if (uploadError) {
+                        uploadedFiles.push({
+                            name: displayName,
+                            url: `/projects/file/${uploadedFile.id}`,
+                            size: file.size || 0,
+                            type: file.mimetype || "application/octet-stream",
+                            google_drive_file_id: uploadedFile.id
+                        });
+
+                    } catch (uploadError) {
+
                         console.error(
-                            "File upload error for",
+                            "Task file Google Drive upload error for",
                             displayName,
                             uploadError
                         );
                         continue;
-                    }
 
-                    const {
-                        data
-                    } =
-                        supabase.storage
-                            .from("task-files")
-                            .getPublicUrl(
-                                storageKey
-                            );
-
-                    if (data && data.publicUrl) {
-                        uploadedFiles.push({
-                            name: displayName,
-                            url: data.publicUrl,
-                            size: file.size || 0,
-                            type: file.mimetype || "application/octet-stream"
-                        });
                     }
                 }
 
@@ -6128,40 +6764,28 @@ app.patch("/tasks/:taskId", verifyToken, requireRole("owner", "manager", "admin"
 
                 }
 
-                const extension =
-                    path.extname(displayName).toLowerCase() || "";
+                try {
 
-                const storageKey =
-                    `${Date.now()}_${Math.random().toString(36).substring(2, 10)}${extension}`;
+                    const uploadedFile =
+                        await uploadToGoogleDrive(file);
 
-                const { error: uploadError } = await supabase.storage
-                    .from("task-files")
-                    .upload(storageKey, file.buffer, {
-                        contentType:
-                            file.mimetype || "application/octet-stream",
-                        upsert: false
+                    attachments.push({
+                        name: displayName,
+                        url: `/projects/file/${uploadedFile.id}`,
+                        size: file.size || 0,
+                        type: file.mimetype || "application/octet-stream",
+                        google_drive_file_id: uploadedFile.id
                     });
 
-                if (uploadError) {
+                } catch (uploadError) {
 
-                    console.error("TASK EDIT FILE UPLOAD ERROR:", uploadError);
+                    console.error("TASK EDIT FILE GOOGLE DRIVE UPLOAD ERROR:", uploadError);
 
                     return res.status(500).json({
                         message: "فشل رفع أحد الملفات المرفقة."
                     });
 
                 }
-
-                const { data: publicUrlData } = supabase.storage
-                    .from("task-files")
-                    .getPublicUrl(storageKey);
-
-                attachments.push({
-                    name: displayName,
-                    url: publicUrlData.publicUrl,
-                    size: file.size || 0,
-                    type: file.mimetype || "application/octet-stream"
-                });
 
             }
 
@@ -11398,7 +12022,7 @@ app.post(
                 is_private,
                 members
             } = req.body;
-
+            console.log("🖼️ SERVER CHANNEL IMAGE URL:", image_url);
 
             if (
                 !name ||
@@ -12121,9 +12745,8 @@ app.get(
     }
 );
 
-
 // =====================================================
-// UPLOAD CHANNEL IMAGE
+// UPLOAD CHANNEL IMAGE TO GOOGLE DRIVE
 // =====================================================
 
 app.post(
@@ -12134,9 +12757,7 @@ app.post(
         "manager",
         "admin"
     ),
-    upload.single(
-        "channelImage"
-    ),
+    upload.single("channelImage"),
     async (req, res) => {
 
         try {
@@ -12144,8 +12765,7 @@ app.post(
             if (!req.file) {
 
                 return res.status(400).json({
-                    message:
-                        "لم يتم اختيار صورة."
+                    message: "لم يتم اختيار صورة."
                 });
 
             }
@@ -12166,8 +12786,7 @@ app.post(
             ) {
 
                 return res.status(400).json({
-                    message:
-                        "نوع الصورة غير مدعوم."
+                    message: "نوع الصورة غير مدعوم."
                 });
 
             }
@@ -12187,76 +12806,22 @@ app.post(
             }
 
 
-            const extension =
-                projectImageFile.originalname
-                    .split(".")
-                    .pop()
-                    .toLowerCase();
-
-
-            const fileName =
-                `channels/${Date.now()}-${Math.random()
-                    .toString(36)
-                    .substring(2)}.${extension}`;
-
-
-            const {
-                error:
-                uploadError
-            } =
-                await supabase
-                    .storage
-                    .from(
-                        "channel-images"
-                    )
-                    .upload(
-                        fileName,
-                        projectImageFile.buffer,
-                        {
-
-                            contentType:
-                                projectImageFile.mimetype,
-
-                            upsert: false
-
-                        }
-                    );
-
-
-            if (uploadError) {
-
-                console.error(
-                    "CHANNEL IMAGE UPLOAD ERROR:",
-                    uploadError
+            // رفع الصورة إلى Google Drive
+            const uploadedFile =
+                await uploadToGoogleDrive(
+                    req.file
                 );
-
-                return res.status(500).json({
-                    message:
-                        "فشل رفع صورة القناة."
-                });
-
-            }
-
-
-            const {
-                data:
-                publicUrlData
-            } =
-                supabase
-                    .storage
-                    .from(
-                        "channel-images"
-                    )
-                    .getPublicUrl(
-                        fileName
-                    );
 
 
             return res.json({
 
+                success: true,
+
                 image_url:
-                    publicUrlData
-                        .publicUrl
+                    `/channels/image/${uploadedFile.id}`,
+
+                google_drive_file_id:
+                    uploadedFile.id
 
             });
 
@@ -12276,7 +12841,6 @@ app.post(
 
     }
 );
-
 
 // =====================================================
 // GET CHANNEL MESSAGES

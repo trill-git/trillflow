@@ -87,26 +87,11 @@ async function loadMyTasks() {
             });
 
 
-        console.log(
-            "MY TASKS STATUS:",
-            response.status
-        );
-
-
-        console.log(
-            "MY TASKS URL:",
-            response.url
-        );
 
 
         const rawResponse =
             await response.text();
 
-
-        console.log(
-            "MY TASKS RAW RESPONSE:",
-            rawResponse
-        );
 
 
         if (!response.ok) {
@@ -122,10 +107,6 @@ async function loadMyTasks() {
             JSON.parse(rawResponse);
 
 
-        console.log(
-            "MY TASKS DATA:",
-            data
-        );
 
 
         // =================================================
