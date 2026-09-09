@@ -169,7 +169,7 @@ async function checkTaskPermission() {
 
         const response =
             await fetch(
-                "http://localhost:3000/user",
+                "/user",
                 {
                     credentials: "include"
                 }

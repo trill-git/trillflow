@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
 
         const response = await fetch(
-            "http://localhost:3000/check-session",
+            "/check-session",
             {
                 method: "GET",
                 credentials: "include"
