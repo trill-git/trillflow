@@ -85,7 +85,7 @@ loginbtn.addEventListener("click", async (e) => {
 
     try {
 
-        const response = await fetch("http://localhost:3000/signin", {
+        const response = await fetch("/signin", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -162,7 +162,7 @@ signupbtn.addEventListener("click", async (e) => {
     btntext2.textContent = "جاري التحميل...";
     try {
 
-        const response = await fetch("http://localhost:3000/signup", {
+        const response = await fetch("/signup", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

@@ -278,7 +278,7 @@ async function loadTaskMembers() {
 
         const response =
             await fetch(
-                `http://localhost:3000/projects/${projectId}/members`,
+                `/projects/${projectId}/members`,
                 {
                     credentials: "include"
                 }
@@ -777,7 +777,7 @@ if (createTaskbtn) {
 
                 const response =
                     await fetch(
-                        "http://localhost:3000/addtask",
+                        "/addtask",
                         {
 
                             method: "POST",
@@ -1670,7 +1670,7 @@ if (confirmDeleteBtn) {
 
                 const response =
                     await fetch(
-                        `http://localhost:3000/tasks/${currentTaskId}`,
+                        `/tasks/${currentTaskId}`,
                         {
 
                             method: "DELETE",
@@ -2123,7 +2123,7 @@ async function loadKanbanProject() {
 
         const projectResponse =
             await fetch(
-                `http://localhost:3000/projects/${projectId}`,
+                `/projects/${projectId}`,
                 {
                     credentials:
                         "include"
@@ -2159,7 +2159,7 @@ async function loadKanbanProject() {
 
         const tasksResponse =
             await fetch(
-                `http://localhost:3000/tasks/${projectId}`,
+                `/tasks/${projectId}`,
                 {
                     credentials:
                         "include"
@@ -3902,7 +3902,7 @@ kanbanWrappers.forEach(
 
                     const response =
                         await fetch(
-                            `http://localhost:3000/tasks/${taskId}/status`,
+                            `/tasks/${taskId}/status`,
                             {
 
                                 method: "PATCH",

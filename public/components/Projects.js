@@ -230,7 +230,7 @@ projectContent?.addEventListener(
 
                 const response =
                     await fetch(
-                        `http://localhost:3000/projects/${projectId}`,
+                        `/projects/${projectId}`,
                         {
                             method: "DELETE",
 
@@ -374,7 +374,7 @@ async function checkProjectPermission() {
 
         const response =
             await fetch(
-                "http://localhost:3000/user",
+                "/user",
                 {
                     credentials:
                         "include"
@@ -502,7 +502,7 @@ async function loadProjects() {
 
         const response =
             await fetch(
-                "http://localhost:3000/projects",
+                "/projects",
                 {
                     credentials:
                         "include"
@@ -674,7 +674,7 @@ async function loadProjectMemberNames() {
 
             const response =
                 await fetch(
-                    `http://localhost:3000/projects/${projectId}/members`,
+                    `/projects/${projectId}/members`,
                     {
                         credentials:
                             "include"
@@ -775,7 +775,7 @@ async function loadUsersForProjectForm() {
 
         const response =
             await fetch(
-                "http://localhost:3000/users",
+                "/users",
                 {
                     credentials:
                         "include"
@@ -1027,7 +1027,7 @@ createProjectBtn?.addEventListener(
 
                 const usersResponse =
                     await fetch(
-                        "http://localhost:3000/users",
+                        "/users",
                         {
                             credentials:
                                 "include"
@@ -1172,7 +1172,7 @@ createProjectBtn?.addEventListener(
 
             const response =
                 await fetch(
-                    "http://localhost:3000/addproject",
+                    "/addproject",
                     {
                         method: "POST",
 
