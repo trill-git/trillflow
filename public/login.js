@@ -21,44 +21,42 @@ btnclose.addEventListener("click", () => {
 // التحقق من جلسة تسجيل الدخول الحالية
 // =====================================================
 
-document.addEventListener("DOMContentLoaded", async () => {
+// document.addEventListener("DOMContentLoaded", async () => {
 
-    try {
+//     try {
 
-        const response = await fetch(
-            "/check-session",
-            {
-                method: "GET",
-                credentials: "include"
-            }
-        );
+//         const response = await fetch(
+//             "/check-session",
+//             {
+//                 method: "GET",
+//                 credentials: "include"
+//             }
+//         );
 
-        if (response.ok) {
+//         if (response.ok) {
 
-            console.log(
-                "✅ المستخدم مسجل دخول بالفعل"
-            );
+//             console.log(
+//                 "✅ المستخدم مسجل دخول بالفعل"
+//             );
 
-            window.location.href = "/dashboard";
+//             window.location.href = "/dashboard";
 
-        } else {
+//         } else {
 
-            console.log(
-                "🔐 لا توجد جلسة، يجب تسجيل الدخول"
-            );
 
-        }
 
-    } catch (error) {
+//         }
 
-        console.error(
-            "❌ Session check error:",
-            error
-        );
+//     } catch (error) {
 
-    }
+//         console.error(
+//             "❌ Session check error:",
+//             error
+//         );
 
-});
+//     }
+
+// });
 ////////////////////////login////////////////////////////////
 const username = document.getElementById("username");
 const email = document.getElementById("email");
@@ -136,80 +134,80 @@ loginbtn.addEventListener("click", async (e) => {
 // ==========================================
 /////////////signup انشاء الحساب ////////
 // ==========================================
-const signupform = document.getElementById("signupform");
-const showSigninBtn = document.getElementById("showSigninBtn");
-const btnclose2 = document.getElementById("btn-close2");
-const signupbtn = document.getElementById("signupbtn");
-const signupusername = document.getElementById("signupusername");
-const signupemail = document.getElementById("signupemail");
-const signuppassword = document.getElementById("signuppassword");
-const btntext2 = document.getElementById("btntext2");
-const loginCard2 = document.getElementById("loginCard2");
+// const signupform = document.getElementById("signupform");
+// const showSigninBtn = document.getElementById("showSigninBtn");
+// const btnclose2 = document.getElementById("btn-close2");
+// const signupbtn = document.getElementById("signupbtn");
+// const signupusername = document.getElementById("signupusername");
+// const signupemail = document.getElementById("signupemail");
+// const signuppassword = document.getElementById("signuppassword");
+// const btntext2 = document.getElementById("btntext2");
+// const loginCard2 = document.getElementById("loginCard2");
 ////////show and hide signup form//////
-showSigninBtn.addEventListener("click", () => {
-    signinform.style.display = "none";
-    signupform.style.display = "flex";
-});
-btnclose2.addEventListener("click", () => {
-    signupform.style.display = "none";
-});
+// showSigninBtn.addEventListener("click", () => {
+//     signinform.style.display = "none";
+//     signupform.style.display = "flex";
+// });
+// btnclose2.addEventListener("click", () => {
+//     signupform.style.display = "none";
+// });
 
 /// Sending data to the backend
-signupbtn.addEventListener("click", async (e) => {
-    e.preventDefault();
+// signupbtn.addEventListener("click", async (e) => {
+//     e.preventDefault();
 
 
-    btntext2.textContent = "جاري التحميل...";
-    try {
+//     btntext2.textContent = "جاري التحميل...";
+//     try {
 
-        const response = await fetch("/signup", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                signupusername: signupusername.value,
-                signupemail: signupemail.value,
-                signuppassword: signuppassword.value
-            })
-        });
-
-
-        const result = await response.json();
+//         const response = await fetch("/signup", {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json"
+//             },
+//             body: JSON.stringify({
+//                 signupusername: signupusername.value,
+//                 signupemail: signupemail.value,
+//                 signuppassword: signuppassword.value
+//             })
+//         });
 
 
-        if (!response.ok) {
-
-            message2.textContent = result.message;
-            messageBox2.style.display = "flex";
-
-            setTimeout(() => {
-                messageBox2.style.display = "none";
-            }, 3000);
-
-            return;
-        }
+//         const result = await response.json();
 
 
-        // نجاح التسجيل
-        window.location.href = "/dashboard";
+//         if (!response.ok) {
+
+//             message2.textContent = result.message;
+//             messageBox2.style.display = "flex";
+
+//             setTimeout(() => {
+//                 messageBox2.style.display = "none";
+//             }, 3000);
+
+//             return;
+//         }
 
 
-    } catch (error) {
-
-        message2.textContent = "حدث خطأ في الاتصال بالسيرفر.";
-        messageBox2.style.display = "flex";
+// نجاح التسجيل
+//     window.location.href = "/dashboard";
 
 
-    } finally {
+// } catch (error) {
 
-        // يشتغل دائما بعد انتهاء الطلب
-        btntext2.textContent = "إنشاء حساب";
-        signupbtn.disabled = false;
+//     message2.textContent = "حدث خطأ في الاتصال بالسيرفر.";
+//     messageBox2.style.display = "flex";
 
-    }
 
-});
+// } finally {
+
+// يشتغل دائما بعد انتهاء الطلب
+//         btntext2.textContent = "إنشاء حساب";
+//         signupbtn.disabled = false;
+
+//     }
+
+// });
 
 ///////////////////////////preloader/////////////////////////////////
 document.addEventListener("DOMContentLoaded", () => {

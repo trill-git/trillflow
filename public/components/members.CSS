@@ -1,3 +1,7 @@
+#teamPage {
+    animation: fade-up var(--t-slow) var(--e-out) both;
+}
+
 /* =========================================================
    MEMBERS SECTION — PROFESSIONAL TEAM DIRECTORY
 ========================================================= */

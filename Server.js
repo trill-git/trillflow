@@ -2599,133 +2599,133 @@ app.get("/users", verifyToken, async (req, res) => {
 // إنشاء حساب
 // =====================================================
 
-app.post(
-    "/signup",
-    async (req, res) => {
+// app.post(
+//     "/signup",
+//     async (req, res) => {
 
-        try {
+//         try {
 
-            const {
-                signupusername,
-                signupemail,
-                signuppassword
-            } = req.body;
+//             const {
+//                 signupusername,
+//                 signupemail,
+//                 signuppassword
+//             } = req.body;
 
-            if (
-                !signupusername ||
-                !signupemail ||
-                !signuppassword
-            ) {
+//             if (
+//                 !signupusername ||
+//                 !signupemail ||
+//                 !signuppassword
+//             ) {
 
-                return res.status(400).json({
-                    message:
-                        "يرجى إدخال جميع الحقول."
-                });
+//                 return res.status(400).json({
+//                     message:
+//                         "يرجى إدخال جميع الحقول."
+//                 });
 
-            }
+//             }
 
-            // =================================================
-            // التأكد أن الحساب غير موجود
-            // =================================================
+// =================================================
+// التأكد أن الحساب غير موجود
+// =================================================
 
-            const {
-                data: user,
-                error
-            } = await supabase
-                .from("users")
-                .select("id")
-                .eq(
-                    "email",
-                    signupemail
-                )
-                .maybeSingle();
+// const {
+//     data: user,
+//     error
+// } = await supabase
+//     .from("users")
+//     .select("id")
+//     .eq(
+//         "email",
+//         signupemail
+//     )
+//     .maybeSingle();
 
-            if (error) {
+// if (error) {
 
-                console.error(
-                    "Signup user lookup error:",
-                    error
-                );
+//     console.error(
+//         "Signup user lookup error:",
+//         error
+//     );
 
-                return res.status(500).json({
-                    message:
-                        "حدث خطأ في الخادم."
-                });
+//     return res.status(500).json({
+//         message:
+//             "حدث خطأ في الخادم."
+//     });
 
-            }
+// }
 
-            if (user) {
+// if (user) {
 
-                return res.status(409).json({
-                    message:
-                        "الحساب موجود بالفعل، يرجى تسجيل الدخول."
-                });
+//     return res.status(409).json({
+//         message:
+//             "الحساب موجود بالفعل، يرجى تسجيل الدخول."
+//     });
 
-            }
+// }
 
-            // =================================================
-            // إنشاء المستخدم
-            // =================================================
+// =================================================
+// إنشاء المستخدم
+// =================================================
 
-            const {
-                data,
-                error: insertError
-            } = await supabase
-                .from("users")
-                .insert([
-                    {
-                        username:
-                            signupusername,
+//             const {
+//                 data,
+//                 error: insertError
+//             } = await supabase
+//                 .from("users")
+//                 .insert([
+//                     {
+//                         username:
+//                             signupusername,
 
-                        email:
-                            signupemail,
+//                         email:
+//                             signupemail,
 
-                        password:
-                            signuppassword
-                    }
-                ])
-                .select();
+//                         password:
+//                             signuppassword
+//                     }
+//                 ])
+//                 .select();
 
-            if (insertError) {
+//             if (insertError) {
 
-                console.error(
-                    "Signup insert error:",
-                    insertError
-                );
+//                 console.error(
+//                     "Signup insert error:",
+//                     insertError
+//                 );
 
-                return res.status(500).json({
-                    message:
-                        "فشل إنشاء الحساب."
-                });
+//                 return res.status(500).json({
+//                     message:
+//                         "فشل إنشاء الحساب."
+//                 });
 
-            }
+//             }
 
-            return res.status(201).json({
+//             return res.status(201).json({
 
-                message:
-                    "تم إنشاء الحساب بنجاح.",
+//                 message:
+//                     "تم إنشاء الحساب بنجاح.",
 
-                user:
-                    data
+//                 user:
+//                     data
 
-            });
+//             });
 
-        } catch (error) {
+//         } catch (error) {
 
-            console.error(
-                "POST /signup ERROR:",
-                error
-            );
+//             console.error(
+//                 "POST /signup ERROR:",
+//                 error
+//             );
 
-            return res.status(500).json({
-                message:
-                    "حدث خطأ في الخادم."
-            });
+//             return res.status(500).json({
+//                 message:
+//                     "حدث خطأ في الخادم."
+//             });
 
-        }
+//         }
 
-    }
-);
+//     }
+// );
 
 // =====================================================
 // تسجيل الخروج
@@ -7576,7 +7576,7 @@ app.get(
                     // =========================================
                     // TASK MEMBERS
                     // =========================================
-                    
+
                     const taskMembers =
                         (allTaskMembers || [])
 

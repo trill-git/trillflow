@@ -24,6 +24,8 @@
         sans-serif;
 
     overflow-y: auto;
+    animation: fade-up var(--t-slow) var(--e-out) both;
+
 }
 
 
