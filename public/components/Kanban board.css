@@ -3244,7 +3244,7 @@
 }
 
 
-.comment-link-input-group .input-with-icon input:not([dir="ltr"]) ~ svg,
+.comment-link-input-group .input-with-icon input:not([dir="ltr"])~svg,
 .comment-link-input-group:not(:has(input[dir="ltr"])) .input-with-icon svg {
     left:
         auto;

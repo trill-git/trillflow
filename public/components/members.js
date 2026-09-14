@@ -837,7 +837,10 @@ function openEditUserModal(user) {
 
     editUserAvatar.textContent =
         user.username?.charAt(0) || "؟";
-
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
     // الحذف متاح للمالك فقط، ولا يمكن حذف المالك أو الحساب الحالي.
     if (deleteUserBtn) {
 

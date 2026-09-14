@@ -2121,37 +2121,43 @@ async function loadKanbanProject() {
         // جلب المشروع
         // ==================================================
 
-        const projectResponse =
-            await fetch(
-                `/projects/${projectId}`,
-                {
-                    credentials:
-                        "include"
-                }
+        const projectResponse = await fetch(
+            `/projects/${projectId}`,
+            {
+                credentials: "include"
+            }
+        );
+
+        // المشروع غير موجود أو المستخدم ما عنده صلاحية
+        if (!projectResponse.ok) {
+
+            console.warn(
+                `Project ${projectId} غير متاح. سيتم حذف المشروع الحالي من localStorage.`
             );
 
+            localStorage.removeItem("currentProject");
 
-        const project =
-            await projectResponse.json();
+            const projectName =
+                document.getElementById("projectName");
 
+            if (projectName) {
+                projectName.textContent = "";
+            }
 
-        const projectName =
-            document.getElementById(
-                "projectName"
-            );
-
-
-        if (
-            projectName &&
-            project
-        ) {
-
-            projectName.textContent =
-                project.ProjectTitle ||
-                "";
-
+            return;
         }
 
+        const project = await projectResponse.json();
+
+        const projectName =
+            document.getElementById("projectName");
+
+        if (projectName && project) {
+
+            projectName.textContent =
+                project.ProjectTitle || "";
+
+        }
 
         // ==================================================
         // جلب التاسكات

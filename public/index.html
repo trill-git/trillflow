@@ -126,11 +126,20 @@
 
         <!-- ============================= login ============================= -->
         <div class="signin" id="signinform">
+            <!--  message box -->
+            <div id="messageBox" class="message-box">
+                <div id="messageBoxIcon" class="message-box-icon"></div>
 
-            <!-- error -->
-            <div id="messagebox">
-                <h1 id="message"></h1>
+                <div class="message-box-content">
+                    <div id="messageBoxTitle" class="message-box-title"></div>
+                    <div id="messageBoxText" class="message-box-text"></div>
+                </div>
+
+                <button id="messageBoxClose" type="button">
+                    ×
+                </button>
             </div>
+
             <img src="assets/dashboard.png" alt="" class="signimg">
 
             <button id="btn-close">x</button>

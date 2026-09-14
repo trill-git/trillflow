@@ -212,14 +212,11 @@
 
         if (!response.ok) {
 
-            throw new Error(
-
+            showMessage(
                 data?.message ||
-
                 data?.error ||
-
-                `HTTP ${response.status}`
-
+                `HTTP ${response.status}`,
+                "error"
             );
 
         }
@@ -249,9 +246,7 @@
             ChannelsState.initialized
         ) {
 
-            console.warn(
-                "⚠️ Channels already initialized."
-            );
+
 
             return;
 
@@ -1897,10 +1892,10 @@
 
         if (invalidFiles.length) {
 
-            alert(
-                "يمكنك إرفاق الصور فقط."
+            showMessage(
+                "يمكنك إرفاق الصور فقط.",
+                "warning"
             );
-
         }
 
 
@@ -1926,8 +1921,9 @@
 
         if (oversized.length) {
 
-            alert(
-                "حجم الصورة يجب ألا يتجاوز 10MB."
+            showMessage(
+                "حجم الصورة يجب ألا يتجاوز 10MB.",
+                "warning"
             );
 
         }
@@ -2880,10 +2876,11 @@
             );
 
 
-            alert(
+            showMessage(
                 error.message ||
                 "فشل فتح القناة."
             );
+
 
         }
 
@@ -4089,7 +4086,7 @@
             );
 
 
-            alert(
+            showMessage(
                 error.message ||
                 "فشل إرسال الرسالة."
             );
@@ -4202,7 +4199,7 @@
             );
 
 
-            alert(
+            showMessage(
                 error.message ||
                 "فشل تعديل الرسالة."
             );
@@ -4263,7 +4260,7 @@
             );
 
 
-            alert(
+            showMessage(
                 error.message ||
                 "فشل حذف الرسالة."
             );
@@ -4319,7 +4316,7 @@
             );
 
 
-            alert(
+            showMessage(
                 error.message ||
                 "فشل تثبيت الرسالة."
             );
@@ -4674,7 +4671,7 @@
             )
         ) {
 
-            alert(
+            showMessage(
                 "اختر ملف صورة فقط."
             );
 
@@ -4693,8 +4690,9 @@
             5 * 1024 * 1024
         ) {
 
-            alert(
-                "حجم الصورة يجب ألا يتجاوز 5MB."
+            showMessage(
+                "حجم الصورة يجب ألا يتجاوز 5MB.",
+                "warning"
             );
 
 
@@ -4877,10 +4875,10 @@
 
         if (!name) {
 
-            alert(
-                "اكتب اسم القناة."
+            showMessage(
+                "اكتب اسم القناة.",
+                "warning"
             );
-
 
             return;
 
@@ -5057,15 +5055,13 @@
 
         } catch (error) {
 
-            console.error(
-                "❌ SAVE CHANNEL ERROR:",
-                error
-            );
 
 
-            alert(
+
+            showMessage(
                 error.message ||
-                "حدث خطأ أثناء حفظ القناة."
+                "حدث خطأ أثناء حفظ القناة.",
+                "error"
             );
 
         }
@@ -5085,8 +5081,9 @@
 
         if (!channel) {
 
-            alert(
-                "حدد قناة أولاً."
+            showMessage(
+                "حدد قناة أولاً.",
+                "error"
             );
 
 
@@ -5107,8 +5104,9 @@
 
         ) {
 
-            alert(
-                "رقم القناة غير صحيح."
+            showMessage(
+                "رقم القناة غير صحيح.",
+                "error"
             );
 
 
@@ -5127,8 +5125,9 @@
 
         if (!modal) {
 
-            alert(
-                "عنصر حذف القناة غير موجود في HTML."
+            showMessage(
+                "عنصر حذف القناة غير موجود في HTML.",
+                "error"
             );
 
 
@@ -5289,8 +5288,9 @@
 
         ) {
 
-            alert(
-                "رقم القناة غير صحيح."
+            showMessage(
+                "رقم القناة غير صحيح.",
+                "error"
             );
 
 
@@ -5451,9 +5451,10 @@
             );
 
 
-            alert(
+            showMessage(
                 error?.message ||
-                "فشل حذف القناة."
+                "فشل حذف القناة.",
+                "error"
             );
 
 
@@ -5498,8 +5499,9 @@
 
         if (!channel) {
 
-            alert(
-                "حدد قناة أولاً."
+            showMessage(
+                "حدد قناة أولاً.",
+                "warning"
             );
 
 
