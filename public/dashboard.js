@@ -350,7 +350,7 @@ if (
 
                     } catch (error) {
 
-            
+
 
                     }
 
@@ -2110,7 +2110,7 @@ async function loadDashboardAnalytics() {
             await response.json();
 
 
-     
+
 
         // =================================================
         // SUMMARY
@@ -2582,7 +2582,24 @@ async function loadDashboardAnalytics() {
     }
 
 }
+async function updatePresence() {
+    try {
+        const response = await fetch("/api/presence", {
+            method: "POST",
+            credentials: "include"
+        });
 
+        if (!response.ok) {
+            console.error("Presence update failed:", response.status);
+        }
+    } catch (error) {
+        console.error("Presence update error:", error);
+    }
+}
+
+updatePresence();
+
+setInterval(updatePresence, 30000);
 
 // =====================================================
 // START DASHBOARD

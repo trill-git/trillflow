@@ -2,9 +2,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 });
 
+
 // ==================================================
-// التحقق من صلاحية المستخدم
+// المتغيرات العامة
 // ==================================================
+
 let currentUserRole = null;
 let currentUserId = null;
 let editingUser = null;
@@ -13,26 +15,120 @@ let editingUser = null;
 // ==================================================
 // حالة المستخدم — نشط / غير نشط
 // ==================================================
+
 function isUserOnline(lastSeenAt) {
 
     if (!lastSeenAt) {
         return false;
     }
 
-    const lastSeen =
-        new Date(lastSeenAt).getTime();
+    const lastSeen = new Date(lastSeenAt).getTime();
 
     if (Number.isNaN(lastSeen)) {
         return false;
     }
 
-    const now =
-        Date.now();
+    const now = Date.now();
 
     // المستخدم يعتبر نشط إذا كان آخر ظهور خلال 90 ثانية
-    return (
-        now - lastSeen
-    ) <= 90 * 1000;
+    return (now - lastSeen) <= 90 * 1000;
+
+}
+
+
+// ==================================================
+// تحديث حالة المستخدمين الموجودين على الصفحة
+// ==================================================
+
+function updateMemberStatuses(users) {
+    const now = Date.now();
+    const ONLINE_THRESHOLD = 90 * 1000;
+
+    users.forEach(user => {
+        if (!user.last_seen_at) {
+            return;
+        }
+
+        const lastSeen = new Date(user.last_seen_at).getTime();
+        const online = (now - lastSeen) <= ONLINE_THRESHOLD;
+
+        const statusElement = document.querySelector(
+            `.member-status[data-status-user-id="${user.id}"]`
+        );
+
+        if (!statusElement) {
+            return;
+        }
+
+        const statusDot = statusElement.querySelector(
+            ".member-status-dot"
+        );
+
+        const statusTextElement = statusElement.querySelector(
+            ".member-status-text"
+        );
+
+        if (online) {
+            statusElement.classList.remove("offline");
+            statusElement.classList.add("online");
+
+            if (statusTextElement) {
+                statusTextElement.textContent = "نشط";
+            }
+
+            if (statusDot) {
+                statusDot.classList.remove("offline");
+                statusDot.classList.add("online");
+            }
+        } else {
+            statusElement.classList.remove("online");
+            statusElement.classList.add("offline");
+
+            if (statusTextElement) {
+                statusTextElement.textContent = "غير نشط";
+            }
+
+            if (statusDot) {
+                statusDot.classList.remove("online");
+                statusDot.classList.add("offline");
+            }
+        }
+    });
+}
+
+// ==================================================
+// تحديث الحالات من السيرفر
+// ==================================================
+
+async function refreshMemberStatuses() {
+
+    try {
+
+        const response = await fetch(
+            "/users",
+            {
+                method: "GET",
+                credentials: "include",
+                cache: "no-store"
+            }
+        );
+
+        if (!response.ok) {
+            return;
+        }
+
+        const users = await response.json();
+
+        updateMemberStatuses(users);
+
+    } catch (error) {
+
+        console.error(
+            "❌ refreshMemberStatuses:",
+            error
+        );
+
+    }
 
 }
 
@@ -40,44 +136,46 @@ function isUserOnline(lastSeenAt) {
 // ==================================================
 // التحقق من صلاحية المستخدم
 // ==================================================
+
 async function checkMemberPermission() {
 
     try {
 
-        const response =
-            await fetch(
-                "/user",
-                {
-                    method: "GET",
-                    credentials: "include"
-                }
-            );
+        const response = await fetch(
+            "/user",
+            {
+                method: "GET",
+                credentials: "include"
+            }
+        );
 
         if (!response.ok) {
             return;
         }
 
-        const user =
-            await response.json();
+        const user = await response.json();
 
-        currentUserRole =
-            user.role;
+        currentUserRole = user.role;
 
-        currentUserId =
-            String(user.id);
+        currentUserId = String(user.id);
 
 
-        if (
-            currentUserRole === "member"
-        ) {
+        const addMemberBtn =
+            document.getElementById("addMemberBtn");
 
-            addMemberBtn.style.display =
-                "none";
+
+        if (!addMemberBtn) {
+            return;
+        }
+
+
+        if (currentUserRole === "member") {
+
+            addMemberBtn.style.display = "none";
 
         } else {
 
-            addMemberBtn.style.display =
-                "block";
+            addMemberBtn.style.display = "block";
 
         }
 
@@ -98,10 +196,12 @@ checkMemberPermission();
 // ==================================================
 // تحميل أعضاء النظام — GROUPED BY ROLE
 // ==================================================
+
 async function loadMembers() {
 
     const container =
         document.getElementById("membersContainer");
+
 
     if (!container) {
 
@@ -120,7 +220,8 @@ async function loadMembers() {
                 "/users",
                 {
                     method: "GET",
-                    credentials: "include"
+                    credentials: "include",
+                    cache: "no-store"
                 }
             );
 
@@ -189,6 +290,7 @@ async function loadMembers() {
             const group =
                 document.createElement("section");
 
+
             group.className =
                 `members-group members-group--${type}`;
 
@@ -199,6 +301,7 @@ async function loadMembers() {
 
             const header =
                 document.createElement("div");
+
 
             header.className =
                 "members-group-header";
@@ -252,11 +355,13 @@ async function loadMembers() {
             const list =
                 document.createElement("div");
 
+
             list.className =
                 "members-group-list";
 
 
             groupUsers.forEach(user => {
+
 
                 const card =
                     document.createElement("div");
@@ -391,11 +496,17 @@ async function loadMembers() {
 
                     <div class="member-right">
 
-                        <span class="member-status ${statusClass}">
+                        <span
+                            class="member-status ${statusClass}"
+                            data-status-user-id="${user.id}"
+                            title="آخر ظهور يتم تحديثه تلقائياً"
+                        >
 
                             <span class="member-status-dot"></span>
 
-                            ${statusText}
+                            <span class="member-status-text">
+                                ${statusText}
+                            </span>
 
                         </span>
 
@@ -434,7 +545,9 @@ async function loadMembers() {
 
                             event.stopPropagation();
 
+                            return;
                         }
+
 
                         openEditUserModal(user);
 
@@ -579,37 +692,64 @@ async function loadMembers() {
 // ==================================================
 
 const addMemberBtn =
-    document.getElementById("addMemberBtn");
+    document.getElementById(
+        "addMemberBtn"
+    );
+
 
 const addMemberModal =
-    document.getElementById("addMemberModal");
+    document.getElementById(
+        "addMemberModal"
+    );
+
 
 const closeAddMemberBtn =
-    document.getElementById("closeAddMemberBtn");
+    document.getElementById(
+        "closeAddMemberBtn"
+    );
+
 
 const createMemberBtn =
-    document.getElementById("createMemberBtn");
+    document.getElementById(
+        "createMemberBtn"
+    );
+
 
 const newMemberUsername =
-    document.getElementById("newMemberUsername");
+    document.getElementById(
+        "newMemberUsername"
+    );
+
 
 const newMemberEmail =
-    document.getElementById("newMemberEmail");
+    document.getElementById(
+        "newMemberEmail"
+    );
+
 
 const newMemberPassword =
-    document.getElementById("newMemberPassword");
+    document.getElementById(
+        "newMemberPassword"
+    );
+
 
 const newMemberRole =
-    document.getElementById("newMemberRole");
+    document.getElementById(
+        "newMemberRole"
+    );
 
 
 // ==================================================
 // فتح الفورم
 // ==================================================
 
-addMemberBtn.addEventListener(
+addMemberBtn?.addEventListener(
     "click",
     () => {
+
+        if (!addMemberModal) {
+            return;
+        }
 
         addMemberModal.style.display =
             "flex";
@@ -622,9 +762,13 @@ addMemberBtn.addEventListener(
 // إغلاق الفورم
 // ==================================================
 
-closeAddMemberBtn.addEventListener(
+closeAddMemberBtn?.addEventListener(
     "click",
     () => {
+
+        if (!addMemberModal) {
+            return;
+        }
 
         addMemberModal.style.display =
             "none";
@@ -637,18 +781,21 @@ closeAddMemberBtn.addEventListener(
 // إنشاء العضو
 // ==================================================
 
-createMemberBtn.addEventListener(
+createMemberBtn?.addEventListener(
     "click",
     async () => {
 
         const username =
             newMemberUsername.value.trim();
 
+
         const email =
             newMemberEmail.value.trim();
 
+
         const password =
             newMemberPassword.value;
+
 
         const role =
             newMemberRole.value;
@@ -758,11 +905,14 @@ createMemberBtn.addEventListener(
             newMemberUsername.value =
                 "";
 
+
             newMemberEmail.value =
                 "";
 
+
             newMemberPassword.value =
                 "";
+
 
             newMemberRole.value =
                 "member";
@@ -770,8 +920,12 @@ createMemberBtn.addEventListener(
 
             // إغلاق الفورم
 
-            addMemberModal.style.display =
-                "none";
+            if (addMemberModal) {
+
+                addMemberModal.style.display =
+                    "none";
+
+            }
 
 
             // إعادة تحميل أعضاء النظام
@@ -786,10 +940,12 @@ createMemberBtn.addEventListener(
                 error
             );
 
+
             showMessage(
                 "حدث خطأ أثناء إضافة العضو.",
                 "error"
             );
+
 
         } finally {
 
@@ -811,50 +967,60 @@ const editUserModal =
         "editUserModal"
     );
 
+
 const closeEditUserBtn =
     document.getElementById(
         "closeEditUserBtn"
     );
+
 
 const cancelEditUserBtn =
     document.getElementById(
         "cancelEditUserBtn"
     );
 
+
 const saveUserChangesBtn =
     document.getElementById(
         "saveUserChangesBtn"
     );
+
 
 const editUserId =
     document.getElementById(
         "editUserId"
     );
 
+
 const editUsername =
     document.getElementById(
         "editUsername"
     );
+
 
 const editUserEmail =
     document.getElementById(
         "editUserEmail"
     );
 
+
 const editUserPassword =
     document.getElementById(
         "editUserPassword"
     );
+
 
 const editUserRole =
     document.getElementById(
         "editUserRole"
     );
 
+
 const editUserAvatar =
     document.getElementById(
         "editUserAvatar"
     );
+
 
 const deleteUserBtn =
     document.getElementById(
@@ -869,32 +1035,42 @@ const deleteUserBtn =
 function openEditUserModal(user) {
 
     // العضو العادي لا يستطيع فتح فورم التعديل
+
     if (
         currentUserRole === "member"
     ) {
 
         return;
+
     }
 
+
     editingUser = user;
+
 
     editUserId.value =
         user.id;
 
+
     editUsername.value =
         user.username || "";
+
 
     editUserEmail.value =
         user.email || "";
 
+
     editUserPassword.value =
         "";
+
 
     editUserRole.value =
         user.role || "member";
 
+
     editUserAvatar.textContent =
         user.username?.charAt(0) || "؟";
+
 
     window.scrollTo({
         top: 0,
@@ -902,7 +1078,9 @@ function openEditUserModal(user) {
     });
 
 
-    // الحذف متاح للمالك فقط، ولا يمكن حذف المالك أو الحساب الحالي.
+    // الحذف متاح للمالك فقط
+    // ولا يمكن حذف المالك أو الحساب الحالي
+
     if (deleteUserBtn) {
 
         const canDelete =
@@ -910,8 +1088,10 @@ function openEditUserModal(user) {
             user.role !== "owner" &&
             String(user.id) !== currentUserId;
 
+
         deleteUserBtn.hidden =
             !canDelete;
+
 
         deleteUserBtn.disabled =
             !canDelete;
@@ -921,6 +1101,7 @@ function openEditUserModal(user) {
 
     editUserModal.style.display =
         "flex";
+
 }
 
 
@@ -930,20 +1111,27 @@ function openEditUserModal(user) {
 
 function closeEditUserModal() {
 
+    if (!editUserModal) {
+        return;
+    }
+
+
     editUserModal.style.display =
         "none";
 
+
     editingUser = null;
+
 }
 
 
-closeEditUserBtn.addEventListener(
+closeEditUserBtn?.addEventListener(
     "click",
     closeEditUserModal
 );
 
 
-cancelEditUserBtn.addEventListener(
+cancelEditUserBtn?.addEventListener(
     "click",
     closeEditUserModal
 );
@@ -953,9 +1141,9 @@ cancelEditUserBtn.addEventListener(
 // الضغط خارج الفورم
 // ==================================================
 
-editUserModal.addEventListener(
+editUserModal?.addEventListener(
     "click",
-    (event) => {
+    event => {
 
         if (
             event.target ===
@@ -974,21 +1162,25 @@ editUserModal.addEventListener(
 // حفظ التعديلات
 // ==================================================
 
-saveUserChangesBtn.addEventListener(
+saveUserChangesBtn?.addEventListener(
     "click",
     async () => {
 
         const id =
             editUserId.value;
 
+
         const username =
             editUsername.value.trim();
+
 
         const email =
             editUserEmail.value.trim();
 
+
         const password =
             editUserPassword.value;
+
 
         const role =
             editUserRole.value;
@@ -1034,6 +1226,7 @@ saveUserChangesBtn.addEventListener(
 
 
             // إذا المستخدم كتب كلمة مرور
+
             if (
                 password.trim()
             ) {
@@ -1082,6 +1275,7 @@ saveUserChangesBtn.addEventListener(
                 );
 
                 return;
+
             }
 
 
@@ -1108,10 +1302,12 @@ saveUserChangesBtn.addEventListener(
                 error
             );
 
+
             showMessage(
                 "حدث خطأ أثناء تعديل المستخدم.",
                 "error"
             );
+
 
         } finally {
 
@@ -1134,6 +1330,7 @@ deleteUserBtn?.addEventListener(
 
         const user =
             editingUser;
+
 
         if (
             !user ||
@@ -1171,6 +1368,7 @@ deleteUserBtn?.addEventListener(
 
             deleteUserBtn.disabled =
                 true;
+
 
             deleteUserBtn.textContent =
                 "جاري الحذف...";
@@ -1225,11 +1423,13 @@ deleteUserBtn?.addEventListener(
                 error
             );
 
+
             showMessage(
                 error.message ||
                 "حدث خطأ أثناء حذف العضو.",
                 "error"
             );
+
 
         } finally {
 
@@ -1237,6 +1437,7 @@ deleteUserBtn?.addEventListener(
 
                 deleteUserBtn.disabled =
                     false;
+
 
                 deleteUserBtn.textContent =
                     defaultLabel;
@@ -1254,3 +1455,19 @@ deleteUserBtn?.addEventListener(
 // ==================================================
 
 loadMembers();
+
+
+// ==================================================
+// تحديث حالة الأعضاء تلقائياً
+// ==================================================
+//
+// كل 30 ثانية:
+// - نطلب أحدث last_seen_at من السيرفر
+// - نحدث فقط حالة العضو
+// - لا نعيد بناء البطاقات
+//
+
+setInterval(
+    refreshMemberStatuses,
+    30000
+);

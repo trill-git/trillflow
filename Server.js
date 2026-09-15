@@ -1059,11 +1059,9 @@ function verifyToken(req, res, next) {
     const token = req.cookies.token;
 
     if (!token) {
-
         return res.status(401).json({
             message: "لا يوجد Token."
         });
-
     }
 
     try {
@@ -1074,7 +1072,6 @@ function verifyToken(req, res, next) {
         );
 
         req.user = decoded;
-
 
         next();
 
@@ -1090,12 +1087,47 @@ function verifyToken(req, res, next) {
         });
 
     }
-
 }
 // =====================================================
 // التحقق من الجلسة الحالية
 // =====================================================
+// =====================================================
+// تحديث حالة المستخدم - Online Presence
+// =====================================================
 
+app.post("/api/presence", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const { error } = await supabase
+            .from("users")
+            .update({
+                last_seen_at: new Date().toISOString()
+            })
+            .eq("id", userId);
+
+        if (error) {
+            console.error("PRESENCE UPDATE ERROR:", error);
+
+            return res.status(500).json({
+                success: false,
+                message: error.message
+            });
+        }
+
+        res.json({
+            success: true
+        });
+
+    } catch (error) {
+        console.error("PRESENCE UPDATE ERROR:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to update presence"
+        });
+    }
+});
 // =====================================================
 // التحقق من الجلسة الحالية
 // =====================================================
@@ -2554,7 +2586,7 @@ app.get("/users", verifyToken, async (req, res) => {
         } = await supabase
             .from("users")
             .select(
-                "id, username, email, role"
+                "id, username, email, role, last_seen_at"
             )
             .order(
                 "id",
@@ -13443,32 +13475,6 @@ app.delete(
 
     }
 );
-app.post("/api/presence", verifyToken, async (req, res) => {
-    try {
-        const userId = req.user.id;
-
-        await pool.query(
-            `
-      UPDATE users
-      SET last_seen_at = NOW()
-      WHERE id = $1
-      `,
-            [userId]
-        );
-
-        res.json({
-            success: true,
-            last_seen_at: new Date().toISOString()
-        });
-    } catch (error) {
-        console.error("PRESENCE UPDATE ERROR:", error);
-
-        res.status(500).json({
-            success: false,
-            message: "Failed to update presence"
-        });
-    }
-});
 
 // =====================================================
 // PIN / UNPIN MESSAGE
