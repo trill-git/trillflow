@@ -138,7 +138,6 @@
     }
 
     function renderWorkspaceMembers(members) {
-
         const list = byId("workspaceMembersList");
 
         if (!list) return;
@@ -146,38 +145,40 @@
         list.innerHTML = "";
 
         if (!members.length) {
-
             const empty = document.createElement("span");
             empty.className = "workspace-members-empty";
             empty.textContent = "لا يوجد أعضاء ظاهرون";
             list.appendChild(empty);
             return;
-
         }
 
         members.slice(0, 8).forEach(member => {
-
             const avatar = document.createElement("span");
-            const name = member.username || member.email || "مستخدم";
+
+            const name = String(
+                member.username ||
+                member.name ||
+                member.email ||
+                "مستخدم"
+            ).trim();
 
             avatar.className = "workspace-member-avatar";
+            avatar.textContent = name;
             avatar.title = name;
-            avatar.textContent = getInitial(name);
-            list.appendChild(avatar);
 
+            list.appendChild(avatar);
         });
 
         if (members.length > 8) {
-
             const extra = document.createElement("span");
-            extra.className = "workspace-member-avatar";
-            extra.title = `${members.length - 8} أعضاء إضافيين`;
+
+            extra.className = "workspace-members-extra";
             extra.textContent = `+${members.length - 8}`;
+
             list.appendChild(extra);
-
         }
-
     }
+
 
     function renderWorkspaceSummary(data) {
 

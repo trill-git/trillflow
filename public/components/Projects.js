@@ -1942,7 +1942,428 @@ document.getElementById("editProjectForm")?.addEventListener("submit", async eve
 
 });
 
+const openProjectMembersBtn =
+    document.getElementById(
+        "openProjectMembersBtn"
+    );
 
+
+async function loadProjectMembersModal() {
+
+    if (!activeProject?.id) {
+        showMessage(
+            "لم يتم تحديد المشروع.",
+            "warning"
+        );
+
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `/projects/${activeProject.id}/members`,
+                {
+                    credentials: "include"
+                }
+            );
+
+        const members =
+            await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                members.message ||
+                "فشل تحميل أعضاء المشروع."
+            );
+        }
+
+        projectMembersList.innerHTML = "";
+
+        if (
+            !Array.isArray(members) ||
+            members.length === 0
+        ) {
+
+            projectMembersList.innerHTML = `
+                <p class="no-project-members">
+                    لا يوجد أعضاء في هذا المشروع.
+                </p>
+            `;
+
+        } else {
+
+            members.forEach(member => {
+
+                const username =
+                    (
+                        member.users?.username ||
+                        member.username ||
+                        "مستخدم"
+                    )
+                        .trim();
+
+                const email =
+                    member.users?.email ||
+                    member.email ||
+                    "";
+
+                const item =
+                    document.createElement("div");
+
+                item.className =
+                    "project-member-modal-item";
+
+                item.innerHTML = `
+                    <div class="project-member-modal-info">
+                        <strong>
+                            ${escapeProjectText(username)}
+                        </strong>
+
+                        <span>
+                            ${escapeProjectText(email)}
+                        </span>
+                    </div>
+                `;
+
+                projectMembersList.appendChild(item);
+
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "LOAD PROJECT MEMBERS MODAL ERROR:",
+            error
+        );
+
+        projectMembersList.innerHTML = `
+            <p class="no-project-members">
+                تعذر تحميل أعضاء المشروع.
+            </p>
+        `;
+
+    }
+}
+
+
+async function loadAvailableProjectMembers() {
+
+    if (!activeProject?.id) {
+        return;
+    }
+
+    try {
+
+        const [
+            usersResponse,
+            membersResponse
+        ] = await Promise.all([
+
+            fetch(
+                "/users",
+                {
+                    credentials: "include"
+                }
+            ),
+
+            fetch(
+                `/projects/${activeProject.id}/members`,
+                {
+                    credentials: "include"
+                }
+            )
+
+        ]);
+
+        const users =
+            await usersResponse.json();
+
+        const members =
+            await membersResponse.json();
+
+        if (!usersResponse.ok) {
+            throw new Error(
+                users.message ||
+                "فشل تحميل المستخدمين."
+            );
+        }
+
+        if (!membersResponse.ok) {
+            throw new Error(
+                members.message ||
+                "فشل تحميل أعضاء المشروع."
+            );
+        }
+
+        const existingMemberIds =
+            new Set(
+                Array.isArray(members)
+                    ? members.map(
+                        member =>
+                            String(
+                                member.user_id ??
+                                member.users?.id ??
+                                member.id
+                            )
+                    )
+                    : []
+            );
+
+        projectMemberSelect.innerHTML = `
+            <option value="">
+                اختر مستخدم
+            </option>
+        `;
+
+        if (!Array.isArray(users)) {
+            return;
+        }
+
+        users.forEach(user => {
+
+            const userId =
+                String(user.id);
+
+            if (
+                existingMemberIds.has(userId)
+            ) {
+                return;
+            }
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                userId;
+
+            option.textContent =
+                `${user.username || "مستخدم"}${user.email ? ` — ${user.email}` : ""}`;
+
+            projectMemberSelect.appendChild(
+                option
+            );
+
+        });
+
+    } catch (error) {
+
+        console.error(
+            "LOAD AVAILABLE PROJECT MEMBERS ERROR:",
+            error
+        );
+
+        projectMemberSelect.innerHTML = `
+            <option value="">
+                فشل تحميل المستخدمين
+            </option>
+        `;
+
+    }
+}
+
+
+openProjectMembersBtn?.addEventListener(
+    "click",
+    async () => {
+
+        if (!activeProject?.id) {
+
+            const savedProject =
+                localStorage.getItem(
+                    "currentProject"
+                );
+
+            if (!savedProject) {
+
+                showMessage(
+                    "لم يتم تحديد المشروع.",
+                    "warning"
+                );
+
+                return;
+            }
+
+            currentProjectId =
+                String(savedProject);
+        }
+
+        projectMembersModal.style.display =
+            "flex";
+
+        await Promise.all([
+            loadProjectMembersModal(),
+            loadAvailableProjectMembers()
+        ]);
+
+    }
+);
+
+
+closeProjectMembers?.addEventListener(
+    "click",
+    () => {
+
+        projectMembersModal.style.display =
+            "none";
+
+    }
+);
+
+
+projectMembersModal?.addEventListener(
+    "click",
+    event => {
+
+        if (
+            event.target ===
+            projectMembersModal
+        ) {
+
+            projectMembersModal.style.display =
+                "none";
+
+        }
+
+    }
+);
+
+
+addProjectMemberBtn?.addEventListener(
+    "click",
+    async () => {
+
+        const projectId =
+            activeProject?.id ||
+            currentProjectId ||
+            localStorage.getItem(
+                "currentProject"
+            );
+
+        const userId =
+            projectMemberSelect?.value;
+
+        if (!projectId) {
+
+            showMessage(
+                "لم يتم تحديد المشروع.",
+                "warning"
+            );
+
+            return;
+        }
+
+        if (!userId) {
+
+            showMessage(
+                "اختر مستخدم أولاً.",
+                "warning"
+            );
+
+            return;
+        }
+
+        addProjectMemberBtn.disabled =
+            true;
+
+        try {
+
+            const response =
+                await fetch(
+                    `/projects/${projectId}/members`,
+                    {
+                        method: "POST",
+
+                        credentials: "include",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body: JSON.stringify({
+                            userId:
+                                Number(userId)
+                        })
+                    }
+                );
+
+            const data =
+                await response.json()
+                    .catch(() => ({}));
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.message ||
+                    "فشل إضافة العضو."
+                );
+
+            }
+
+            showMessage(
+                "تمت إضافة العضو إلى المشروع.",
+                "success"
+            );
+
+            projectMemberSelect.value =
+                "";
+
+            await loadProjectMembersModal();
+
+            await loadAvailableProjectMembers();
+
+            const memberCount =
+                document.getElementById(
+                    "workspaceMemberCount"
+                );
+
+            if (memberCount) {
+
+                const membersResponse =
+                    await fetch(
+                        `/projects/${projectId}/members`,
+                        {
+                            credentials:
+                                "include"
+                        }
+                    );
+
+                const members =
+                    await membersResponse.json();
+
+                memberCount.textContent =
+                    Array.isArray(members)
+                        ? members.length
+                        : 0;
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                "ADD PROJECT MEMBER ERROR:",
+                error
+            );
+
+            showMessage(
+                error.message ||
+                "فشل إضافة العضو.",
+                "error"
+            );
+
+        } finally {
+
+            addProjectMemberBtn.disabled =
+                false;
+
+        }
+
+    }
+);
 // ==================================================
 // INITIAL LOAD
 // ==================================================

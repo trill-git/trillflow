@@ -5493,3 +5493,682 @@
             auto !important;
     }
 }
+
+.workspace-tasks-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+#openProjectMembersBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#openProjectMembersBtn i {
+    font-size: 14px;
+}
+
+@media (max-width: 700px) {
+    .workspace-tasks-actions {
+        width: 100%;
+    }
+
+    .workspace-tasks-actions button {
+        flex: 1;
+    }
+}
+
+.project-member-modal-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+}
+
+.project-member-modal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.project-member-modal-info strong {
+    font-size: 14px;
+}
+
+.project-member-modal-info span {
+    font-size: 12px;
+    opacity: 0.65;
+}
+
+.add-project-member {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.add-project-member select {
+    flex: 1;
+    min-width: 0;
+}
+
+@media (max-width: 600px) {
+    .add-project-member {
+        flex-direction: column;
+    }
+
+    .add-project-member select,
+    .add-project-member button {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   KANBAN PROJECT MEMBERS MODAL
+   ========================================================= */
+
+#kanbanProjectMembersModal {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    z-index: 99999;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 24px;
+    box-sizing: border-box;
+
+    background: rgba(4, 15, 15, 0.78);
+
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+
+/* =========================================================
+   MODAL BOX
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-members-modal-content {
+    width: min(560px, 100%);
+    max-height: calc(100% - 48px);
+
+    display: flex;
+    flex-direction: column;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(145deg,
+            rgba(20, 55, 54, 0.98),
+            rgba(8, 31, 31, 0.98));
+
+    border: 1px solid rgba(157, 251, 98, 0.16);
+
+    border-radius: 24px;
+
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.025) inset;
+
+    color: #ffffff;
+
+    animation: kanbanMembersModalIn 0.22s ease-out;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-members-modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 26px 28px 22px;
+
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+#kanbanProjectMembersModal .project-members-modal-header>div {
+    min-width: 0;
+}
+
+
+#kanbanProjectMembersModal .project-members-modal-header span {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: 1.8px;
+
+    color: #58f2a8;
+}
+
+
+#kanbanProjectMembersModal .project-members-modal-header h3 {
+    margin: 0;
+
+    font-size: 22px;
+    line-height: 1.4;
+
+    font-weight: 700;
+
+    color: #ffffff;
+}
+
+
+#kanbanProjectMembersModal .project-members-modal-header p {
+    margin: 7px 0 0;
+
+    font-size: 13px;
+    line-height: 1.7;
+
+    color: rgba(255, 255, 255, 0.55);
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+   ========================================================= */
+
+#kanbanProjectMembersModal #closeKanbanProjectMembersBtn {
+    flex: 0 0 auto;
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    border-radius: 11px;
+
+    background: rgba(255, 255, 255, 0.045);
+
+    color: rgba(255, 255, 255, 0.7);
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#kanbanProjectMembersModal #closeKanbanProjectMembersBtn:hover {
+    background: rgba(255, 255, 255, 0.09);
+
+    border-color: rgba(157, 251, 98, 0.2);
+
+    color: #ffffff;
+
+    transform: rotate(4deg);
+}
+
+
+#kanbanProjectMembersModal #closeKanbanProjectMembersBtn i {
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   BODY
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-members-modal-body {
+    display: flex;
+    flex-direction: column;
+
+    min-height: 0;
+
+    padding: 22px 28px 28px;
+
+    overflow-y: auto;
+}
+
+
+/* =========================================================
+   MEMBERS LIST
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-members-list {
+    display: flex;
+    flex-direction: column;
+
+    gap: 9px;
+
+    max-height: 300px;
+
+    overflow-y: auto;
+
+    padding-right: 3px;
+}
+
+
+#kanbanProjectMembersModal .project-members-list::-webkit-scrollbar {
+    width: 5px;
+}
+
+
+#kanbanProjectMembersModal .project-members-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+#kanbanProjectMembersModal .project-members-list::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+
+    background: rgba(157, 251, 98, 0.2);
+}
+
+
+/* =========================================================
+   MEMBER ITEM
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-member-item {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 11px 13px;
+
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    border-radius: 14px;
+
+    background: rgba(255, 255, 255, 0.035);
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+#kanbanProjectMembersModal .project-member-item:hover {
+    background: rgba(255, 255, 255, 0.055);
+
+    border-color: rgba(157, 251, 98, 0.13);
+
+    transform: translateX(-2px);
+}
+
+
+/* =========================================================
+   AVATAR
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-member-avatar {
+    width: 40px;
+    height: 40px;
+
+    flex: 0 0 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(135deg,
+            rgba(88, 242, 168, 0.2),
+            rgba(157, 251, 98, 0.08));
+
+    border: 1px solid rgba(88, 242, 168, 0.16);
+
+    color: #9dfb62;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   MEMBER INFO
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-member-info {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+#kanbanProjectMembersModal .project-member-info strong {
+    display: block;
+
+    overflow: hidden;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: #ffffff;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+#kanbanProjectMembersModal .project-member-info small {
+    display: block;
+
+    overflow: hidden;
+
+    font-size: 11px;
+
+    color: rgba(255, 255, 255, 0.45);
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   ADD MEMBER SECTION
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-member-add-section {
+    margin-top: 22px;
+
+    padding-top: 20px;
+
+    border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+
+#kanbanProjectMembersModal .project-member-add-section label {
+    display: block;
+
+    margin-bottom: 9px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: rgba(255, 255, 255, 0.75);
+}
+
+
+/* =========================================================
+   ADD MEMBER ROW
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-member-add-row {
+    display: flex;
+    align-items: stretch;
+
+    gap: 9px;
+}
+
+
+#kanbanProjectMembersModal #kanbanProjectMemberSelect {
+    flex: 1;
+
+    min-width: 0;
+
+    height: 46px;
+
+    padding: 0 14px;
+
+    border: 1px solid rgba(255, 255, 255, 0.09);
+
+    border-radius: 12px;
+
+    outline: none;
+
+    background: rgba(255, 255, 255, 0.045);
+
+    color: #ffffff;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    cursor: pointer;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+#kanbanProjectMembersModal #kanbanProjectMemberSelect:hover {
+    background: rgba(255, 255, 255, 0.065);
+
+    border-color: rgba(88, 242, 168, 0.18);
+}
+
+
+#kanbanProjectMembersModal #kanbanProjectMemberSelect:focus {
+    border-color: rgba(88, 242, 168, 0.45);
+
+    background: rgba(255, 255, 255, 0.06);
+
+    box-shadow:
+        0 0 0 3px rgba(88, 242, 168, 0.08);
+}
+
+
+#kanbanProjectMembersModal #kanbanProjectMemberSelect option {
+    background: #102f2e;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   ADD BUTTON
+   ========================================================= */
+
+#kanbanProjectMembersModal #kanbanAddProjectMemberBtn {
+    height: 46px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 18px;
+
+    border: 1px solid rgba(88, 242, 168, 0.18);
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(135deg,
+            rgba(88, 242, 168, 0.16),
+            rgba(157, 251, 98, 0.1));
+
+    color: #9dfb62;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    white-space: nowrap;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+#kanbanProjectMembersModal #kanbanAddProjectMemberBtn:hover {
+    background:
+        linear-gradient(135deg,
+            rgba(88, 242, 168, 0.23),
+            rgba(157, 251, 98, 0.15));
+
+    border-color: rgba(88, 242, 168, 0.35);
+
+    box-shadow:
+        0 8px 25px rgba(88, 242, 168, 0.08);
+
+    transform: translateY(-1px);
+}
+
+
+#kanbanProjectMembersModal #kanbanAddProjectMemberBtn:active {
+    transform: translateY(0);
+}
+
+
+#kanbanProjectMembersModal #kanbanAddProjectMemberBtn:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+#kanbanProjectMembersModal #kanbanAddProjectMemberBtn i {
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-members-error {
+    padding: 20px;
+
+    border: 1px solid rgba(255, 100, 100, 0.12);
+
+    border-radius: 14px;
+
+    background: rgba(255, 80, 80, 0.045);
+
+    color: rgba(255, 150, 150, 0.9);
+
+    font-size: 13px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+   ========================================================= */
+
+#kanbanProjectMembersModal .project-members-list:empty::before {
+    content: "لا يوجد أعضاء في المشروع";
+
+    display: block;
+
+    padding: 24px;
+
+    border: 1px dashed rgba(255, 255, 255, 0.08);
+
+    border-radius: 14px;
+
+    color: rgba(255, 255, 255, 0.4);
+
+    font-size: 13px;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+@keyframes kanbanMembersModalIn {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(10px) scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0) scale(1);
+    }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    #kanbanProjectMembersModal {
+        padding: 14px;
+    }
+
+    #kanbanProjectMembersModal .project-members-modal-content {
+        max-height: calc(100% - 28px);
+
+        border-radius: 20px;
+    }
+
+    #kanbanProjectMembersModal .project-members-modal-header {
+        padding: 20px;
+    }
+
+    #kanbanProjectMembersModal .project-members-modal-body {
+        padding: 18px 20px 22px;
+    }
+
+    #kanbanProjectMembersModal .project-members-modal-header h3 {
+        font-size: 19px;
+    }
+
+    #kanbanProjectMembersModal .project-member-add-row {
+        flex-direction: column;
+    }
+
+    #kanbanProjectMembersModal #kanbanProjectMemberSelect,
+    #kanbanProjectMembersModal #kanbanAddProjectMemberBtn {
+        width: 100%;
+    }
+
+    #kanbanProjectMembersModal #kanbanAddProjectMemberBtn {
+        height: 44px;
+    }
+}

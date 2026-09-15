@@ -2800,8 +2800,7 @@ window.openTaskDetails = function (
                     const username =
                         getTaskMemberUser(tm).username;
 
-                    const initial =
-                        username.charAt(0).toUpperCase();
+                    const initial = username;
 
                     const memberItem =
                         document.createElement(
@@ -4076,6 +4075,347 @@ document.addEventListener(
 
         originalNextSibling =
             null;
+
+    }
+);
+// ==================================================
+// KANBAN PROJECT MEMBERS
+// ==================================================
+async function loadKanbanProjectMembers() {
+
+    const projectId = localStorage.getItem("currentProject");
+
+    if (!projectId) {
+        return;
+    }
+
+    const membersList = document.getElementById(
+        "kanbanProjectMembersList"
+    );
+
+    const memberSelect = document.getElementById(
+        "kanbanProjectMemberSelect"
+    );
+
+    if (!membersList || !memberSelect) {
+        return;
+    }
+
+    try {
+
+        const membersResponse = await fetch(
+            `/projects/${projectId}/members`,
+            {
+                credentials: "include"
+            }
+        );
+
+        if (!membersResponse.ok) {
+            throw new Error("تعذر تحميل أعضاء المشروع");
+        }
+
+        const members = await membersResponse.json();
+
+        const usersResponse = await fetch(
+            "/users",
+            {
+                credentials: "include"
+            }
+        );
+
+        if (!usersResponse.ok) {
+            throw new Error("تعذر تحميل الموظفين");
+        }
+
+        const users = await usersResponse.json();
+
+        membersList.innerHTML = "";
+
+        memberSelect.innerHTML =
+            `<option value="">اختر موظف</option>`;
+
+        if (!Array.isArray(members)) {
+            return;
+        }
+
+        const currentMemberIds = new Set();
+
+        members.forEach(member => {
+
+            const user = member.users || member;
+
+            const userId =
+                user.id ||
+                member.user_id;
+
+            if (userId !== undefined && userId !== null) {
+                currentMemberIds.add(String(userId));
+            }
+
+            const username =
+                user.username ||
+                user.email ||
+                "عضو";
+
+            const email =
+                user.email ||
+                "";
+
+            const memberItem =
+                document.createElement("div");
+
+            memberItem.className =
+                "project-member-item";
+
+            memberItem.innerHTML = `
+                <div class="project-member-avatar">
+                    ${(username || "م")
+                    .charAt(0)
+                    .toUpperCase()}
+                </div>
+
+                <div class="project-member-info">
+                    <strong>${username}</strong>
+                    <small>${email}</small>
+                </div>
+            `;
+
+            membersList.appendChild(memberItem);
+
+        });
+
+        if (Array.isArray(users)) {
+
+            users.forEach(user => {
+
+                if (!user || user.id === undefined || user.id === null) {
+                    return;
+                }
+
+                if (
+                    currentMemberIds.has(
+                        String(user.id)
+                    )
+                ) {
+                    return;
+                }
+
+                const option =
+                    document.createElement("option");
+
+                option.value = user.id;
+
+                option.textContent =
+                    user.username ||
+                    user.email ||
+                    `مستخدم ${user.id}`;
+
+                memberSelect.appendChild(option);
+
+            });
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Load project members error:",
+            error
+        );
+
+        membersList.innerHTML = `
+            <div class="project-members-error">
+                تعذر تحميل أعضاء المشروع
+            </div>
+        `;
+
+        memberSelect.innerHTML =
+            `<option value="">تعذر تحميل الموظفين</option>`;
+
+    }
+}
+
+// ==================================================
+// OPEN PROJECT MEMBERS MODAL
+// ==================================================
+
+function openKanbanProjectMembersModal() {
+
+    const modal =
+        document.getElementById(
+            "kanbanProjectMembersModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.style.display = "flex";
+
+    loadKanbanProjectMembers();
+
+}
+
+
+// ==================================================
+// CLOSE PROJECT MEMBERS MODAL
+// ==================================================
+
+function closeKanbanProjectMembersModal() {
+
+    const modal =
+        document.getElementById(
+            "kanbanProjectMembersModal"
+        );
+
+    if (!modal) {
+        return;
+    }
+
+    modal.style.display = "none";
+
+}
+
+
+// ==================================================
+// KANBAN PROJECT MEMBERS EVENTS
+// ==================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const openBtn =
+            document.getElementById(
+                "openProjectMembersBtn"
+            );
+
+        const closeBtn =
+            document.getElementById(
+                "closeKanbanProjectMembersBtn"
+            );
+
+        if (openBtn) {
+
+            openBtn.addEventListener(
+                "click",
+                openKanbanProjectMembersModal
+            );
+
+        }
+
+        if (closeBtn) {
+
+            closeBtn.addEventListener(
+                "click",
+                closeKanbanProjectMembersModal
+            );
+
+        }
+
+    }
+);
+async function addKanbanProjectMember() {
+
+    const projectId = localStorage.getItem("currentProject");
+
+    const memberSelect = document.getElementById(
+        "kanbanProjectMemberSelect"
+    );
+
+    const addBtn = document.getElementById(
+        "kanbanAddProjectMemberBtn"
+    );
+
+    if (!projectId || !memberSelect) {
+        return;
+    }
+
+    const userId = memberSelect.value;
+
+    if (!userId) {
+        showMessage("اختر موظف أولاً", "error");
+        return;
+    }
+
+    try {
+
+        if (addBtn) {
+            addBtn.disabled = true;
+            addBtn.innerHTML = `
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                جاري الإضافة...
+            `;
+        }
+
+        const response = await fetch(
+            `/projects/${projectId}/members`,
+            {
+                method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId: Number(userId)
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+
+            showMessage(data.message || "تعذر إضافة العضو", "error");
+        }
+
+        memberSelect.value = "";
+
+        await loadKanbanProjectMembers();
+
+        showMessage("تم إضافة العضو بنجاح", "success");
+
+    } catch (error) {
+
+        console.error(
+            "Add project member error:",
+            error
+        );
+
+        showMessage(error.message || "حدث خطأ أثناء إضافة العضو", "error");
+
+
+    } finally {
+
+        if (addBtn) {
+            addBtn.disabled = false;
+            addBtn.innerHTML = `
+                <i class="fa-solid fa-user-plus"></i>
+                إضافة
+            `;
+        }
+
+    }
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const addBtn =
+            document.getElementById(
+                "kanbanAddProjectMemberBtn"
+            );
+
+        if (addBtn) {
+
+            addBtn.addEventListener(
+                "click",
+                addKanbanProjectMember
+            );
+
+        }
 
     }
 );

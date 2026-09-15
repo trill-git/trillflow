@@ -559,59 +559,7 @@
           </div>
 
 
-          <!-- ==============================
-         PROJECT MEMBERS MODAL
-    =============================== -->
 
-          <div id="projectMembersModal" class="project-members-modal" style="display: none;">
-
-            <div class="project-members-box">
-
-              <button id="closeProjectMembers" class="close-project-members">
-                ×
-              </button>
-
-
-              <h2>
-                أعضاء المشروع
-              </h2>
-
-
-              <!-- أعضاء المشروع -->
-
-              <div id="projectMembersList">
-
-                <p class="no-project-members">
-                  لا يوجد أعضاء في هذا المشروع.
-                </p>
-
-              </div>
-
-
-              <!-- إضافة عضو -->
-
-              <div class="add-project-member">
-
-                <select id="projectMemberSelect">
-
-                  <option value="">
-                    اختر مستخدم
-                  </option>
-
-                </select>
-
-
-                <button id="addProjectMemberBtn">
-
-                  إضافة عضو
-
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
 
         </section>
 
@@ -711,17 +659,65 @@
 
             <div id="workspaceTasksPanel" class="workspace-panel workspace-tasks-panel">
               <div class="workspace-section-heading workspace-tasks-heading">
-                <div><span>Tasks / Kanban</span>
+                <div>
+                  <span>Tasks / Kanban</span>
                   <h2>لوحة المهام <small id="projectName"></small></h2>
                   <p>نظّم سير العمل واسحب التاسكات بين الحالات.</p>
                 </div>
-                <button id="addTaskbtn" class="workspace-action workspace-action-primary">+ مهمة جديدة</button>
+
+                <div class="workspace-tasks-actions">
+
+                  <button type="button" id="openProjectMembersBtn" class="workspace-action workspace-action-secondary">
+                    <i class="fa-solid fa-users"></i>
+                    أعضاء المشروع
+                  </button>
+
+                  <button id="addTaskbtn" class="workspace-action workspace-action-primary">
+                    + مهمة جديدة
+                  </button>
+
+                </div>
               </div>
               <div id="workspaceTasksError" class="workspace-inline-error" hidden></div>
               <div id="workspaceTasksEmpty" class="workspace-empty-state" hidden>
                 <span>✦</span>
                 <h3>ابدأ أول خطوة في المشروع</h3>
                 <p>أضف مهمة جديدة لتظهر هنا ضمن لوحة العمل.</p>
+              </div>
+
+              <div id="kanbanProjectMembersModal" class="project-members-modal" style="display: none;">
+                <div class="project-members-modal-content">
+                  <div class="project-members-modal-header">
+                    <div>
+                      <span>PROJECT MEMBERS</span>
+                      <h3>أعضاء المشروع</h3>
+                      <p>إدارة أعضاء هذا المشروع وإضافة أعضاء جدد.</p>
+                    </div>
+
+                    <button id="closeKanbanProjectMembersBtn" type="button">
+                      <i class="fa-solid fa-xmark"></i>
+                    </button>
+                  </div>
+
+                  <div class="project-members-modal-body">
+                    <div id="kanbanProjectMembersList" class="project-members-list"></div>
+
+                    <div class="project-member-add-section">
+                      <label for="kanbanProjectMemberSelect">إضافة عضو للمشروع</label>
+
+                      <div class="project-member-add-row">
+                        <select id="kanbanProjectMemberSelect">
+                          <option value="">اختر موظف</option>
+                        </select>
+
+                        <button id="kanbanAddProjectMemberBtn" type="button">
+                          <i class="fa-solid fa-user-plus"></i>
+                          إضافة
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div id="Kanban-board-container">
 
@@ -1432,7 +1428,8 @@
               <input type="hidden" id="editMessageId">
               <div class="form-field">
                 <label for="editMessageInput">نص الرسالة</label>
-                <textarea id="editMessageInput" class="edit-message-textarea" rows="4" placeholder="اكتب الرسالة المعدلة هنا..." required></textarea>
+                <textarea id="editMessageInput" class="edit-message-textarea" rows="4"
+                  placeholder="اكتب الرسالة المعدلة هنا..." required></textarea>
                 <small class="edit-message-tip">اضغط Enter لحفظ التعديل أو Shift+Enter لسطر جديد</small>
               </div>
               <div class="channel-modal-footer">
