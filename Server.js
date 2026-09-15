@@ -1856,7 +1856,7 @@ app.get(
                 error
             } = await supabase
                 .from("users")
-                .select("username, role")
+                .select("id, username, role, email")
                 .eq(
                     "id",
                     req.user.id

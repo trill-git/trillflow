@@ -12,6 +12,7 @@
   <!-- Favicon - أيقونة تبويب المتصفح -->
   <link rel="icon" type="image/png" href="/assets/favicon.png">
 
+
   <!-- Open Graph - معاينة الرابط عند المشاركة -->
   <meta property="og:title" content="TrillFlow — مساحة عمل ذكية">
   <meta property="og:description" content="مساحة عمل ذكية لإدارة المشاريع والمهام والتعاون مع فريقك بسهولة.">
@@ -21,6 +22,16 @@
   <link
     href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&family=Manrope:wght@400;500;600;700&family=Cairo:wght@300;400;500;600;700&family=Tajawal:wght@300;400;500;700&display=swap"
     rel="stylesheet" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#043f3b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TrillFlow">
+  <link rel="apple-touch-icon" href="/assets/Trill Icon w.png">
+
 
   <link rel="stylesheet" href="/dashboad.css">
   <link rel="stylesheet" href="/components/sidbar.css">
@@ -1401,6 +1412,63 @@
 
           </div>
 
+        </div>
+
+        <!-- ========================================= -->
+        <!-- EDIT MESSAGE MODAL -->
+        <!-- ========================================= -->
+        <div id="editMessageModal" class="channel-modal hidden">
+          <div class="channel-modal-box edit-message-modal-box">
+            <div class="channel-modal-header">
+              <div>
+                <span class="channels-eyebrow">EDIT MESSAGE</span>
+                <h2>تعديل الرسالة</h2>
+              </div>
+              <button type="button" id="closeEditMessageModal" title="إغلاق">
+                <i data-lucide="x"></i>
+              </button>
+            </div>
+            <form id="editMessageForm">
+              <input type="hidden" id="editMessageId">
+              <div class="form-field">
+                <label for="editMessageInput">نص الرسالة</label>
+                <textarea id="editMessageInput" class="edit-message-textarea" rows="4" placeholder="اكتب الرسالة المعدلة هنا..." required></textarea>
+                <small class="edit-message-tip">اضغط Enter لحفظ التعديل أو Shift+Enter لسطر جديد</small>
+              </div>
+              <div class="channel-modal-footer">
+                <button type="button" id="cancelEditMessageBtn" class="secondary-btn">إلغاء</button>
+                <button type="submit" id="saveEditMessageBtn" class="primary-btn">
+                  <i data-lucide="check"></i>
+                  حفظ التعديل
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- DELETE MESSAGE MODAL -->
+        <!-- ========================================= -->
+        <div id="deleteMessageModal" class="delete-channel-overlay hidden">
+          <div class="delete-channel-modal delete-message-modal">
+            <div class="delete-channel-icon">
+              <i data-lucide="trash-2"></i>
+            </div>
+            <div class="delete-channel-content">
+              <span class="channels-eyebrow">DELETE MESSAGE</span>
+              <h2>حذف الرسالة</h2>
+              <p>هل أنت متأكد من رغبتك في حذف هذه الرسالة؟</p>
+              <div id="deleteMessagePreview" class="delete-message-preview"></div>
+              <span class="delete-channel-warning">لا يمكن التراجع عن هذا الإجراء بعد الحذف.</span>
+            </div>
+            <div class="delete-channel-actions">
+              <button type="button" id="cancelDeleteMessageBtn" class="delete-cancel-btn">إلغاء</button>
+              <button type="button" id="confirmDeleteMessageBtn" class="delete-confirm-btn">
+                <i data-lucide="trash-2"></i>
+                حذف الرسالة
+              </button>
+            </div>
+          </div>
         </div>
         <!-- =======================================
         ||          MyTasksPage           ||
@@ -2885,6 +2953,89 @@ EDIT USER MODAL
   <script src="../components/ChannelsPage.js"></script>
   <script src="../components/settings.js"></script>
   <script src="/dashboard.js"></script>
+  <!-- <button id="installTrillFlow" type="button" onclick="installTrillFlow()" style="
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #58f2a8;
+    color: #043f3b;
+    font-family: inherit;
+    font-weight: 700;
+  ">
+    <span>⬇</span>
+    <span>تثبيت TrillFlow</span>
+  </button> -->
 </body>
+<script>
+  let deferredInstallPrompt = null;
+
+  // تسجيل Service Worker
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/service-worker.js")
+        .then((registration) => {
+          console.log("✅ TrillFlow Service Worker registered");
+          registration.update();
+        })
+        .catch((error) => {
+          console.error("❌ Service Worker error:", error);
+        });
+    });
+  }
+
+  // إظهار خيار التثبيت
+  window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+
+    deferredInstallPrompt = event;
+
+    const installButton =
+      document.getElementById("installTrillFlow");
+
+    if (installButton) {
+      installButton.style.display = "flex";
+    }
+  });
+
+  // تثبيت التطبيق
+  async function installTrillFlow() {
+    if (!deferredInstallPrompt) {
+      return;
+    }
+
+    deferredInstallPrompt.prompt();
+
+    const result = await deferredInstallPrompt.userChoice;
+
+    console.log("PWA install result:", result.outcome);
+
+    deferredInstallPrompt = null;
+
+    const installButton =
+      document.getElementById("installTrillFlow");
+
+    if (installButton) {
+      installButton.style.display = "none";
+    }
+  }
+
+  // بعد التثبيت
+  window.addEventListener("appinstalled", () => {
+    console.log("✅ TrillFlow installed");
+
+    deferredInstallPrompt = null;
+
+    const installButton =
+      document.getElementById("installTrillFlow");
+
+    if (installButton) {
+      installButton.style.display = "none";
+    }
+  });
+</script>
 
 </html>

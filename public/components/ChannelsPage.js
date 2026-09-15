@@ -59,6 +59,16 @@
 
             deleteModalOpen: false,
 
+            currentUser: null,
+
+            editingMessageId: null,
+
+            deletingMessageId: null,
+
+            editMessageModalOpen: false,
+
+            deleteMessageModalOpen: false,
+
             initialized: false,
 
             eventsBound: false,
@@ -269,7 +279,11 @@
                 setupEmojiPicker();
 
 
+
                 refreshIcons();
+
+
+                await loadCurrentUser();
 
 
                 await loadUsers();
@@ -2358,6 +2372,93 @@
 
 
     // =====================================================
+    // LOAD CURRENT USER
+    // =====================================================
+
+    async function loadCurrentUser() {
+
+        if (ChannelsState.currentUser?.id) {
+
+            return ChannelsState.currentUser;
+
+        }
+
+
+        try {
+
+            const data =
+                await channelAPI(
+                    "/user"
+                );
+
+            const user =
+                data?.user || data;
+
+
+            if (user?.id) {
+
+                ChannelsState.currentUser =
+                    user;
+
+                window.currentUser =
+                    user;
+
+                window.currentUserRole =
+                    user.role;
+
+                return user;
+
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "loadCurrentUser /user failed:",
+                error
+            );
+
+        }
+
+
+        try {
+
+            const data =
+                await channelAPI(
+                    "/check-session"
+                );
+
+
+            if (data?.user?.id) {
+
+                ChannelsState.currentUser =
+                    data.user;
+
+                window.currentUser =
+                    data.user;
+
+                window.currentUserRole =
+                    data.user.role;
+
+                return data.user;
+
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "loadCurrentUser /check-session failed:",
+                error
+            );
+
+        }
+
+
+        return null;
+
+    }
+
+
+    // =====================================================
     // LOAD USERS
     // =====================================================
 
@@ -2815,6 +2916,12 @@
 
         try {
 
+            if (!ChannelsState.currentUser) {
+
+                await loadCurrentUser();
+
+            }
+
 
 
 
@@ -3238,22 +3345,30 @@
                         "مستخدم";
 
 
-                    const own =
-                        Number(
-                            message.user_id
-                        ) ===
+                    const currentUserId =
                         getCurrentUserId();
 
 
+                    const currentRole =
+                        String(
+                            ChannelsState.currentUser?.role ||
+                            window.currentUserRole ||
+                            window.currentUser?.role ||
+                            ""
+                        ).toLowerCase();
+
+
                     const admin =
-                        window.currentUserRole ===
-                        "owner" ||
+                        currentRole === "owner" ||
+                        currentRole === "manager" ||
+                        currentRole === "admin";
 
-                        window.currentUserRole ===
-                        "manager" ||
 
-                        window.currentUserRole ===
-                        "admin";
+                    const own =
+                        Boolean(
+                            currentUserId &&
+                            Number(message.user_id) === currentUserId
+                        );
 
 
                     const canEdit =
