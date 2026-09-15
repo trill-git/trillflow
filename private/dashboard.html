@@ -2969,22 +2969,81 @@ EDIT USER MODAL
 <script>
   let deferredInstallPrompt = null;
 
-  // تسجيل Service Worker
+  // ==================================================
+  // SERVICE WORKER + AUTO UPDATE
+  // ==================================================
+
   if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/service-worker.js")
-        .then((registration) => {
-          console.log("✅ TrillFlow Service Worker registered");
-          registration.update();
-        })
-        .catch((error) => {
-          console.error("❌ Service Worker error:", error);
+    window.addEventListener("load", async () => {
+      try {
+        const registration = await navigator.serviceWorker.register(
+          "/service-worker.js"
+        );
+
+        console.log("✅ TrillFlow Service Worker registered");
+
+        // فحص وجود تحديث جديد
+        await registration.update();
+
+        // إذا فيه Service Worker جديد ينتظر التفعيل
+        if (registration.waiting) {
+          console.log("🔄 New TrillFlow version waiting...");
+          registration.waiting.postMessage({
+            type: "SKIP_WAITING"
+          });
+        }
+
+        // مراقبة أي نسخة جديدة يتم تحميلها
+        registration.addEventListener("updatefound", () => {
+          const newWorker = registration.installing;
+
+          if (!newWorker) {
+            return;
+          }
+
+          newWorker.addEventListener("statechange", () => {
+            if (
+              newWorker.state === "installed" &&
+              navigator.serviceWorker.controller
+            ) {
+              console.log("🔄 TrillFlow update downloaded");
+
+              newWorker.postMessage({
+                type: "SKIP_WAITING"
+              });
+            }
+          });
         });
+
+      } catch (error) {
+        console.error("❌ Service Worker error:", error);
+      }
     });
+
+    // النسخة الجديدة أصبحت فعالة
+    let refreshing = false;
+
+    navigator.serviceWorker.addEventListener(
+      "controllerchange",
+      () => {
+        if (refreshing) {
+          return;
+        }
+
+        refreshing = true;
+
+        console.log("🚀 TrillFlow updated successfully");
+
+        window.location.reload();
+      }
+    );
   }
 
-  // إظهار خيار التثبيت
+
+  // ==================================================
+  // PWA INSTALL
+  // ==================================================
+
   window.addEventListener("beforeinstallprompt", (event) => {
     event.preventDefault();
 
@@ -2998,7 +3057,11 @@ EDIT USER MODAL
     }
   });
 
-  // تثبيت التطبيق
+
+  // ==================================================
+  // INSTALL TRILLFLOW
+  // ==================================================
+
   async function installTrillFlow() {
     if (!deferredInstallPrompt) {
       return;
@@ -3008,7 +3071,10 @@ EDIT USER MODAL
 
     const result = await deferredInstallPrompt.userChoice;
 
-    console.log("PWA install result:", result.outcome);
+    console.log(
+      "PWA install result:",
+      result.outcome
+    );
 
     deferredInstallPrompt = null;
 
@@ -3020,7 +3086,11 @@ EDIT USER MODAL
     }
   }
 
-  // بعد التثبيت
+
+  // ==================================================
+  // AFTER INSTALL
+  // ==================================================
+
   window.addEventListener("appinstalled", () => {
     console.log("✅ TrillFlow installed");
 
