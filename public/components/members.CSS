@@ -2169,3 +2169,54 @@
     cursor: wait;
     opacity: .6;
 }
+
+/* =========================================
+   MEMBER ONLINE / OFFLINE STATUS
+   ========================================= */
+
+.member-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+
+/* النقطة */
+.member-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+
+/* =========================================
+   ONLINE — أخضر
+   ========================================= */
+
+.member-status.online {
+    color: #58f2a8;
+}
+
+.member-status.online .member-status-dot {
+    background: #58f2a8;
+    box-shadow: 0 0 8px rgba(88, 242, 168, 0.7);
+}
+
+
+/* =========================================
+   OFFLINE — رصاصي
+   ========================================= */
+
+.member-status.offline {
+    color: #8b949e;
+}
+
+.member-status.offline .member-status-dot {
+    background: #8b949e;
+    box-shadow: none;
+}

@@ -13443,7 +13443,32 @@ app.delete(
 
     }
 );
+app.post("/api/presence", verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
 
+        await pool.query(
+            `
+      UPDATE users
+      SET last_seen_at = NOW()
+      WHERE id = $1
+      `,
+            [userId]
+        );
+
+        res.json({
+            success: true,
+            last_seen_at: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error("PRESENCE UPDATE ERROR:", error);
+
+        res.status(500).json({
+            success: false,
+            message: "Failed to update presence"
+        });
+    }
+});
 
 // =====================================================
 // PIN / UNPIN MESSAGE

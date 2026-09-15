@@ -1,14 +1,45 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-
-
 });
+
 // ==================================================
 // التحقق من صلاحية المستخدم
 // ==================================================
 let currentUserRole = null;
 let currentUserId = null;
 let editingUser = null;
+
+
+// ==================================================
+// حالة المستخدم — نشط / غير نشط
+// ==================================================
+function isUserOnline(lastSeenAt) {
+
+    if (!lastSeenAt) {
+        return false;
+    }
+
+    const lastSeen =
+        new Date(lastSeenAt).getTime();
+
+    if (Number.isNaN(lastSeen)) {
+        return false;
+    }
+
+    const now =
+        Date.now();
+
+    // المستخدم يعتبر نشط إذا كان آخر ظهور خلال 90 ثانية
+    return (
+        now - lastSeen
+    ) <= 90 * 1000;
+
+}
+
+
+// ==================================================
+// التحقق من صلاحية المستخدم
+// ==================================================
 async function checkMemberPermission() {
 
     try {
@@ -36,7 +67,6 @@ async function checkMemberPermission() {
             String(user.id);
 
 
-
         if (
             currentUserRole === "member"
         ) {
@@ -61,11 +91,13 @@ async function checkMemberPermission() {
     }
 
 }
+
 checkMemberPermission();
+
+
 // ==================================================
 // تحميل أعضاء النظام — GROUPED BY ROLE
 // ==================================================
-
 async function loadMembers() {
 
     const container =
@@ -281,6 +313,28 @@ async function loadMembers() {
 
 
                 // ==================================================
+                // حالة المستخدم
+                // ==================================================
+
+                const online =
+                    isUserOnline(
+                        user.last_seen_at
+                    );
+
+
+                const statusClass =
+                    online
+                        ? "online"
+                        : "offline";
+
+
+                const statusText =
+                    online
+                        ? "نشط"
+                        : "غير نشط";
+
+
+                // ==================================================
                 // CARD
                 // ==================================================
 
@@ -337,11 +391,11 @@ async function loadMembers() {
 
                     <div class="member-right">
 
-                        <span class="member-status">
+                        <span class="member-status ${statusClass}">
 
                             <span class="member-status-dot"></span>
 
-                            متصل
+                            ${statusText}
 
                         </span>
 
@@ -518,6 +572,8 @@ async function loadMembers() {
     }
 
 }
+
+
 // ==================================================
 // إضافة عضو جديد للنظام
 // ==================================================
@@ -744,6 +800,8 @@ createMemberBtn.addEventListener(
 
     }
 );
+
+
 // ==================================================
 // EDIT USER
 // ==================================================
@@ -837,10 +895,13 @@ function openEditUserModal(user) {
 
     editUserAvatar.textContent =
         user.username?.charAt(0) || "؟";
+
     window.scrollTo({
         top: 0,
         behavior: "smooth"
     });
+
+
     // الحذف متاح للمالك فقط، ولا يمكن حذف المالك أو الحساب الحالي.
     if (deleteUserBtn) {
 
@@ -849,14 +910,19 @@ function openEditUserModal(user) {
             user.role !== "owner" &&
             String(user.id) !== currentUserId;
 
-        deleteUserBtn.hidden = !canDelete;
-        deleteUserBtn.disabled = !canDelete;
+        deleteUserBtn.hidden =
+            !canDelete;
+
+        deleteUserBtn.disabled =
+            !canDelete;
 
     }
+
 
     editUserModal.style.display =
         "flex";
 }
+
 
 // ==================================================
 // إغلاق
@@ -870,10 +936,12 @@ function closeEditUserModal() {
     editingUser = null;
 }
 
+
 closeEditUserBtn.addEventListener(
     "click",
     closeEditUserModal
 );
+
 
 cancelEditUserBtn.addEventListener(
     "click",
@@ -1064,9 +1132,13 @@ deleteUserBtn?.addEventListener(
     "click",
     async () => {
 
-        const user = editingUser;
+        const user =
+            editingUser;
 
-        if (!user || currentUserRole !== "owner") {
+        if (
+            !user ||
+            currentUserRole !== "owner"
+        ) {
 
             showMessage(
                 "ليس لديك صلاحية لحذف هذا العضو.",
@@ -1077,9 +1149,12 @@ deleteUserBtn?.addEventListener(
 
         }
 
-        const confirmed = window.confirm(
-            `هل تريد حذف العضو ${user.username || ""} نهائيًا؟\nسيتم حذف عضوياته ورسائله وتعليقاته، بينما ستبقى مشاريعه وقنواته محفوظة.`
-        );
+
+        const confirmed =
+            window.confirm(
+                `هل تريد حذف العضو ${user.username || ""} نهائيًا؟\nسيتم حذف عضوياته ورسائله وتعليقاته، بينما ستبقى مشاريعه وقنواته محفوظة.`
+            );
+
 
         if (!confirmed) {
 
@@ -1087,47 +1162,72 @@ deleteUserBtn?.addEventListener(
 
         }
 
-        const defaultLabel = deleteUserBtn.textContent;
+
+        const defaultLabel =
+            deleteUserBtn.textContent;
+
 
         try {
 
-            deleteUserBtn.disabled = true;
-            deleteUserBtn.textContent = "جاري الحذف...";
+            deleteUserBtn.disabled =
+                true;
 
-            const response = await fetch(
-                `/users/${user.id}`,
-                {
-                    method: "DELETE",
-                    credentials: "include"
-                }
-            );
+            deleteUserBtn.textContent =
+                "جاري الحذف...";
 
-            const data = await response.json()
-                .catch(() => ({}));
+
+            const response =
+                await fetch(
+                    `/users/${user.id}`,
+                    {
+                        method:
+                            "DELETE",
+
+                        credentials:
+                            "include"
+                    }
+                );
+
+
+            const data =
+                await response
+                    .json()
+                    .catch(() => ({}));
+
 
             if (!response.ok) {
 
                 throw new Error(
-                    data.message || "فشل حذف العضو."
+                    data.message ||
+                    "فشل حذف العضو."
                 );
 
             }
 
+
             closeEditUserModal();
 
+
             showMessage(
-                data.message || "تم حذف العضو من النظام.",
+                data.message ||
+                "تم حذف العضو من النظام.",
                 "success"
             );
 
+
             await loadMembers();
+
 
         } catch (error) {
 
-            console.error("DELETE USER ERROR:", error);
+            console.error(
+                "DELETE USER ERROR:",
+                error
+            );
 
             showMessage(
-                error.message || "حدث خطأ أثناء حذف العضو.",
+                error.message ||
+                "حدث خطأ أثناء حذف العضو.",
                 "error"
             );
 
@@ -1135,8 +1235,11 @@ deleteUserBtn?.addEventListener(
 
             if (deleteUserBtn) {
 
-                deleteUserBtn.disabled = false;
-                deleteUserBtn.textContent = defaultLabel;
+                deleteUserBtn.disabled =
+                    false;
+
+                deleteUserBtn.textContent =
+                    defaultLabel;
 
             }
 
@@ -1144,4 +1247,10 @@ deleteUserBtn?.addEventListener(
 
     }
 );
+
+
+// ==================================================
+// تحميل الأعضاء
+// ==================================================
+
 loadMembers();
