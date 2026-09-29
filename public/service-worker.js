@@ -17,7 +17,7 @@ self.addEventListener("install", (event) => {
             return cache.addAll(APP_SHELL);
         })
     );
-
+ 
     self.skipWaiting();
 });
 

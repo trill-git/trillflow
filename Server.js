@@ -585,7 +585,10 @@ const NotificationType = Object.freeze({
         "TASK_CREATED",
 
     USER_ROLE_CHANGED:
-        "USER_ROLE_CHANGED"
+        "USER_ROLE_CHANGED",
+
+    TASK_CHAT_MESSAGE:
+        "TASK_CHAT_MESSAGE"
 
 });
 
@@ -709,6 +712,26 @@ function buildNotificationContent(type, data = {}) {
 
                 link:
                     null
+
+            };
+
+
+        case NotificationType.TASK_CHAT_MESSAGE:
+
+            return {
+
+                title:
+                    "رسالة جديدة في المهمة",
+
+                message:
+                    data.senderName
+                        ? `أرسل ${data.senderName} رسالة في المهمة "${taskTitle}".`
+                        : `رسالة جديدة في المهمة "${taskTitle}".`,
+
+                link:
+                    data.taskId
+                        ? `/tasks/${data.taskId}`
+                        : null
 
             };
 
@@ -9850,7 +9873,7 @@ app.post(
             // SUCCESS
             // =================================================
 
-            return res.status(201).json({
+            res.status(201).json({
 
                 message:
                     "تم إضافة التعليق بنجاح.",
@@ -9869,6 +9892,339 @@ app.post(
                 }
 
             });
+
+
+            // =================================================
+            // TASK CHAT MESSAGE NOTIFICATION (async, non-blocking)
+            // =================================================
+
+            (async () => {
+
+                try {
+
+                    // -----------------------------------------
+                    // 1. التحقق من إعداد n8n
+                    // -----------------------------------------
+
+                    if (!process.env.N8N_NOTIFICATION_WEBHOOK_URL) {
+
+                        console.log(
+                            "TASK_CHAT_MESSAGE: N8N_NOTIFICATION_WEBHOOK_URL غير مُعد، تم تخطي الإشعار."
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------------------
+                    // 2. جلب بيانات المهمة
+                    // -----------------------------------------
+
+                    const {
+                        data: taskData,
+                        error: taskDataError
+                    } = await supabase
+                        .from("tasks")
+                        .select(
+                            "id, Title, projectId, status, Priority"
+                        )
+                        .eq(
+                            "id",
+                            taskId
+                        )
+                        .maybeSingle();
+
+
+                    if (taskDataError || !taskData) {
+
+                        console.error(
+                            "TASK_CHAT_MESSAGE: خطأ في جلب بيانات المهمة:",
+                            taskDataError || "المهمة غير موجودة"
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------------------
+                    // 3. جلب بيانات المشروع
+                    // -----------------------------------------
+
+                    let projectData = null;
+
+                    if (taskData.projectId) {
+
+                        const {
+                            data: projResult,
+                            error: projError
+                        } = await supabase
+                            .from("projects")
+                            .select(
+                                "id, ProjectTitle"
+                            )
+                            .eq(
+                                "id",
+                                taskData.projectId
+                            )
+                            .maybeSingle();
+
+
+                        if (projError) {
+
+                            console.error(
+                                "TASK_CHAT_MESSAGE: خطأ في جلب بيانات المشروع:",
+                                projError
+                            );
+
+                        } else {
+
+                            projectData = projResult;
+
+                        }
+
+                    }
+
+
+                    // -----------------------------------------
+                    // 4. جلب بيانات المرسل كاملة
+                    // -----------------------------------------
+
+                    const {
+                        data: senderFull,
+                        error: senderFullError
+                    } = await supabase
+                        .from("users")
+                        .select(
+                            "id, username, email"
+                        )
+                        .eq(
+                            "id",
+                            currentUserId
+                        )
+                        .maybeSingle();
+
+
+                    if (senderFullError) {
+
+                        console.error(
+                            "TASK_CHAT_MESSAGE: خطأ في جلب بيانات المرسل:",
+                            senderFullError
+                        );
+
+                    }
+
+
+                    // -----------------------------------------
+                    // 5. جلب أعضاء المهمة
+                    // -----------------------------------------
+
+                    const {
+                        data: taskMembers,
+                        error: membersError
+                    } = await supabase
+                        .from("task_members")
+                        .select(
+                            "user_id"
+                        )
+                        .eq(
+                            "task_id",
+                            taskId
+                        );
+
+
+                    if (membersError) {
+
+                        console.error(
+                            "TASK_CHAT_MESSAGE: خطأ في جلب أعضاء المهمة:",
+                            membersError
+                        );
+
+                        return;
+
+                    }
+
+
+                    if (
+                        !taskMembers ||
+                        taskMembers.length === 0
+                    ) {
+
+                        console.log(
+                            "TASK_CHAT_MESSAGE: لا يوجد أعضاء في المهمة، تم تخطي الإشعار."
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------------------
+                    // 6. استبعاد المرسل من قائمة المستلمين
+                    // -----------------------------------------
+
+                    const recipientIds =
+                        taskMembers
+                            .map(
+                                member =>
+                                    member.user_id
+                            )
+                            .filter(
+                                uid =>
+                                    String(uid) !==
+                                    String(currentUserId)
+                            );
+
+
+                    if (recipientIds.length === 0) {
+
+                        console.log(
+                            "TASK_CHAT_MESSAGE: المرسل هو العضو الوحيد، لا يوجد مستلمين."
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------------------
+                    // 7. جلب بيانات المستلمين
+                    // -----------------------------------------
+
+                    const {
+                        data: recipientUsers,
+                        error: recipientUsersError
+                    } = await supabase
+                        .from("users")
+                        .select(
+                            "id, username, email"
+                        )
+                        .in(
+                            "id",
+                            recipientIds
+                        );
+
+
+                    if (recipientUsersError) {
+
+                        console.error(
+                            "TASK_CHAT_MESSAGE: خطأ في جلب بيانات المستلمين:",
+                            recipientUsersError
+                        );
+
+                        return;
+
+                    }
+
+
+                    // -----------------------------------------
+                    // 8. إرسال الإشعار لكل مستلم
+                    // -----------------------------------------
+
+                    const senderName =
+                        senderFull?.username ||
+                        sender?.username ||
+                        "مستخدم";
+
+                    const senderEmail =
+                        senderFull?.email ||
+                        "";
+
+
+                    for (
+                        const recipient of recipientUsers || []
+                    ) {
+
+                        if (!recipient.email) {
+
+                            console.log(
+                                `TASK_CHAT_MESSAGE: المستلم ${recipient.id} بدون email، تم تخطيه.`
+                            );
+
+                            continue;
+
+                        }
+
+
+                        await sendNotificationEmail({
+
+                            user: {
+
+                                id:
+                                    recipient.id,
+
+                                username:
+                                    recipient.username,
+
+                                email:
+                                    recipient.email
+
+                            },
+
+                            type:
+                                NotificationType.TASK_CHAT_MESSAGE,
+
+                            data: {
+
+                                messageId:
+                                    newComment.id,
+
+                                messageContent:
+                                    newComment.comment,
+
+                                messageCreatedAt:
+                                    newComment.created_at,
+
+                                taskId:
+                                    taskData.id,
+
+                                taskTitle:
+                                    taskData.Title,
+
+                                taskStatus:
+                                    taskData.status,
+
+                                taskPriority:
+                                    taskData.Priority,
+
+                                projectId:
+                                    projectData?.id || null,
+
+                                projectTitle:
+                                    projectData?.ProjectTitle || null,
+
+                                senderId:
+                                    currentUserId,
+
+                                senderName:
+                                    senderName,
+
+                                senderEmail:
+                                    senderEmail
+
+                            }
+
+                        });
+
+                    }
+
+
+                    console.log(
+                        `TASK_CHAT_MESSAGE: تم إرسال الإشعار لـ ${recipientUsers?.length || 0} مستلم للمهمة ${taskId}`
+                    );
+
+
+                } catch (notificationError) {
+
+                    console.error(
+                        "TASK_CHAT_MESSAGE notification error:",
+                        notificationError
+                    );
+
+                }
+
+            })();
 
 
         } catch (error) {
