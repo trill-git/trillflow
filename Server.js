@@ -6233,70 +6233,119 @@ app.post(
 // تحميل ملف مرفق
 // =====================================================
 
+
 app.get(
     "/tasks/attachment/download",
     verifyToken,
     async (req, res) => {
+
         try {
+
             const { url, filename } = req.query;
 
             if (!url) {
-                return res.status(400).send("رابط الملف مفقود.");
+                return res.status(400).send(
+                    "رابط الملف مفقود."
+                );
             }
 
             // =================================================
-            // تنظيف الرابط
+            // استخراج Google Drive File ID
             // =================================================
 
             let cleanUrl = String(url).trim();
 
-            // إزالة أي %20 زائد في نهاية الرابط
             cleanUrl = cleanUrl.replace(/%20$/, "");
 
-            // =================================================
-            // تحويل المسار النسبي إلى URL كامل
-            // =================================================
+            let fileId = null;
 
-            if (cleanUrl.startsWith("/")) {
-                cleanUrl = `${req.protocol}://${req.get("host")}${cleanUrl}`;
-            }
-
-            console.log("📎 Attachment download URL:", cleanUrl);
-
-            // =================================================
-            // جلب الملف
-            // =================================================
-
-            const response = await fetch(cleanUrl);
-
-            if (!response.ok) {
-                console.error(
-                    "❌ Attachment fetch failed:",
-                    response.status,
-                    response.statusText,
-                    cleanUrl
+            // الشكل:
+            // /projects/file/FILE_ID
+            const internalMatch =
+                cleanUrl.match(
+                    /\/projects\/file\/([^/?#]+)/
                 );
 
-                return res
-                    .status(response.status)
-                    .send("تعذر العثور على الملف.");
+            if (internalMatch) {
+                fileId = internalMatch[1];
             }
 
-            // =================================================
-            // نوع الملف
-            // =================================================
+            // إذا تم إرسال File ID مباشرة
+            if (!fileId && !cleanUrl.startsWith("/")) {
 
-            const contentType =
-                response.headers.get("content-type") ||
-                "application/octet-stream";
+                // drive.google.com/file/d/FILE_ID
+                const driveFileMatch =
+                    cleanUrl.match(
+                        /drive\.google\.com\/file\/d\/([^/?#]+)/
+                    );
 
-            // =================================================
-            // قراءة الملف
-            // =================================================
+                if (driveFileMatch) {
+                    fileId = driveFileMatch[1];
+                }
 
-            const buffer = Buffer.from(
-                await response.arrayBuffer()
+                // Google Drive uc?id=FILE_ID
+                if (!fileId) {
+
+                    try {
+
+                        const parsedUrl =
+                            new URL(cleanUrl);
+
+                        fileId =
+                            parsedUrl.searchParams.get("id");
+
+                    } catch (urlError) {
+
+                        // ليس URL صالح، قد يكون File ID
+                    }
+                }
+            }
+
+            if (!fileId) {
+
+                return res.status(400).send(
+                    "معرف ملف Google Drive غير صالح."
+                );
+
+            }
+
+            console.log(
+                "📎 Downloading Google Drive file:",
+                fileId
             );
+
+            // =================================================
+            // Google Drive Client
+            // =================================================
+
+            const drive =
+                getGoogleDriveClient();
+
+            // =================================================
+            // جلب Metadata
+            // =================================================
+
+            const meta =
+                await drive.files.get({
+                    fileId,
+                    fields:
+                        "id,name,mimeType,size"
+                });
+
+            // =================================================
+            // تحميل الملف من Google Drive
+            // =================================================
+
+            const driveResponse =
+                await drive.files.get(
+                    {
+                        fileId,
+                        alt: "media"
+                    },
+                    {
+                        responseType: "stream"
+                    }
+                );
 
             // =================================================
             // اسم الملف
@@ -6304,11 +6353,13 @@ app.get(
 
             const downloadName =
                 filename ||
-                cleanUrl.split("/").pop() ||
+                meta.data.name ||
                 "download";
 
             const encodedFilename =
-                encodeURIComponent(downloadName);
+                encodeURIComponent(
+                    String(downloadName)
+                );
 
             // =================================================
             // Headers
@@ -6316,7 +6367,8 @@ app.get(
 
             res.setHeader(
                 "Content-Type",
-                contentType
+                meta.data.mimeType ||
+                "application/octet-stream"
             );
 
             res.setHeader(
@@ -6325,30 +6377,64 @@ app.get(
             );
 
             res.setHeader(
-                "Content-Length",
-                buffer.length
+                "Cache-Control",
+                "private, max-age=3600"
             );
 
+            if (meta.data.size) {
+
+                res.setHeader(
+                    "Content-Length",
+                    meta.data.size
+                );
+
+            }
+
             // =================================================
-            // إرسال الملف
+            // إرسال الملف مباشرة
             // =================================================
 
-            return res.send(buffer);
+            driveResponse.data.pipe(res);
 
         } catch (error) {
 
             console.error(
-                "❌ Attachment download error:",
+                "❌ TASK ATTACHMENT DOWNLOAD ERROR:",
                 error
             );
 
-            return res
-                .status(500)
-                .send("حدث خطأ أثناء تحميل الملف.");
+            // Google Drive file غير موجود
+            if (
+                error?.code === 404 ||
+                error?.response?.status === 404
+            ) {
+
+                return res.status(404).send(
+                    "الملف غير موجود في Google Drive."
+                );
+
+            }
+
+            // صلاحيات Google Drive
+            if (
+                error?.code === 403 ||
+                error?.response?.status === 403
+            ) {
+
+                return res.status(403).send(
+                    "ليس لدى النظام صلاحية للوصول إلى الملف."
+                );
+
+            }
+
+            return res.status(500).send(
+                "حدث خطأ أثناء تحميل الملف."
+            );
+
         }
+
     }
 );
-
 
 // =====================================================
 // جلب Tasks الخاصة بمشروع معيّن
