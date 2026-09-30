@@ -2966,6 +2966,11 @@ window.openTaskDetails = function (
 
     }
 
+    if (taskCommentInput) {
+        taskCommentInput.value = "";
+        taskCommentInput.style.height = "";
+    }
+
 
     loadTaskComments(
         currentTaskId
@@ -3402,6 +3407,7 @@ async function addTaskComment() {
         }
 
         taskCommentInput.value = "";
+        taskCommentInput.style.height = "";
 
         await loadTaskComments(
             currentTaskId
@@ -3482,6 +3488,7 @@ function handleInsertCommentLink() {
         } else {
             taskCommentInput.value = `${currentVal}${formattedLink} `;
         }
+        taskCommentInput.dispatchEvent(new Event("input"));
         taskCommentInput.focus();
     }
 
@@ -3623,7 +3630,7 @@ if (btnTaskCommentSubmit) {
 
 
 // ==================================================
-// Enter لإرسال التعليق
+// Enter لإرسال التعليق و Shift+Enter لسطر جديد
 // ==================================================
 
 if (taskCommentInput) {
@@ -3633,8 +3640,9 @@ if (taskCommentInput) {
         (event) => {
 
             if (
-                event.key ===
-                "Enter"
+                event.key === "Enter" &&
+                !event.shiftKey &&
+                !event.isComposing
             ) {
 
                 event.preventDefault();
@@ -3645,6 +3653,12 @@ if (taskCommentInput) {
 
         }
     );
+
+    taskCommentInput.addEventListener("input", () => {
+        taskCommentInput.style.height = "auto";
+        const newHeight = Math.min(Math.max(taskCommentInput.scrollHeight, 42), 120);
+        taskCommentInput.style.height = `${newHeight}px`;
+    });
 
 }
 

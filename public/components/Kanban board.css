@@ -2487,6 +2487,9 @@
 
     word-break:
         break-word;
+
+    white-space:
+        pre-wrap;
 }
 
 
@@ -2739,7 +2742,7 @@
         flex;
 
     align-items:
-        center;
+        flex-end;
 
     gap:
         8px;
@@ -2762,6 +2765,12 @@
     width:
         100%;
 
+    min-height:
+        42px;
+
+    max-height:
+        120px;
+
     height:
         42px;
 
@@ -2772,7 +2781,7 @@
         border-box;
 
     padding:
-        0 13px;
+        11px 13px;
 
     border:
         1px solid rgba(255, 255, 255, .065);
@@ -2795,8 +2804,17 @@
     font-size:
         12px;
 
+    line-height:
+        1.5;
+
+    resize:
+        none;
+
+    overflow-y:
+        auto;
+
     transition:
-        .2s ease;
+        border-color .2s ease, background .2s ease, box-shadow .2s ease;
 }
 
 
