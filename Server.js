@@ -6244,38 +6244,111 @@ app.get(
                 return res.status(400).send("رابط الملف مفقود.");
             }
 
-            const cleanUrl = String(url).trim().replace(/%20$/, "");
+            // =================================================
+            // تنظيف الرابط
+            // =================================================
+
+            let cleanUrl = String(url).trim();
+
+            // إزالة أي %20 زائد في نهاية الرابط
+            cleanUrl = cleanUrl.replace(/%20$/, "");
+
+            // =================================================
+            // تحويل المسار النسبي إلى URL كامل
+            // =================================================
+
+            if (cleanUrl.startsWith("/")) {
+                cleanUrl = `${req.protocol}://${req.get("host")}${cleanUrl}`;
+            }
+
+            console.log("📎 Attachment download URL:", cleanUrl);
+
+            // =================================================
+            // جلب الملف
+            // =================================================
 
             const response = await fetch(cleanUrl);
 
             if (!response.ok) {
-                return res.status(response.status).send("تعذر العثور على الملف.");
+                console.error(
+                    "❌ Attachment fetch failed:",
+                    response.status,
+                    response.statusText,
+                    cleanUrl
+                );
+
+                return res
+                    .status(response.status)
+                    .send("تعذر العثور على الملف.");
             }
+
+            // =================================================
+            // نوع الملف
+            // =================================================
 
             const contentType =
                 response.headers.get("content-type") ||
                 "application/octet-stream";
 
-            const buffer = Buffer.from(await response.arrayBuffer());
+            // =================================================
+            // قراءة الملف
+            // =================================================
+
+            const buffer = Buffer.from(
+                await response.arrayBuffer()
+            );
+
+            // =================================================
+            // اسم الملف
+            // =================================================
 
             const downloadName =
-                filename || cleanUrl.split("/").pop() || "download";
+                filename ||
+                cleanUrl.split("/").pop() ||
+                "download";
 
-            const encodedFilename = encodeURIComponent(downloadName);
+            const encodedFilename =
+                encodeURIComponent(downloadName);
 
-            res.setHeader("Content-Type", contentType);
+            // =================================================
+            // Headers
+            // =================================================
+
+            res.setHeader(
+                "Content-Type",
+                contentType
+            );
+
             res.setHeader(
                 "Content-Disposition",
                 `attachment; filename="${encodedFilename}"; filename*=UTF-8''${encodedFilename}`
             );
 
+            res.setHeader(
+                "Content-Length",
+                buffer.length
+            );
+
+            // =================================================
+            // إرسال الملف
+            // =================================================
+
             return res.send(buffer);
+
         } catch (error) {
-            console.error("Attachment download error:", error);
-            return res.status(500).send("حدث خطأ أثناء تحميل الملف.");
+
+            console.error(
+                "❌ Attachment download error:",
+                error
+            );
+
+            return res
+                .status(500)
+                .send("حدث خطأ أثناء تحميل الملف.");
         }
     }
 );
+
 
 // =====================================================
 // جلب Tasks الخاصة بمشروع معيّن
