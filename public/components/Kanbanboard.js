@@ -127,6 +127,60 @@ const btnCommentLinkInsert =
         "btnCommentLinkInsert"
     );
 
+// ==================================================
+// REPLY STATE
+// ==================================================
+
+let replyToCommentId   = null;
+let replyToUsername    = null;
+let replyToCommentText = null;
+
+function clearReply() {
+    replyToCommentId   = null;
+    replyToUsername    = null;
+    replyToCommentText = null;
+    const banner = document.getElementById("commentReplyBanner");
+    if (banner) banner.remove();
+}
+
+function setReplyTo(commentId, username, commentText) {
+    replyToCommentId   = commentId;
+    replyToUsername    = username;
+    replyToCommentText = commentText;
+
+    // Remove existing banner if any
+    const existing = document.getElementById("commentReplyBanner");
+    if (existing) existing.remove();
+
+    // Insert banner above the comment input area
+    const inputArea = taskCommentInput
+        ? taskCommentInput.closest(".task-comment-input-wrap, .task-show-comment-form, .task-show-comments-section")
+        : null;
+    const insertTarget = taskCommentInput?.parentElement;
+
+    if (insertTarget) {
+        const banner = document.createElement("div");
+        banner.id = "commentReplyBanner";
+        banner.className = "comment-reply-banner";
+        banner.innerHTML = `
+            <span class="comment-reply-banner-label">
+                <i data-lucide="corner-down-left" class="comment-reply-icon"></i>
+                رد على <strong>${escapeHtml(username)}</strong>
+            </span>
+            <span class="comment-reply-banner-preview">${escapeHtml((commentText || "").slice(0, 80))}${(commentText || "").length > 80 ? "..." : ""}</span>
+            <button type="button" class="comment-reply-banner-close" id="btnClearReply" title="إلغاء الرد" aria-label="إلغاء الرد">
+                <i data-lucide="x"></i>
+            </button>
+        `;
+        insertTarget.insertBefore(banner, taskCommentInput);
+
+        document.getElementById("btnClearReply")?.addEventListener("click", clearReply);
+        if (typeof lucide !== "undefined" && lucide.createIcons) lucide.createIcons();
+    }
+
+    taskCommentInput?.focus();
+}
+
 
 // ==================================================
 // CURRENT TASK
@@ -3272,6 +3326,14 @@ async function loadTaskComments(
 
                 const isOwner = Boolean(comment.isOwner);
 
+                // Build quoted reply block if this comment is a reply
+                const replyQuoteHtml = comment.reply_to_username && comment.reply_to_comment
+                    ? `<div class="comment-reply-quote">
+                            <span class="comment-reply-quote-author">${escapeHtml(comment.reply_to_username)}</span>
+                            <span class="comment-reply-quote-text">${escapeHtml((comment.reply_to_comment || "").slice(0, 120))}${(comment.reply_to_comment || "").length > 120 ? "..." : ""}</span>
+                       </div>`
+                    : "";
+
                 commentElement.innerHTML = `
                     <span class="avatar avatar--md" style="--a: 152; --b: 190;">
                         ${escapeHtml(userInitial)}
@@ -3282,12 +3344,22 @@ async function loadTaskComments(
                                 <h3 class="comment-user-name">${escapeHtml(usernameStr)}</h3>
                                 ${timeStr ? `<span class="comment-time">${escapeHtml(timeStr)}</span>` : ""}
                             </div>
-                            ${isOwner ? `
+                            <div class="comment-actions-row">
+                                <button type="button" class="btn-comment-reply" title="رد على التعليق"
+                                    data-comment-id="${escapeHtml(String(comment.id))}"
+                                    data-comment-username="${escapeHtml(usernameStr)}"
+                                    data-comment-text="${escapeHtml(comment.comment || "")}"
+                                    aria-label="رد على التعليق">
+                                    <i data-lucide="corner-down-left"></i>
+                                </button>
+                                ${isOwner ? `
                                 <button type="button" class="btn-comment-delete" title="حذف التعليق" data-comment-id="${escapeHtml(String(comment.id))}" aria-label="حذف التعليق">
                                     <i data-lucide="trash-2"></i>
                                 </button>
-                            ` : ""}
+                                ` : ""}
+                            </div>
                         </div>
+                        ${replyQuoteHtml}
                         <div class="comment-description">
                             ${formatCommentContent(comment.comment || "")}
                         </div>
@@ -3362,6 +3434,11 @@ async function addTaskComment() {
 
     try {
 
+        const body = { comment };
+        if (replyToCommentId) {
+            body.reply_to = replyToCommentId;
+        }
+
         const response =
             await fetch(
                 `/tasks/${currentTaskId}/comments`,
@@ -3372,9 +3449,7 @@ async function addTaskComment() {
                         "Content-Type": "application/json",
                         "Accept": "application/json"
                     },
-                    body: JSON.stringify({
-                        comment: comment
-                    })
+                    body: JSON.stringify(body)
                 }
             );
 
@@ -3408,6 +3483,7 @@ async function addTaskComment() {
 
         taskCommentInput.value = "";
         taskCommentInput.style.height = "";
+        clearReply();
 
         await loadTaskComments(
             currentTaskId
@@ -3576,6 +3652,18 @@ if (taskCommentsContainer) {
     taskCommentsContainer.addEventListener(
         "click",
         async (e) => {
+
+            // ---- Reply button ----
+            const replyBtn = e.target.closest(".btn-comment-reply");
+            if (replyBtn) {
+                const commentId   = replyBtn.getAttribute("data-comment-id");
+                const username    = replyBtn.getAttribute("data-comment-username");
+                const commentText = replyBtn.getAttribute("data-comment-text");
+                setReplyTo(commentId, username, commentText);
+                return;
+            }
+
+            // ---- Delete button ----
             const deleteBtn = e.target.closest(".btn-comment-delete");
             if (!deleteBtn) return;
             const commentId = deleteBtn.getAttribute("data-comment-id");

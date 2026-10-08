@@ -9318,31 +9318,48 @@ app.get(
             }
 
             // =================================================
-            // جلب التعليقات
+            // جلب التعليقات (مع دعم reply_to إذا كان العمود موجوداً)
             // =================================================
 
-            const {
-                data: comments,
-                error: commentsError
-            } = await supabase
+            let comments = [];
+            let commentsError = null;
+
+            // محاولة الجلب مع reply_to أولاً
+            const fetchWithReply = await supabase
                 .from("task_comments")
                 .select(`
                     id,
                     task_id,
                     user_id,
                     comment,
-                    created_at
+                    created_at,
+                    reply_to
                 `)
-                .eq(
-                    "task_id",
-                    taskId
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending: true
-                    }
-                );
+                .eq("task_id", taskId)
+                .order("created_at", { ascending: true });
+
+            if (fetchWithReply.error && fetchWithReply.error.code === "PGRST204") {
+
+                // العمود غير موجود بعد — الجلب بدون reply_to
+                const fetchBasic = await supabase
+                    .from("task_comments")
+                    .select(`
+                        id,
+                        task_id,
+                        user_id,
+                        comment,
+                        created_at
+                    `)
+                    .eq("task_id", taskId)
+                    .order("created_at", { ascending: true });
+
+                comments = fetchBasic.data || [];
+                commentsError = fetchBasic.error;
+
+            } else {
+                comments = fetchWithReply.data || [];
+                commentsError = fetchWithReply.error;
+            }
 
             if (commentsError) {
 
@@ -9412,6 +9429,58 @@ app.get(
             }
 
             // =================================================
+            // جلب التعليقات التي يرد عليها (reply_to)
+            // =================================================
+
+            const replyToIds = [
+                ...new Set(
+                    comments
+                        .filter(c => c.reply_to)
+                        .map(c => c.reply_to)
+                )
+            ];
+
+            let repliedCommentsMap = {};
+
+            if (replyToIds.length > 0) {
+
+                const {
+                    data: repliedComments
+                } = await supabase
+                    .from("task_comments")
+                    .select("id, comment, user_id")
+                    .in("id", replyToIds);
+
+                if (repliedComments) {
+
+                    const replyUserIds = [
+                        ...new Set(
+                            repliedComments.map(c => c.user_id)
+                        )
+                    ];
+
+                    const {
+                        data: replyUsers
+                    } = await supabase
+                        .from("users")
+                        .select("id, username")
+                        .in("id", replyUserIds);
+
+                    repliedComments.forEach(rc => {
+                        const u = (replyUsers || []).find(
+                            u => String(u.id) === String(rc.user_id)
+                        );
+                        repliedCommentsMap[rc.id] = {
+                            comment:  rc.comment,
+                            username: u?.username || "مستخدم"
+                        };
+                    });
+
+                }
+
+            }
+
+            // =================================================
             // ربط التعليقات بالمستخدمين
             // =================================================
 
@@ -9429,6 +9498,10 @@ app.get(
                                         comment.user_id
                                     )
                             );
+
+                        const replied = comment.reply_to
+                            ? repliedCommentsMap[comment.reply_to] || null
+                            : null;
 
                         return {
 
@@ -9457,7 +9530,16 @@ app.get(
                                 ) ===
                                 String(
                                     currentUserId
-                                )
+                                ),
+
+                            reply_to:
+                                comment.reply_to || null,
+
+                            reply_to_username:
+                                replied?.username || null,
+
+                            reply_to_comment:
+                                replied?.comment || null
 
                         };
 
@@ -9940,33 +10022,30 @@ app.post(
 
 
             // =================================================
-            // إضافة التعليق
+            // بناء بيانات الإدخال (reply_to اختياري)
             // =================================================
+
+            const insertPayload = {
+                task_id:  taskId,
+                user_id:  currentUserId,
+                comment:  comment.trim()
+            };
+
+            if (req.body.reply_to) {
+                insertPayload.reply_to = req.body.reply_to;
+            }
+
+            const selectFields = req.body.reply_to
+                ? `id, task_id, user_id, comment, created_at, reply_to`
+                : `id, task_id, user_id, comment, created_at`;
 
             const {
                 data: newComment,
                 error: insertError
             } = await supabase
                 .from("task_comments")
-                .insert({
-
-                    task_id:
-                        taskId,
-
-                    user_id:
-                        currentUserId,
-
-                    comment:
-                        comment.trim()
-
-                })
-                .select(`
-                    id,
-                    task_id,
-                    user_id,
-                    comment,
-                    created_at
-                `)
+                .insert(insertPayload)
+                .select(selectFields)
                 .single();
 
 

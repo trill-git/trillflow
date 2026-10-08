@@ -2437,14 +2437,6 @@
     transition:
         all 0.18s ease;
 
-    opacity:
-        0.6;
-}
-
-
-.task-form-show-comments:hover .btn-comment-delete {
-    opacity:
-        1;
 }
 
 
@@ -2490,6 +2482,295 @@
 
     white-space:
         pre-wrap;
+}
+
+
+/* =========================================================
+   COMMENT ACTIONS ROW (reply + delete)
+   ========================================================= */
+
+.comment-actions-row {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        4px;
+
+    opacity:
+        0;
+
+    transition:
+        opacity .18s ease;
+}
+
+.task-form-show-comments:hover .comment-actions-row {
+    opacity:
+        1;
+}
+
+
+/* =========================================================
+   REPLY BUTTON
+   ========================================================= */
+
+.btn-comment-reply {
+    background:
+        transparent;
+
+    border:
+        none;
+
+    color:
+        rgba(255, 255, 255, 0.35);
+
+    cursor:
+        pointer;
+
+    padding:
+        4px;
+
+    border-radius:
+        6px;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    transition:
+        all 0.18s ease;
+}
+
+.btn-comment-reply:hover {
+    color:
+        #818cf8;
+
+    background:
+        rgba(129, 140, 248, 0.12);
+
+    transform:
+        scale(1.08);
+}
+
+.btn-comment-reply svg {
+    width:
+        13.5px;
+
+    height:
+        13.5px;
+}
+
+
+/* =========================================================
+   QUOTED REPLY BLOCK (inside a comment that replies)
+   ========================================================= */
+
+.comment-reply-quote {
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        2px;
+
+    background:
+        rgba(129, 140, 248, 0.08);
+
+    border-right:
+        3px solid #818cf8;
+
+    border-radius:
+        6px;
+
+    padding:
+        6px 10px;
+
+    margin-bottom:
+        4px;
+}
+
+.comment-reply-quote-author {
+    font-size:
+        11px;
+
+    font-weight:
+        600;
+
+    color:
+        #818cf8;
+}
+
+.comment-reply-quote-text {
+    font-size:
+        11px;
+
+    color:
+        rgba(255, 255, 255, 0.5);
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+}
+
+
+/* =========================================================
+   REPLY BANNER (above the comment input)
+   ========================================================= */
+
+.comment-reply-banner {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        8px;
+
+    background:
+        rgba(129, 140, 248, 0.1);
+
+    border:
+        1px solid rgba(129, 140, 248, 0.25);
+
+    border-radius:
+        8px;
+
+    padding:
+        7px 12px;
+
+    margin-bottom:
+        6px;
+
+    animation:
+        replyBannerIn .2s ease;
+}
+
+@keyframes replyBannerIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.comment-reply-banner-label {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    gap:
+        5px;
+
+    font-size:
+        11.5px;
+
+    color:
+        #818cf8;
+
+    font-weight:
+        500;
+
+    white-space:
+        nowrap;
+}
+
+.comment-reply-icon {
+    width:
+        13px;
+
+    height:
+        13px;
+}
+
+.comment-reply-banner-preview {
+    flex:
+        1;
+
+    font-size:
+        11px;
+
+    color:
+        rgba(255, 255, 255, 0.45);
+
+    white-space:
+        nowrap;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+}
+
+.comment-reply-banner-close {
+    background:
+        transparent;
+
+    border:
+        none;
+
+    cursor:
+        pointer;
+
+    color:
+        rgba(255, 255, 255, 0.35);
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        center;
+
+    padding:
+        3px;
+
+    border-radius:
+        5px;
+
+    transition:
+        all .15s ease;
+
+    flex-shrink:
+        0;
+}
+
+.comment-reply-banner-close:hover {
+    color:
+        #ef4444;
+
+    background:
+        rgba(239, 68, 68, 0.1);
+}
+
+.comment-reply-banner-close svg {
+    width:
+        12px;
+
+    height:
+        12px;
 }
 
 
