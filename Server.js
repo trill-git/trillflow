@@ -7,9 +7,7 @@ const jwt = require("jsonwebtoken");
 const supabase = require("./supabase");
 const multer = require("multer");
 const helmet = require("helmet");
-const upload = multer({
-    storage: multer.memoryStorage()
-});
+const upload = multer({storage: multer.memoryStorage()});
 
 // =====================================================
 // GOOGLE DRIVE

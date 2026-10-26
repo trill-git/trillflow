@@ -490,6 +490,12 @@
 
     overflow-wrap:
         anywhere;
+
+    word-break:
+        break-word;
+
+    white-space:
+        pre-line;
 }
 
 
@@ -2083,6 +2089,38 @@
 
     font-weight:
         650;
+}
+
+.task-show-description #showTaskDescription,
+.task-show-description .description-task {
+    display: block !important;
+    -webkit-line-clamp: unset !important;
+    -webkit-box-orient: unset !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: 280px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    color: rgba(255, 255, 255, .82);
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 0;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, .025);
+    border: 1px solid rgba(255, 255, 255, .06);
+    border-radius: 10px;
+}
+
+.task-show-description #showTaskDescription::-webkit-scrollbar,
+.task-show-description .description-task::-webkit-scrollbar {
+    width: 6px;
+}
+
+.task-show-description #showTaskDescription::-webkit-scrollbar-thumb,
+.task-show-description .description-task::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .15);
+    border-radius: 4px;
 }
 
 

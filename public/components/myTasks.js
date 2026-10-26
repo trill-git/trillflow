@@ -800,7 +800,7 @@ function createMyTaskCard(task) {
                 ${description
             ? `
 
-                            <div class="my-task-description">
+                            <div class="my-task-description" title="${description}">
 
                                 ${description}
 

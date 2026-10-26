@@ -62,6 +62,12 @@ const taskformshow =
 const btnTaskshowclose =
     document.getElementById("btnTaskshowclose");
 
+const showTaskTitle =
+    document.getElementById("showTaskTitle");
+
+const showTaskDescription =
+    document.getElementById("showTaskDescription");
+
 
 // ==================================================
 // COMMENTS & LINK MODAL
@@ -2512,6 +2518,10 @@ async function loadKanbanProject() {
                         task.description
                     );
 
+                if (task.description) {
+                    description.title = task.description;
+                }
+
 
                 // ==================================================
                 // Status
@@ -2790,10 +2800,14 @@ window.openTaskDetails = function (
 
     if (showTaskDescription) {
 
-        showTaskDescription.innerHTML =
+        const formatted =
             formatDescription(
                 description
             );
+
+        showTaskDescription.innerHTML =
+            formatted ||
+            '<span style="color: rgba(255, 255, 255, 0.35); font-style: italic; font-size: 12px;">لا يوجد وصف لهذه المهمة</span>';
 
     }
 
