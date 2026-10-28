@@ -1665,6 +1665,73 @@
 
         }
 
+
+        /* =================================================
+           KEYBOARD SHORTCUTS (ENTER TO SUBMIT)
+        ================================================= */
+
+        const passwordInputs = [
+            $("#tfCurrentPassword"),
+            $("#tfNewPassword"),
+            $("#tfConfirmPassword")
+        ];
+
+        passwordInputs.forEach((input) => {
+
+            if (
+                input &&
+                input.dataset.enterReady !== "true"
+            ) {
+
+                input.dataset.enterReady = "true";
+
+                input.addEventListener("keydown", function (event) {
+
+                    if (event.key === "Enter") {
+
+                        event.preventDefault();
+
+                        changePassword();
+
+                    }
+
+                });
+
+            }
+
+        });
+
+
+        const accountInputs = [
+            $("#tfSettingsUsername"),
+            $("#tfSettingsEmail")
+        ];
+
+        accountInputs.forEach((input) => {
+
+            if (
+                input &&
+                input.dataset.enterReady !== "true"
+            ) {
+
+                input.dataset.enterReady = "true";
+
+                input.addEventListener("keydown", function (event) {
+
+                    if (event.key === "Enter") {
+
+                        event.preventDefault();
+
+                        saveAccount();
+
+                    }
+
+                });
+
+            }
+
+        });
+
     }
 
 

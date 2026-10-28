@@ -1948,6 +1948,306 @@ app.get(
 
     }
 );
+
+// =====================================================
+// تغيير كلمة المرور للمستخدم الحالي
+// =====================================================
+
+app.patch(
+    "/user/password",
+    verifyToken,
+    async (req, res) => {
+
+        try {
+
+            const {
+                currentPassword,
+                newPassword
+            } = req.body;
+
+            if (
+                !currentPassword ||
+                !newPassword
+            ) {
+
+                return res.status(400).json({
+                    message:
+                        "يرجى إدخال كلمة المرور الحالية وكلمة المرور الجديدة."
+                });
+
+            }
+
+            if (
+                typeof newPassword !== "string" ||
+                newPassword.trim().length < 6
+            ) {
+
+                return res.status(400).json({
+                    message:
+                        "كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل."
+                });
+
+            }
+
+            // التحقق من المستخدم الحالي وكلمة مروره
+            const {
+                data: user,
+                error: userError
+            } = await supabase
+                .from("users")
+                .select("id, password")
+                .eq(
+                    "id",
+                    req.user.id
+                )
+                .single();
+
+            if (userError || !user) {
+
+                console.error(
+                    "Change password user fetch error:",
+                    userError
+                );
+
+                return res.status(404).json({
+                    message:
+                        "المستخدم غير موجود."
+                });
+
+            }
+
+            if (user.password !== currentPassword) {
+
+                return res.status(400).json({
+                    message:
+                        "كلمة المرور الحالية غير صحيحة."
+                });
+
+            }
+
+            if (currentPassword === newPassword) {
+
+                return res.status(400).json({
+                    message:
+                        "كلمة المرور الجديدة يجب أن تكون مختلفة عن كلمة المرور الحالية."
+                });
+
+            }
+
+            // تحديث كلمة المرور في قاعدة البيانات
+            const {
+                error: updateError
+            } = await supabase
+                .from("users")
+                .update({
+                    password: newPassword
+                })
+                .eq(
+                    "id",
+                    req.user.id
+                );
+
+            if (updateError) {
+
+                console.error(
+                    "Change password update error:",
+                    updateError
+                );
+
+                return res.status(500).json({
+                    message:
+                        "فشل تحديث كلمة المرور."
+                });
+
+            }
+
+            return res.json({
+                message:
+                    "تم تغيير كلمة المرور بنجاح."
+            });
+
+        } catch (error) {
+
+            console.error(
+                "PATCH /user/password ERROR:",
+                error
+            );
+
+            return res.status(500).json({
+                message:
+                    "حدث خطأ أثناء تغيير كلمة المرور."
+            });
+
+        }
+
+    }
+);
+
+// =====================================================
+// تعديل إعدادات الحساب للمستخدم الحالي
+// =====================================================
+
+app.patch(
+    "/user/settings",
+    verifyToken,
+    async (req, res) => {
+
+        try {
+
+            const {
+                username,
+                email
+            } = req.body;
+
+            if (
+                !username ||
+                !email
+            ) {
+
+                return res.status(400).json({
+                    message:
+                        "الاسم والبريد الإلكتروني مطلوبان."
+                });
+
+            }
+
+            const cleanUsername = username.trim();
+            const cleanEmail = email.trim();
+
+            if (
+                !cleanUsername ||
+                !cleanEmail
+            ) {
+
+                return res.status(400).json({
+                    message:
+                        "الاسم والبريد الإلكتروني لا يمكن أن يكونا فارغين."
+                });
+
+            }
+
+            // التحقق من أن البريد غير مستخدم من حساب آخر
+            const {
+                data: emailUser,
+                error: emailError
+            } = await supabase
+                .from("users")
+                .select("id")
+                .eq(
+                    "email",
+                    cleanEmail
+                )
+                .neq(
+                    "id",
+                    req.user.id
+                )
+                .maybeSingle();
+
+            if (emailError) {
+
+                console.error(
+                    "Settings email check error:",
+                    emailError
+                );
+
+                return res.status(500).json({
+                    message:
+                        "حدث خطأ أثناء التحقق من البريد الإلكتروني."
+                });
+
+            }
+
+            if (emailUser) {
+
+                return res.status(409).json({
+                    message:
+                        "البريد الإلكتروني مستخدم بالفعل بحساب آخر."
+                });
+
+            }
+
+            // تحديث بيانات المستخدم
+            const {
+                data: updatedUser,
+                error: updateError
+            } = await supabase
+                .from("users")
+                .update({
+                    username: cleanUsername,
+                    email: cleanEmail
+                })
+                .eq(
+                    "id",
+                    req.user.id
+                )
+                .select(
+                    "id, username, email, role"
+                )
+                .single();
+
+            if (updateError) {
+
+                console.error(
+                    "Settings update error:",
+                    updateError
+                );
+
+                return res.status(500).json({
+                    message:
+                        "فشل تحديث بيانات الحساب."
+                });
+
+            }
+
+            // تحديث JWT في Cookie
+            const token = jwt.sign(
+                {
+                    id: updatedUser.id,
+                    username: updatedUser.username,
+                    email: updatedUser.email,
+                    role: updatedUser.role
+                },
+                process.env.JWT_SECRET,
+                {
+                    expiresIn: "30d"
+                }
+            );
+
+            res.cookie(
+                "token",
+                token,
+                {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: "lax",
+                    path: "/",
+                    maxAge: 30 * 24 * 60 * 60 * 1000
+                }
+            );
+
+            return res.json({
+                message:
+                    "تم تحديث بيانات الحساب بنجاح.",
+                user: updatedUser
+            });
+
+        } catch (error) {
+
+            console.error(
+                "PATCH /user/settings ERROR:",
+                error
+            );
+
+            return res.status(500).json({
+                message:
+                    "حدث خطأ أثناء حفظ الإعدادات."
+            });
+
+        }
+
+    }
+);
+
 // =====================================================
 // إضافة عضو جديد إلى النظام
 // =====================================================
